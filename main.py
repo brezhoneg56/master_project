@@ -10,9 +10,11 @@ import os
 import shutil
 import subprocess
 import fileinput
+ 
 basepath="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
 ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
+#import module-run.py
 ############## FUNCTIONS ####################################
 
 def decimal_analysis(number):  ##On analyse les décimales pour avoir des périodes cohérentes avec les dossiers : 1, 2 ou 3 décimales
@@ -24,20 +26,20 @@ def decimal_analysis(number):  ##On analyse les décimales pour avoir des pério
 def pimpleMyFoam(folder_name,sweep_name,interval_name):
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     command='pimpleDyMFoam >pimple.log 2>&1 &'
-    result=subprocess.run(command, shell=True, cwd=pimple_path,capture_output=True, text=True)
-    return(result.stdout)
+    #result=subprocess.run(command, shell=True, cwd=pimple_path,capture_output=True, text=True)
+    #return(result.stdout)
     
 def computePressureDrop(folder_name,sweep_name):
     pressure_path=basepath+folder_name+"/"+sweep_name+"/postProcessing"    
     command='computePressureDropFoam start end > pressureDrop.txt'
-    result=subprocess.run(command, shell=True, cwd=pressure_path,capture_output=True, text=True)
-    return(result.stdout)
-    with open("pressureDrop.txt", "r") as f:
-        log_data = f.read()
-    pressure_drop_index = log_data.find("pressureDrop is")
-    pressure_drop_str = log_data[pressure_drop_index:].split()[2]
-    pressure_drop = float(pressure_drop_str)
-    print("The pressure drop for "+sweep_name+" is "+pressure_drop)
+    #result=subprocess.run(command, shell=True, cwd=pressure_path,capture_output=True, text=True)
+    #return(result.stdout)
+    #with open("pressureDrop.txt", "r") as f:
+    #    log_data = f.read()
+    #pressure_drop_index = log_data.find("pressureDrop is")
+    #pressure_drop_str = log_data[pressure_drop_index:].split()[2]
+    #pressure_drop = float(pressure_drop_str)
+    #print("The pressure drop for "+sweep_name+" is "+pressure_drop)
 #######################################################
 #########INITIALIZATION################################
 #folder_name=input("Name your folder: ")
@@ -48,7 +50,7 @@ os.mkdir(folder_name)
 #theta=input("Define the starting time (example: 0.4): ");
 
 # For the testing we can uncomment the following
-n=2;
+n=4;
 theta=0.4;
 T=0.1;
 deltaT=T/n
@@ -87,9 +89,9 @@ for k in range(1,2): ##je laisse le loop pour l'instant pour ma rappeler pour ap
         shutil.copytree(source_startTime,os.path.join(destination_startTime,os.path.basename(source_startTime)))
        
        # Deleting wrong polyMesh/points in the starting time directory
-        polyMesh_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/'+str(startTime)+'/polyMesh/points'
+        polyMesh_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/constant/polyMesh/points'
         print('The directory '+polyMesh_path+' has not been deleted because we outcommented the command line.')
-       # shutil.rmtree(polyMesh_path)
+        os.remove(polyMesh_path)
         
         #Fetching the right polyMesh
         source_newPolyMesh=ref_cases_mod_def+"constant/polyMesh/points"
@@ -103,7 +105,7 @@ for k in range(1,2): ##je laisse le loop pour l'instant pour ma rappeler pour ap
                 line = 'startTime       {};\n'.format(startTime)
             elif line.startswith('endTime'):
                 line = 'endTime         {};\n'.format(endTime)
-            print line
+            print(line)
         
         #Executing PimpleMyFoam
         pimpleMyFoam(folder_name,sweep_name,interval_name)
@@ -112,7 +114,7 @@ for k in range(1,2): ##je laisse le loop pour l'instant pour ma rappeler pour ap
         source_file="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/primitiveShooting/primal"
         destination_file=folder_name+'/'+sweep_name
         subprocess.run(['chmod','u+x','preparePostProcessing.sh'])
-        subprocess.run(['preparePostProcessing.sh'])        
+        #subprocess.run(['preparePostProcessing.sh'])        
         
         #Prepare computePressureDrop      
         computePressureDrop(folder_name,sweep_name)
@@ -134,23 +136,25 @@ for k in range(2,n+1):
         source_interval=basepath+folder_name+"/"+previous_sweep_name+"/"+interval_name
         destination_interval=basepath+folder_name+"/"+sweep_name
         shutil.copytree(source_interval,os.path.join(destination_interval,os.path.basename(source_interval)))
-    #Preparing shooting directories from sweep1 data   
+    #Preparing shooting directories from sweep1 data
     for i in range(k,n+1):
         interval_name=myinterval.format(i)
+        destination_constant=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+        destination_system=basepath+folder_name+"/"+sweep_name+"/"+interval_name
         previous_interval_name=myinterval.format(i-1)
-        startTime=decimal_analysis(theta+deltaT*(i-1))
-        endTime=decimal_analysis(theta+deltaT*i)
+        startTime=decimal_analysis(theta+deltaT*(i-2))
+        endTime=decimal_analysis(theta+deltaT*(i-1))
         
         source_constant=basepath+folder_name+"/"+previous_sweep_name+"/"+interval_name+'/constant'
         source_system=basepath+folder_name+"/"+previous_sweep_name+"/"+interval_name+'/system'
-        source_endTime=basepath+folder_name+"/"+previous_sweep_name+"/"+previous_interval_name+str(endTime)        
+        source_endTime=basepath+folder_name+"/"+previous_sweep_name+"/"+previous_interval_name+'/'+str(endTime)        
         destination_endTime=basepath+folder_name+"/"+sweep_name+"/"+interval_name        
         
         shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
         shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
-        shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
+        #shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
         
-        pimpleMyFoam(basepath,folder_name,sweep_name,interval_name)
+        #pimpleMyFoam(basepath,folder_name,sweep_name,interval_name)
     ## Prepare computePressure
        # computePressureDrop(folder_name,sweep_name)
         
