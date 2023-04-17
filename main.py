@@ -206,15 +206,14 @@ print("ready for postProcessing ...")
 
 ################################################################### Prepare computePressureDrop      
 #FONCTION computePressureDrop(folder_name,sweep_name)
-os.chdir(basepath+folder_name+sweep_name+"/postProcessing")
-os.system('computePressureDropFoam start end')
-os.chdir(basepath)   
+os.chdir(basepath+folder_name+'/'+sweep_name+"/postProcessing")
+#os.system('computePressureDropFoam start end')
 #Open a log file        
-with open("pressureDrop.txt","w") as logfile:
+with open("../../pressureDrop.txt","w") as logfile:
     os.system('computePressureDropFoam start end > pressureDrop.txt')            
 print("\nComputation of Pressure Drop for "+sweep_name+" is done.\n\n Writing into pressureDrop.txt ...")
 print("Done.\n\n")
-
+os.chdir(basepath)   
 with open("pressureDrop.txt","r") as logfile:
     content=logfile.read()
 logfile.close()
