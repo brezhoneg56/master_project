@@ -108,7 +108,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 #########INITIALIZATION################################
 
 #folder_name=input("Name your folder: ")
-folder_name="five_intervals"
+folder_name="six_intervals"
 os.mkdir(folder_name)
 print("\nThe directory "+folder_name+" has been created at this place: \n"+basepath+"\n\n")
 
@@ -116,7 +116,7 @@ print("\nThe directory "+folder_name+" has been created at this place: \n"+basep
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
 
-n=5;
+n=6;
 theta=0.4;
 T=0.1;
 deltaT=T/n
