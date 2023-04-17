@@ -10,19 +10,17 @@ import os
 import shutil
 import subprocess
 import fileinput
-import re
-
 
 ######### PATHS ########################## 
 basepath="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
 ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
 project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
-
 os.chdir(basepath)
+
 ############## FUNCTIONS ####################################
 
-def decimal_analysis(number):  ##On analyse les décimales pour avoir des périodes cohérentes avec les dossiers : 1, 2 ou 3 décimales
+def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)
         else:
@@ -87,15 +85,17 @@ def copytree(src, dst, symlinks=False, ignore=None):
     if errors:
         raise BaseException(errors)
 
+##### Homework : Functions to be implemented
+
 #def pimpleMyFoam(folder_name,sweep_name,interval_name):
 #    pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
 #    command='pimpleDyMFoam >pimple.log 2>&1 &'
 #    result=subprocess.run(command, shell=True, cwd=pimple_path,capture_output=True, text=True)
 #    return(result.stdout)
     
-def computePressureDrop(folder_name,sweep_name):
-    pressure_path=basepath+folder_name+"/"+sweep_name+"/postProcessing"    
-    command='computePressureDropFoam start end > pressureDrop.txt'
+#def computePressureDrop(folder_name,sweep_name):
+ #   pressure_path=basepath+folder_name+"/"+sweep_name+"/postProcessing"    
+#    command='computePressureDropFoam start end > pressureDrop.txt'
     #result=subprocess.run(command, shell=True, cwd=pressure_path,capture_output=True, text=True)
     #return(result.stdout)
     #with open("pressureDrop.txt", "r") as f:
@@ -104,17 +104,18 @@ def computePressureDrop(folder_name,sweep_name):
     #pressure_drop_str = log_data[pressure_drop_index:].split()[2]
     #pressure_drop = float(pressure_drop_str)
     #print("The pressure drop for "+sweep_name+" is "+pressure_drop)
-#######################################################
+
 #########INITIALIZATION################################
+
 #folder_name=input("Name your folder: ")
 folder_name="five_intervals"
 os.mkdir(folder_name)
 print("\nThe directory "+folder_name+" has been created at this place: \n"+basepath+"\n\n")
+
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
 
-# For the testing we can uncomment the following
 n=5;
 theta=0.4;
 T=0.1;
@@ -122,17 +123,18 @@ deltaT=T/n
 
 ########## SET THE SWEEP FOLDERS ##############################
 
-#sweep="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 myinterval="interval{}"
 mysweep="sweep{}"
 
 ############## SWEEP 1 INITIALIZATION ##################################
+
 k=1
 sweep_name=mysweep.format(k)
 sweep_path=os.path.join(folder_name,sweep_name)
 os.mkdir(sweep_path)
-    
+
 ##########  ALL INTERVALS IN SWEEP1 ###################################
+
 for i in range(1,n+1):
     interval_name=myinterval.format(i)
         
@@ -173,30 +175,28 @@ for i in range(1,n+1):
         print(line)
 
 ################################################################### Executing PimpleMyFoam
-# Ici on voudrait créer une fonction plutot
+# Here, we will have a function (cf line 90)
 
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing pimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
-    os.chdir(pimple_path) #entering logfile path
-    #Open a log file        
+    os.chdir(pimple_path) #Entering logfile path
+    
+    #Open a log file and pipe the output of PimpleDyMFoam into the log        
     with open("logfile.txt","w") as logfile:
         result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
     print("Computation of "+interval_name+" is done.\n\n Writing into pimple.log ...")
-    with open('logfile.txt','r') as input_file:
-        file_contents=input_file.read()
-    with open('pimple.log','w') as output_file:
-        output_file.write(file_contents)
     os.chdir(basepath) #back to main path
     print("Done.\n\n")
     print("End of loop for interval "+str(i)+".")
 
-###NOTE : on aimerait de pas avoir à passer par le log.txt, on veut direcetement le pimple.log : a retravailler
 #################################################################### Prepare postProcessing
+# Here, we will have a function
+
 destination_file=basepath+folder_name+'/'+sweep_name+'/'
 postPro_destination=destination_file+"postProcessing"
 os.chdir(destination_file)
 print("Preparing for postProcessing ...\n")
-list_dir=[]
+list_dir=[] #We do a list of all folder names, so that we can look through every folder, and copy their content
 for x in range(1,n+1):
     list_dir=list_dir+["interval"+str(x)]
 for list_dir in list_dir:
@@ -206,18 +206,17 @@ print("ready for postProcessing ...")
 
 ################################################################### Prepare computePressureDrop      
 #FONCTION computePressureDrop(folder_name,sweep_name)
+
 os.chdir(basepath+folder_name+'/'+sweep_name+"/postProcessing")
-#os.system('computePressureDropFoam start end')
+
 #Open a log file        
 with open("../../pressureDrop.txt","w") as logfile:
     os.system('computePressureDropFoam start end > pressureDrop.txt')            
 print("\nComputation of Pressure Drop for "+sweep_name+" is done.\n\n Writing into pressureDrop.txt ...")
 print("Done.\n\n")
-os.chdir(basepath)   
-with open("pressureDrop.txt","r") as logfile:
-    content=logfile.read()
-logfile.close()
+os.chdir(basepath)
 
+#Writing the pressureDrop line into txt file
 with open("pressureDrop.txt","r") as f:
     lines=f.readlines()
 for line in lines:
@@ -229,25 +228,25 @@ for line in lines:
             mapression.close()
 os.chdir(basepath) #back to main path
 print("Sweep 1 is done.")
-###############################################################
-###############################################################
 
-##########  FOR LOOP FOR SWEEP FROM 2-n ###################################
-#STARTING OTHERS SWEEPS
+##########  FOR LOOP FOR SWEEP FROM 2-n      ###################################
+##########  STARTING OTHERS SWEEPS           ###################################
 
 for k in range(2,n+1):  
     sweep_name=mysweep.format(k)
     previous_sweep_name=mysweep.format(k-1)
     sweep_path=os.path.join(folder_name,sweep_name)
     print("Starting shooting of "+sweep_name+"\n")
+    
 ##########  ALL INTERVALS IN SWEEPk ###################################
+    
     # Copy Directories that were already shoot
     for x in range(1,k):
         interval_name=myinterval.format(x)
-        #pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name  
         source_interval=basepath+folder_name+"/"+previous_sweep_name+"/"+interval_name
         destination_interval=basepath+folder_name+"/"+sweep_name
         shutil.copytree(source_interval,os.path.join(destination_interval,os.path.basename(source_interval)))
+    
     #Preparing shooting directories from sweep1 data
     for i in range(k,n+1):
         interval_name=myinterval.format(i)
@@ -265,11 +264,9 @@ for k in range(2,n+1):
         shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
         shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
         shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
-################
 
-    #TENTATIVE EN COPY PASTA
-    ################################################################### Executing PimpleMyFoam
-# Ici on voudrait créer une fonction plutot
+################################################################### Executing PimpleMyFoam
+#Function
 
         pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
         print("Executing pimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
@@ -279,18 +276,12 @@ for k in range(2,n+1):
             result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
             print("Computation of "+interval_name+" is done.\n\n Writing into pimple.log ...")
             logfile.close()
-            with open('logfile.txt','r') as input_file:
-                file_contents=input_file.read()
-                input_file.close()
-            with open('pimple.log','w') as output_file:
-                output_file.write(file_contents)
-                output_file.close()
             os.chdir(basepath) #back to main path
             print("Done.\n\n")
             print("End of loop for interval "+str(i)+".")
 
-###NOTE : on aimerait de pas avoir à passer par le log.txt, on veut direcetement le pimple.log : a retravailler
 #################################################################### Prepare postProcessing
+
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
     os.chdir(destination_file)
@@ -305,18 +296,18 @@ for k in range(2,n+1):
 
 ################################################################### Prepare computePressureDrop      
 #FONCTION computePressureDrop(folder_name,sweep_name)
+
     os.chdir(basepath+folder_name+"/"+sweep_name+"/postProcessing")
     os.system('computePressureDropFoam start end')   
+    
     #Open a log file        
     with open("pressureDrop.txt","w") as log:
         os.system('computePressureDropFoam start end > pressureDrop.txt')
-        #log.close()            
     print("\nComputation of Pressure Drop for "+sweep_name+" is done.\n\n Writing into pressureDrop.txt ...")
     print("Done.\n\n")
     
     with open("pressureDrop.txt","r") as log:
         content=log.read()
-        #log.close()
 
     with open("pressureDrop.txt","r") as f:
         lines=f.readlines()
