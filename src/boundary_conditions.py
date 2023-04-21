@@ -52,6 +52,9 @@ def sweep_1_initialization(n, T, basepath, theta, folder_name):
         polyMesh_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/constant/polyMesh/points'
         print('The file '+folder_name+'/'+sweep_name+'/'+interval_name+'/constant/polyMesh/points has been succefully removed.\n\n')
         os.remove(polyMesh_path)
+        file=destination_startTime+'/'+str(startTime)+'/polyMesh/points'
+        if os.path.exists(file):
+            shutil.rmtree(destination_startTime+'/'+str(startTime)+'/polyMesh')
         
         #Fetching the right polyMesh
         source_newPolyMesh=ref_cases_mod_def+"constant/polyMesh/points"

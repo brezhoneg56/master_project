@@ -42,8 +42,8 @@ def startMyComputation (basepath, n, T, theta, folder_name):
             break
     return(myinterval, mysweep)
 
-def computeEverything(basepath, n, T, theta):
-    for s in range(1, n+1):
+def computeEverything(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+    for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals"
         os.mkdir(folder_name)
