@@ -44,3 +44,35 @@ def prepareMyNextSweep(k, n, folder_name, basepath, theta, deltaT):
         shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
         
         print("Computing for: \n"+sweep_name+"\n"+interval_name+"\n"+"Previous end time, that is current start time: "+str(endTime))
+
+def prepareNextSweepSteffenson(k, n, folder_name, steffensen_path, primitive_path):
+    for i in range(k+1,n+1):
+        myinterval="interval{}"
+        mysweep="sweep{}"
+        sweep_name=mysweep.format(k+1)
+        interval_name=myinterval.format(i+1)
+        os.chdir(steffensen_path)
+        #previous_sweep_name=mysweep.format(k)
+        sweep_path=os.path.join(folder_name,sweep_name)
+        primitive_interval_path=primitive_path+'/'+sweep_name+'/'+interval_name
+        print("\nStarting shooting of "+sweep_name+" with Steffensen's method.\n")
+        #Copy directories of refcases
+        linP_var_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/boundary/linP"
+        linU_var_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/boundary/linU"
+        #Copy of interval1 file
+        shutil.copytree(primitive_interval_path,os.path.join(steffensen_path+sweep_name,os.path.basename(primitive_interval_path)))
+        #Copy of lin varaible from refcases
+        startTime=decimal_analysis(theta+deltaT*(i-2)) ##vérif la valeur
+        start_time_path=steffensen_path+'/'+sweep_name+'/'+interval_name+'/'+str(startTime)
+        os.copy(linP_var_path, start_time_path)
+        os.copy(linU_var_path, start_time_path)
+        
+        fvSchemes_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSchemes"
+        fvSolutions_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSolutions"
+        os.copy(fvSchemes_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
+        os.copy(fvSolutions_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
+        print("Copy Done. Starting linearisedPimpleDyMFoam...\n")
+
+
+
+
