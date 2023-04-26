@@ -25,6 +25,22 @@ def pimpleDyMFoam(folder_name, sweep_name,i, basepath):
     print("End of loop for interval "+str(i)+".")
     return(result)
 
+def linearisedPimpleDyMFoam(folder_name, sweep_name, i, basepath):
+    myinterval="interval{}"
+    interval_name=myinterval.format(i)
+    lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+    print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
+    os.chdir(lin_pimple_path)
+    with open("logfile.txt","w") as logfile:
+        result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
+    print("Computation of "+interval_name+" is done.\n\n Writing into pimple.log ...")
+    os.chdir(basepath) #back to main path
+    print("Done.\n\n")
+    print("End of loop for interval "+str(i)+".")
+    return(result)
+    
+    
+    
 def startMyComputation (basepath, n, T, theta, folder_name):
     deltaT=T/n
     myinterval="interval{}"
@@ -42,7 +58,15 @@ def startMyComputation (basepath, n, T, theta, folder_name):
             break
     return(myinterval, mysweep)
 
-def computeEverything(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+def primal_nofastpropagator_seq(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+    for s in range(a, n+1):
+        print(s)
+        folder_name=str(s)+"_intervals"
+        os.mkdir(folder_name)
+        bc.sweep_1_initialization(s, T, basepath, theta, folder_name)
+        startMyComputation(basepath, s, T, theta, folder_name)
+        
+def primal_nofastpropagator_steffensen(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals"

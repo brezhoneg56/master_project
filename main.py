@@ -30,4 +30,4 @@ mysweep="sweep{}"
 
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 
-sol.computeEverything(basepath, n, T, theta, a)
+sol.primal_nofastpropagator_seq(basepath, n, T, theta, a)
