@@ -21,10 +21,10 @@ os.chdir(basepath)
 #folder_name=input("Name your folder: ")
 
 #folder_name="deux_intervals"
-n=5; #Amount of sweeps / shooting intervals
+n=4; #Amount of sweeps / shooting intervals
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
-a=5; #Amount of sweeps in the first loop
+a=4; #Amount of sweeps in the first loop
 myinterval="interval{}"
 mysweep="sweep{}"
 # After testing is done, please uncomment the following
