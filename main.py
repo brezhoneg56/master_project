@@ -8,6 +8,7 @@ Created on Wed Apr 12 09:42:28 2023
 #os.system("cp -r /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/constant /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/four_intervals/sweep1")
 import os
 from src import solvers as sol, preprocessing as prep
+import shutil
 ######### PATHS ########################## 
 primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
 steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/steffenssens_method/"
@@ -41,4 +42,7 @@ mysweep="sweep{}"
 #Steffensen shooting : ongoing
 k=1
 folder_name="4_intervals"
+os.chdir(steffensen_path)
+if os.path.exists(folder_name):
+    shutil.rmtree(folder_name)
 prep.prepareSteffensen(k, n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
