@@ -56,26 +56,31 @@ def prepareSteffensen(k, n, theta, folder_name, steffensen_path, primitive_path,
     time_next_sweep_int1=primitive_path+"/"+folder_name+"/sweep2/interval1/"+str(theta)
     
     #Paths from actual sweep
-    int1_steffensen=steffensen_path+"/"+folder_name+"/sweep1/interval1/"
-    current_sweep_path=steffensen_path+"/"+folder_name+"sweep1/interval1/"
+    #current_sweep_path=steffensen_path+folder_name+"sweep1/"
+    int1_steffensen=steffensen_path+folder_name+"/sweep1/interval1/"
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
+    
+    #Creating folders
+    os.mkdir(steffensen_path+folder_name)
+    #os.mkdir(steffensen_path+folder_name+"/sweep1")
+    #os.mkdir(steffensen_path+folder_name+"/sweep1/interval1")
 
     #Copy of constant, system, starttime, from primitive folder
     shutil.copytree(constant_next_sweep_int1,os.path.join(int1_steffensen,os.path.basename(constant_next_sweep_int1)))
     shutil.copytree(system_next_sweep_int1,os.path.join(int1_steffensen,os.path.basename(system_next_sweep_int1)))
     shutil.copytree(time_next_sweep_int1,os.path.join(int1_steffensen,os.path.basename(time_next_sweep_int1)))
     #Copy of lin Variables and fv Folders
-    shutil.copyfile(linP_path, current_sweep_path+str(theta))
-    shutil.copyfile(linU_path, current_sweep_path+str(theta))
-    shutil.copyfile(fvSchemes_path, current_sweep_path+"/system/")
-    shutil.copyfile(fvSolution_path, current_sweep_path+"/system/")
-    os.mkdir(steffensen_path+"/"+folder_name+"/sweep1/interval1/","0")
+    shutil.copyfile(linP_path, int1_steffensen+str(theta))
+    shutil.copyfile(linU_path, int1_steffensen+str(theta))
+    shutil.copyfile(fvSchemes_path, int1_steffensen+"/system/")
+    shutil.copyfile(fvSolution_path, int1_steffensen+"/system/")
+    os.mkdir(steffensen_path+folder_name+"/sweep1/interval1/","0")
     print("Copy Done. Starting linearisedPimpleDyMFoam...\n")
-    os.chdir(steffensen_path+"/"+folder_name+"/sweep1/interval1/")
+    os.chdir(steffensen_path+folder_name+"/sweep1/interval1/")
     with open("logfile.txt","w") as logfile:
         result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
         return(result)
