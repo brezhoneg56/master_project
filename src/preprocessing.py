@@ -49,7 +49,7 @@ def prepareMyNextSweepOLD(k, n, folder_name, basepath, theta, deltaT):
 
 import multiprocessing
 
-def process_x(x):
+def process_x(x, myinterval, mysweep, sweep_name, k, n, folder_name, basepath, theta, deltaT):
     previous_sweep_name = mysweep.format(x)
     for i in range(k + 1, n + 1):
         interval_name = myinterval.format(i)
@@ -67,7 +67,7 @@ def process_x(x):
         print("Computing for: \n" + sweep_name + "\n" + interval_name + "\n" + "Previous end time, that is current start time: " + str(endTime))
 
 def prepareMyNextSweep(k, n, folder_name, basepath, theta, deltaT):
-    global myinterval, mysweep, sweep_name, k, n, folder_name, basepath, theta, deltaT
+    #global myinterval, mysweep, sweep_name, k, n, folder_name, basepath, theta, deltaT
     myinterval = "interval{}"
     mysweep = "sweep{}"
     sweep_name = mysweep.format(k + 1)
