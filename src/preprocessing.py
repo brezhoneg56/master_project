@@ -51,9 +51,9 @@ def prepareSteffensen(k, n, theta, folder_name, steffensen_path, primitive_path,
     #Pour l'implementation on considère n=4, on entre dans k=1
     print("Steffensen Preparation: copy of interval1 folders...")
     #Path from other sweep
-    constant_next_sweep_int1=primitive_path+"/"+folder_name+"/sweep2/interval1/constant"
-    system_next_sweep_int1=primitive_path+"/"+folder_name+"/sweep2/interval1/system"
-    time_next_sweep_int1=primitive_path+"/"+folder_name+"/sweep2/interval1/"+str(theta)
+    constant_next_sweep_int1=primitive_path+folder_name+"/sweep2/interval1/constant"
+    system_next_sweep_int1=primitive_path+folder_name+"/sweep2/interval1/system"
+    time_next_sweep_int1=primitive_path+folder_name+"/sweep2/interval1/"+str(theta)
     
     #Paths from actual sweep
     #current_sweep_path=steffensen_path+folder_name+"sweep1/"
