@@ -69,7 +69,7 @@ def primal_nofastpropagator_seq(basepath, n, T, theta, a): #change name (eg prim
 def primal_nofastpropagator_steffensen(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     for s in range(a, n+1):
         print(s)
-        folder_name=str(s)+"_intervals"
+        folder_name=str(s)+"_intervals_parallel"
         os.mkdir(folder_name)
         bc.sweep_1_initialization(s, T, basepath, theta, folder_name)
         startMyComputation(basepath, s, T, theta, folder_name)
