@@ -35,15 +35,15 @@ mysweep="sweep{}"
 #theta=input("Define the starting time (example: 0.4): ");
 
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
-
-
+folder_name="4_intervals_parallel"
+if os.path.exists(folder_name):
+    shutil.rmtree(folder_name)
 #Primitive shooting : works
 sol.primal_nofastpropagator_seq(basepath, n, T, theta, a)
 
 #Steffensen shooting : ongoing
 
-#folder_name="4_intervals"
+
 #os.chdir(steffensen_path)
-#if os.path.exists(folder_name):
-#    shutil.rmtree(folder_name)
+
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
