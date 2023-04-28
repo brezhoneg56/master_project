@@ -78,7 +78,7 @@ def prepareSteffensen(k, n, theta, folder_name, steffensen_path, primitive_path,
     shutil.copy(linU_path, int1_steffensen+str(theta)+"/")
     shutil.copy(fvSchemes_path, int1_steffensen+"/system/")
     shutil.copy(fvSolution_path, int1_steffensen+"/system/")
-    os.mkdir(steffensen_path+folder_name+"/sweep1/interval1/",str(0))
+    os.mkdir(steffensen_path+folder_name+"/sweep1/interval1/0")
     print("Copy Done. Starting linearisedPimpleDyMFoam...\n")
     os.chdir(steffensen_path+folder_name+"/sweep1/interval1/")
     with open("logfile.txt","w") as logfile:
