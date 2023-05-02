@@ -63,9 +63,17 @@ def prepareMyNextSweep(k, folder_name):
             _ = future.result()
 
 #### Linearised
-def prepareShootingUpdate(folder_name):
+def prepareShootingUpdate(folder_name, sweep_name, interval_name):#should start from sweep2, after interval2 is done
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
-    print('Test')
+    print('Preparing Shooting Update for '+interval_name+".\n")
+    print("Copy code VIOLET.\n")
+
+    print("Copy code RED.\n")
+
+    print("Copy code BLUE.\n")
+
+    print("Copy code GREEN.\n")
+
 
 def prepareLinearization(folder_name, sweep_name, k): ##WORKS
     #Copy files to prepare linearisedPimpleDyMFoam
@@ -75,7 +83,7 @@ def prepareLinearization(folder_name, sweep_name, k): ##WORKS
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
     os.mkdir(steffensen_path+folder_name+"/sweep1/")
-#Paths for variables
+    #Paths for variables
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
