@@ -67,9 +67,10 @@ def prepareShootingUpdate(folder_name):
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     print('Test')
 
-def prepareLinearization(folder_name, sweep_name, interval_name, k): ##WORKS
+def prepareLinearization(folder_name, sweep_name, k): ##WORKS
     #Copy files to prepare linearisedPimpleDyMFoam
     print("Preparing linearisation...")
+    interval_name="interval1"
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
     os.mkdir(steffensen_path+folder_name+"/sweep1/")
@@ -88,6 +89,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k): ##WORKS
     shutil.copy(fvSolution_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     print("Prepartion done. Strating linearisedPimpleDyMFoam...")
     for i in range(2, k+2):#Loop for every interval but int1
+        interval_name=myinterval.format(i)
         #copy theta dir
         starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
         starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
