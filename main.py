@@ -7,44 +7,19 @@ Created on Wed Apr 12 09:42:28 2023
 ## $pvd . a quoi sert cette commande?
 #os.system("cp -r /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/constant /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/four_intervals/sweep1")
 import os
+from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
 from src import solvers as sol, preprocessing as prep
 import shutil
 import sys
 ######### PATHS ##########################
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-#PRIMAL PATHS
-primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
-primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
-steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/steffenssens_method/"
-#CALCS PATHS
-calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
-#REFERENCE PATHS
-ref_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/"
-ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
-#MY PROJECTS PATHS
-project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
-# CHOOSE YOUR BASE WORKING PATH
-basepath=primitive_path
 os.chdir(basepath)
 ################################        INITIALIZATION      ################################
-#folder_name=input("Name your folder: ")
-
-#folder_name="deux_intervals"
-n=4; #Amount of sweeps / shooting intervals
-theta=0.4; #Starting time in seconds
-T=0.1; #Length of one period
-a=4; #Amount of sweeps in the first loop
-deltaT=T/n
-myinterval="interval{}"
-mysweep="sweep{}"
-
 #def get_var():
 #    return n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
 
-# After testing is done, please uncomment the following
-#n=int(input("Set the number of shooting intervals: "));
-#theta=input("Define the starting time (example: 0.4): ");
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 folder_name="4_intervals_parallel"
 if os.path.exists(folder_name):

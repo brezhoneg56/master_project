@@ -9,9 +9,9 @@ import shutil
 #import subprocess
 import fileinput
 import sys
-sys.path.append('../')
-from master_project.main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
-
+#sys.path.append('../')
+from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)

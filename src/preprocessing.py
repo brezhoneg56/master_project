@@ -12,9 +12,9 @@ import multiprocessing
 #from .. import main
 import sys
 
-sys.path.append('../')
-from master_project.main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
-
+#sys.path.append('../')
+from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 
 

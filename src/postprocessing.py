@@ -7,9 +7,9 @@ Created on Tue Apr 18 10:30:18 2023
 import os
 from src import boundary_conditions as bc
 import sys
-sys.path.append('../')
-from master_project.main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
-
+#sys.path.append('../')
+from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
 def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
