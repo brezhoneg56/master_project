@@ -6,8 +6,9 @@ Created on Tue Apr 18 10:30:18 2023
 """
 import os
 from src import boundary_conditions as bc
+from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
 
-def preparePostProcessing(folder_name, sweep_name, basepath, n):
+def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
     os.chdir(destination_file)
@@ -20,7 +21,7 @@ def preparePostProcessing(folder_name, sweep_name, basepath, n):
         bc.copytree(list_dir,postPro_destination)
     print("ready for postProcessing ...")
 
-def computePressureDropFoam(folder_name, sweep_name, basepath):
+def computePressureDropFoam(folder_name, sweep_name):
     os.chdir(basepath+folder_name+'/'+sweep_name+"/postProcessing")
     #Open a log file        
     with open("pressureDrop.txt","w") as logfile: ###Erreor openfoam vient de la à priori car on ouvre deux fois le logfile

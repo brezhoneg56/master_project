@@ -7,10 +7,10 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
+from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
+## GLOBAL VARIABLES
 
-
-def pimpleDyMFoam(folder_name, sweep_name,i, basepath):
-    myinterval="interval{}"
+def pimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing pimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
@@ -25,8 +25,7 @@ def pimpleDyMFoam(folder_name, sweep_name,i, basepath):
     print("End of loop for interval "+str(i)+".")
     return(result)
 
-def linearisedPimpleDyMFoam(folder_name, sweep_name, i, basepath):
-    myinterval="interval{}"
+def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
@@ -41,35 +40,33 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i, basepath):
     
     
     
-def startMyComputation (basepath, n, T, theta, folder_name):
+def loop_pimpleDyMFoam(folder_name):
     deltaT=T/n
-    myinterval="interval{}"
-    mysweep="sweep{}"
     for k in range(1, n+1):
         sweep_name=mysweep.format(k)
         ## COMPUTE MY INTERVAL
         print("\nStarting shooting of "+sweep_name+"\n")
         for i in range(k, n+1):
-            sol.pimpleDyMFoam(folder_name, sweep_name,i, basepath)
-        post.preparePostProcessing(folder_name, sweep_name, basepath, n)
-        post.computePressureDropFoam(folder_name, sweep_name, basepath)
+            sol.pimpleDyMFoam(folder_name, sweep_name,i)
+        post.preparePostProcessing(folder_name, sweep_name)
+        post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
-            pre.prepareMyNextSweep(k, n, folder_name, basepath, theta, deltaT)
+            pre.prepareMyNextSweep(k, folder_name)
             break
     return(myinterval, mysweep)
 
-def primal_nofastpropagator_seq(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals_parallel"
         os.mkdir(folder_name)
-        bc.sweep_1_initialization(s, T, basepath, theta, folder_name)
-        startMyComputation(basepath, s, T, theta, folder_name)
+        bc.sweep_1_initialization(s, T, basepath, theta, folder_name, calcs_undeformed, ref_cases_mod_def)
+        loop_pimpleDyMFoam(basepath, s, T, theta, folder_name)
         
-def primal_nofastpropagator_steffensen(basepath, n, T, theta, a): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+def primal_nofastpropagator_steffensen(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals"
         os.mkdir(folder_name)
-        bc.sweep_1_initialization(s, T, basepath, theta, folder_name)
-        startMyComputation(basepath, s, T, theta, folder_name)
+        bc.sweep_1_initialization(s, T, basepath, theta, folder_name, calcs_undeformed, ref_cases_mod_def)
+        loop_pimpleDyMFoam(basepath, s, T, theta, folder_name)

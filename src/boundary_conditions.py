@@ -8,6 +8,7 @@ import os
 import shutil
 #import subprocess
 import fileinput
+from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
 
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
@@ -15,14 +16,9 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
         else:
             return round(number,3)
             
-def sweep_1_initialization(n, T, basepath, theta, folder_name):
+def sweep_1_initialization(folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
-    calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"    
-    ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"    
     k=1
-    deltaT=T/n
-    myinterval="interval{}"
-    mysweep="sweep{}"
     os.chdir(basepath)    
     sweep_name=mysweep.format(k)
     sweep_path=os.path.join(folder_name,sweep_name)

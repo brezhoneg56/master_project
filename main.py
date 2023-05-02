@@ -10,13 +10,18 @@ import os
 from src import solvers as sol, preprocessing as prep
 import shutil
 ######### PATHS ########################## 
+#PRIMAL PATHS
+primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
 steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/steffenssens_method/"
+#CALCS PATHS
 calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
-ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
+#REFERENCE PATHS
 ref_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/"
+ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
+#MY PROJECTS PATHS
 project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
-
+# CHOOSE YOUR BASE WORKING PATH
 basepath=primitive_path
 os.chdir(basepath)
 ################################        INITIALIZATION      ################################
@@ -39,7 +44,7 @@ folder_name="4_intervals_parallel"
 if os.path.exists(folder_name):
     shutil.rmtree(folder_name)
 #Primitive shooting : works
-sol.primal_nofastpropagator_seq(basepath, n, T, theta, a)
+sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting : ongoing
 
