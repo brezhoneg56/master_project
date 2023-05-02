@@ -7,7 +7,7 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
-from .. import main
+#from .. import main
 import sys
 from main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
 
