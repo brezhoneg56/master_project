@@ -17,8 +17,8 @@ os.chdir(basepath)
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 #AUTOMATIC FILE DELETION/CREATIION
 folder_name="4_intervals_parallel"
-#if os.path.exists(folder_name):
-#    shutil.rmtree(folder_name)
+if os.path.exists(folder_name):
+    shutil.rmtree(folder_name)
 
 #Primitive shooting : WOrks
 #sol.primal_nofastpropagator_seq()
