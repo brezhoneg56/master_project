@@ -89,10 +89,10 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k): ##WORKS
     print("Prepartion done. Strating linearisedPimpleDyMFoam...")
     for i in range(2, k+2):#Loop for every interval but int1
         #copy theta dir
-        starttime=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+(i-1)*deltaT)+"/"
-        shutil.copy(starttime, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+(i-1)*deltaT)+"/")
-        shutil.copy(linP_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+(i-1)*deltaT)+"/")
-        shutil.copy(linU_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+(i-1)*deltaT)+"/")
+        starttime=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+        shutil.copy(starttime, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/")
+        shutil.copy(linP_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/")
+        shutil.copy(linU_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/")
         shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/")
         shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/")
         print("Files successfully copied for "+interval_name+".\n")
