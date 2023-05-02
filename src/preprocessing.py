@@ -9,8 +9,8 @@ import shutil
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
-from joblib import Parallel, delayed
 from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
+from concurrent.futures import ThreadPoolExecutor
 
 
 
@@ -49,15 +49,15 @@ def prepareMyNextSweep(k, folder_name):
     print("\nStarting shooting of "+sweep_name+"\n") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
-    #for x in range(1,k+1):
-    #    copyShootDirs(x, folder_name, previous_sweep_name, sweep_name)
-    Parallel(n_jobs=3)(delayed(copyShootDirs(x, folder_name, previous_sweep_name, sweep_name))for x in range(1,k+1))
+    for x in range(1,k+1):
+        copyShootDirs(x, folder_name, previous_sweep_name, sweep_name)
     #Preparing shooting directories from sweep1 data 
     #for i in range(k+1,n+1): #will become k+1, n+1 because of first loop being put into the big loop
     #    preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i)
-    Parallel(n_job=3)(delayed(preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i))for i in range(k+1,n+1))
-
-
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [executor.submit(preparenextSweepStartingFiles, folder_name, previous_sweep_name, sweep_name, i) for i in range(k+1, n+1)]
+        for future in futures:
+            _ = future.result()
 
 
 
