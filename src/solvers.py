@@ -73,5 +73,5 @@ def primal_nofastpropagator_steffensen(): #change name (eg primal or adjoint+sho
         print(s)
         folder_name=str(s)+"_intervals"
         os.mkdir(folder_name)
-        bc.sweep_1_initialization(s, T, basepath, theta, folder_name, calcs_undeformed, ref_cases_mod_def)
-        loop_pimpleDyMFoam(basepath, s, T, theta, folder_name)
+        bc.sweep_1_initialization(folder_name)
+        loop_pimpleDyMFoam(folder_name)
