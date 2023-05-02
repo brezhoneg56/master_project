@@ -22,10 +22,11 @@ if os.path.exists(folder_name):
 
 #Primitive shooting : WOrks
 #sol.primal_nofastpropagator_seq()
-k=1
+k=4
 #Steffensen shooting : ongoing
 os.chdir(steffensen_path)
 sweep_name="sweep1"
 prep.prepareLinearization(folder_name, sweep_name,k)
-sol.linearisedPimpleDyMFoam(folder_name, sweep_name)
+for i in range(1, k+1):
+    sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
