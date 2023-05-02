@@ -86,3 +86,4 @@ def computeSteffensenMethod():
         #linearisedPimpleDyMFoam()
         #prepareShootingUpdate()
         #computeShootingUpdate()
+        print("stef test")

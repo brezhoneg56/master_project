@@ -63,7 +63,7 @@ def prepareMyNextSweep(k, folder_name):
             _ = future.result()
 
 #### Linearised
-def prepareShootingUpdate():
+def prepareShootingUpdate(folder_name):
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     print('Test')
 def prepareLinearization(folder_name, sweep_name, interval_name):
