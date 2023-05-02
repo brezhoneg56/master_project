@@ -96,8 +96,8 @@ def prepareLinearization(folder_name, sweep_name, k): ##WORKS
         shutil.copytree(starttime_source, starttime_dest)
         shutil.copy(linP_path, starttime_dest)
         shutil.copy(linU_path, starttime_dest)
-        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/")
-        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/")
+        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
         print("Files successfully copied for "+interval_name+".\n")
         #copy fv files
         #copy lin files
