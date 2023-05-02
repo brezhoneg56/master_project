@@ -71,7 +71,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k):
     print("Preparing linearisation...")
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
-    os.mkdir(steffensen_path+folder_name+"/sweep1/")
+    #os.mkdir(steffensen_path+folder_name+"/sweep1/")
 #Paths for variables
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
