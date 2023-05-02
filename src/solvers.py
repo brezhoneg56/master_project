@@ -10,8 +10,9 @@ from src import boundary_conditions as bc, preprocessing as pre, solvers as sol,
 #from .. import main
 import sys
 #sys.path.append('../')
-from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
-from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
+
+from .. import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from .. import n, theta, T, a, deltaT, myinterval, mysweep
 print(primal_path+primitive_path+steffensen_path+calcs_undeformed+ref_cases+ref_cases_mod_def+project_path+basepath)
 
 def pimpleDyMFoam(folder_name, sweep_name, i):

@@ -8,6 +8,7 @@ import os
 from src import boundary_conditions as bc
 import sys
 #sys.path.append('../')
+
 from .. import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from .. import n, theta, T, a, deltaT, myinterval, mysweep
 def preparePostProcessing(folder_name, sweep_name):
