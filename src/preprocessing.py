@@ -9,6 +9,8 @@ import shutil
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
+import sys
+sys.path.append('../')
 from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 

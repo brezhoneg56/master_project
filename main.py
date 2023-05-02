@@ -38,7 +38,6 @@ mysweep="sweep{}"
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 folder_name="4_intervals_parallel"
 if os.path.exists(folder_name):

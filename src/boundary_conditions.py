@@ -8,6 +8,8 @@ import os
 import shutil
 #import subprocess
 import fileinput
+import sys
+sys.path.append('../')
 from main import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, n, theta, T, a, deltaT, myinterval, mysweep
 
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
