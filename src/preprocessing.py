@@ -72,7 +72,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k):
     print("Preparing linearisation...")
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
-    #os.mkdir(steffensen_path+folder_name+"/sweep1/")
+    os.mkdir(steffensen_path+folder_name+"/sweep1/")
 #Paths for variables
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
@@ -80,7 +80,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k):
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     
     #Copy Sweep k, interval 1 : preparing sweep1/int1
-    shutil.copytree(primitive_path+folder_name+"/sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/")
+    shutil.copytree(primitive_path+folder_name+"/sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/interval1/")
     
     shutil.copy(linP_path, steffensen_path+folder_name+"/sweep1/interval1/"+str(theta)+"/")
     shutil.copy(linU_path, steffensen_path+folder_name+"/sweep1/interval1/"+str(theta)+"/")
