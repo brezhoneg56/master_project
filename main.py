@@ -35,6 +35,10 @@ a=4; #Amount of sweeps in the first loop
 deltaT=T/n
 myinterval="interval{}"
 mysweep="sweep{}"
+
+def get_var():
+    return n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
+
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");

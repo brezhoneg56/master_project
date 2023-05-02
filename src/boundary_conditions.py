@@ -9,6 +9,7 @@ import shutil
 #import subprocess
 import fileinput
 import sys
+from .. import main
 sys.path.append('../')
 from main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep
 from main import primitive_path, primal_path
