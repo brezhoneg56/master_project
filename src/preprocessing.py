@@ -87,7 +87,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k): ##WORKS
     shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     shutil.copy(fvSolution_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     print("Prepartion done. Strating linearisedPimpleDyMFoam...")
-    for i in range(2, k+1):#Loop for every interval but int1
+    for i in range(2, k+2):#Loop for every interval but int1
         #copy theta dir
         starttime=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+str(theta+i*deltaT)
         shutil.copy(starttime, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+str(theta+i*deltaT)+"/")
