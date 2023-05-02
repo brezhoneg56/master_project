@@ -11,24 +11,19 @@ from src import solvers as sol, preprocessing as prep
 import shutil
 import sys
 ######### PATHS ##########################
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-master_project/
-    __init__.py
-    main.py
-    src/
-        __init__.py
-        solvers.py
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 #PRIMAL PATHS
-primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
-primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
-steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/steffenssens_method/"
+primal_path="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
+primitive_path="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/local_test"
+steffensen_path="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
 #CALCS PATHS
-calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
+calcs_undeformed="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
 #REFERENCE PATHS
-ref_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/"
-ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
+ref_cases="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
+ref_cases_mod_def="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
 #MY PROJECTS PATHS
-project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
+project_path="D:/Users/Lucie/Documents/OneDrive - Helmut-Schmidt-Universität/HSU/Year 4/Master_WT23_FT23/master_project/"
 # CHOOSE YOUR BASE WORKING PATH
 basepath=primitive_path
 os.chdir(basepath)
@@ -55,7 +50,7 @@ folder_name="4_intervals_parallel"
 if os.path.exists(folder_name):
     shutil.rmtree(folder_name)
 #Primitive shooting : works
-sol.primal_nofastpropagator_seq()
+#sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting : ongoing
 
