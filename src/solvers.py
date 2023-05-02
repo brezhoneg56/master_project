@@ -30,8 +30,10 @@ def pimpleDyMFoam(folder_name, sweep_name, i):
     print("End of loop for interval "+str(i)+".")
     return(result)
 
-def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
+def linearisedPimpleDyMFoam(folder_name, sweep_name):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
+    i=2
+    sweep_name="sweep2"
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')

@@ -28,4 +28,5 @@ os.chdir(steffensen_path)
 sweep_name="sweep1"
 interval_name="interval1"
 prep.prepareLinearization(folder_name, sweep_name, interval_name,k)
+sol.linearisedPimpleDyMFoam(folder_name, sweep_name)
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
