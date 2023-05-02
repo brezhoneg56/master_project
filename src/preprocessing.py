@@ -66,7 +66,7 @@ def prepareMyNextSweep(k, folder_name):
 def prepareShootingUpdate(folder_name):
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     print('Test')
-def prepareLinearization(folder_name, sweep_name, interval_name):
+def prepareLinearization(folder_name, sweep_name, interval_name, k):
     #Copy files to prepare linearisedPimpleDyMFoam
     print("Preparing linearisation...")
     #Creating folders
@@ -79,7 +79,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name):
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     
     #Copy Sweep k, interval 1 : preparing sweep1/int1
-    shutil.copy(primitive_path+"sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/")
+    shutil.copy(primitive_path+folder_name+"/sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/")
 
     for i in range(2, k+1):#Loop for every interval but int1
         #mkdir sweep 1
