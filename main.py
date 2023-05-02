@@ -7,8 +7,8 @@ Created on Wed Apr 12 09:42:28 2023
 ## $pvd . a quoi sert cette commande?
 #os.system("cp -r /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/constant /home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/four_intervals/sweep1")
 import os
-from master_project.config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
-from master_project.config import n, theta, T, a, deltaT, myinterval, mysweep
+from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from config import n, theta, T, a, deltaT, myinterval, mysweep
 from src import solvers as sol, preprocessing as prep
 import shutil
 import sys
@@ -28,6 +28,7 @@ if os.path.exists(folder_name):
 sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting : ongoing
+print(primal_path+primitive_path+steffensen_path+calcs_undeformed+ref_cases+ref_cases_mod_def+project_path+basepath)
 
 
 #os.chdir(steffensen_path)
