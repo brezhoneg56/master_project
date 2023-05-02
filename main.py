@@ -9,7 +9,10 @@ Created on Wed Apr 12 09:42:28 2023
 import os
 from src import solvers as sol, preprocessing as prep
 import shutil
-######### PATHS ########################## 
+import sys
+######### PATHS ##########################
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 #PRIMAL PATHS
 primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
@@ -36,8 +39,8 @@ deltaT=T/n
 myinterval="interval{}"
 mysweep="sweep{}"
 
-def get_var():
-    return n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
+#def get_var():
+#    return n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
 
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));

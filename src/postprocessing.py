@@ -8,9 +8,9 @@ import os
 from src import boundary_conditions as bc
 import sys
 from .. import main
-sys.path.append('../')
-from main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep
-from main import primitive_path, primal_path
+#sys.path.append('../')
+from main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
+
 def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
