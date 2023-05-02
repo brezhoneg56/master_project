@@ -9,6 +9,7 @@ import subprocess
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 #from .. import main
 import sys
+sys.path.append('../')
 from master_project.main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
 
 def pimpleDyMFoam(folder_name, sweep_name, i):

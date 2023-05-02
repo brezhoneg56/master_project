@@ -9,8 +9,7 @@ import shutil
 #import subprocess
 import fileinput
 import sys
-#from .. import main
-#sys.path.append('../')
+sys.path.append('../')
 from master_project.main import n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
 
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
