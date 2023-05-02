@@ -17,12 +17,15 @@ os.chdir(basepath)
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 #AUTOMATIC FILE DELETION/CREATIION
 folder_name="4_intervals_parallel"
-if os.path.exists(folder_name):
-    shutil.rmtree(folder_name)
+#if os.path.exists(folder_name):
+#    shutil.rmtree(folder_name)
 
-#Primitive shooting : works
-sol.primal_nofastpropagator_seq()
+#Primitive shooting : WOrks
+#sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting : ongoing
-#os.chdir(steffensen_path)
+os.chdir(steffensen_path)
+sweep_name="sweep1"
+interval_name="interval1"
+prep.prepareLinearization(folder_name, sweep_name, interval_name)
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)

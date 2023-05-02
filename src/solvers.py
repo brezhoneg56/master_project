@@ -31,6 +31,7 @@ def pimpleDyMFoam(folder_name, sweep_name, i):
     return(result)
 
 def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
+    #Executing linearisedPimpleDyMFoam for sweep k interval i
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
@@ -68,10 +69,20 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
         
-def primal_nofastpropagator_steffensen(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
-    for s in range(a, n+1):
-        print(s)
-        folder_name=str(s)+"_intervals"
-        os.mkdir(folder_name)
-        bc.sweep_1_initialization(folder_name)
-        loop_pimpleDyMFoam(folder_name)
+#NO def primal_nofastpropagator_steffensen(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+#    for s in range(a, n+1):
+#        print(s)
+#        folder_name=str(s)+"_intervals"
+#        os.mkdir(folder_name)
+#        bc.sweep_1_initialization(folder_name)
+#        loop_pimpleDyMFoam(folder_name)
+
+def computeShootingUpdate():
+    # Calls compute shootingupdate from openfoam
+    print(".")
+def computeSteffensenMethod():
+    #executes in for-k sweep and for-i interval:
+        #prepareLinearization()
+        #linearisedPimpleDyMFoam()
+        #prepareShootingUpdate()
+        #computeShootingUpdate()
