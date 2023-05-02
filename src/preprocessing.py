@@ -79,7 +79,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, k):
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     
     #Copy Sweep k, interval 1 : preparing sweep1/int1
-    shutil.copy(primitive_path+folder_name+"/sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/")
+    shutil.copytree(primitive_path+folder_name+"/sweep1/interval1/" , steffensen_path+folder_name+"/sweep1/")
 
     for i in range(2, k+1):#Loop for every interval but int1
         #mkdir sweep 1
