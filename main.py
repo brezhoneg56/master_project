@@ -13,24 +13,16 @@ from src import solvers as sol, preprocessing as prep
 import shutil
 import sys
 ######### PATHS ##########################
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 os.chdir(basepath)
-################################        INITIALIZATION      ################################
-#def get_var():
-#    return n, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath, theta, T, a, deltaT, myinterval, mysweep, primitive_path, primal_path
-
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
+#AUTOMATIC FILE DELETION/CREATIION
 folder_name="4_intervals_parallel"
 if os.path.exists(folder_name):
     shutil.rmtree(folder_name)
+
 #Primitive shooting : works
 sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting : ongoing
-print(primal_path+primitive_path+steffensen_path+calcs_undeformed+ref_cases+ref_cases_mod_def+project_path+basepath)
-
-
 #os.chdir(steffensen_path)
-
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)

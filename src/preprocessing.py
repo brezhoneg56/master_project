@@ -17,13 +17,12 @@ from config import primal_path, primitive_path, steffensen_path, calcs_undeforme
 from config import n, theta, T, a, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 
-
-
 def copyShootDirs(x, folder_name, previous_sweep_name, sweep_name):
         interval_name=myinterval.format(x)
         source_interval=basepath+folder_name+"/"+previous_sweep_name+"/"+interval_name
         destination_interval=basepath+folder_name+"/"+sweep_name
         shutil.copytree(source_interval,os.path.join(destination_interval,os.path.basename(source_interval)))
+
 def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i):
     interval_name=myinterval.format(i)
     destination_constant=basepath+folder_name+"/"+sweep_name+"/"+interval_name
