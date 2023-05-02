@@ -22,10 +22,10 @@ folder_name="4_intervals_parallel"
 
 #Primitive shooting : WOrks
 #sol.primal_nofastpropagator_seq()
-
+k=1
 #Steffensen shooting : ongoing
 os.chdir(steffensen_path)
 sweep_name="sweep1"
 interval_name="interval1"
-prep.prepareLinearization(folder_name, sweep_name, interval_name)
+prep.prepareLinearization(folder_name, sweep_name, interval_name,k)
 #prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
