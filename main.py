@@ -12,12 +12,7 @@ import shutil
 import sys
 ######### PATHS ##########################
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-master_project/
-    __init__.py
-    main.py
-    src/
-        __init__.py
-        solvers.py
+
 #PRIMAL PATHS
 primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
