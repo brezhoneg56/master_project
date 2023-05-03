@@ -34,7 +34,9 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
-    os.mkdir(lin_pimple_path)
+    if not os.path.exists(lin_pimple_path):    
+        os.mkdir(lin_pimple_path)
+        print("Directory created at "+lin_pimple_path+".\n")
     os.chdir(lin_pimple_path)
     with open("logfile.txt","w") as logfile:
         result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
@@ -87,7 +89,7 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
     pre.prepareLinearization(folder_name, sweep_name) ##WORKS
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
-        print("Starting for "+sweep_name+"./n")
+        print("Starting for "+sweep_name+".\n")
         for i in range (1, k+1):
             interval_name=myinterval.format(i)
             linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
