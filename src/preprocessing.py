@@ -123,18 +123,19 @@ def initializeLinearisation(folder_name, sweep_name):
 
 def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #Paths for variables
+    if i==1 and sweep_name=="sweep1":
+        exit()
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     #Copy of constant and system files
-    while i>1:
-        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
-        shutil.copytree(src_constant , dest_constant)
-        shutil.copytree(src_system, dest_system)
+    src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+    src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+    shutil.copytree(src_constant , dest_constant)
+    shutil.copytree(src_system, dest_system)
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
