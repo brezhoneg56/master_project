@@ -11,7 +11,7 @@ import subprocess
 import multiprocessing
 #from .. import main
 import sys
-
+import glob
 #sys.path.append('../')
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
@@ -63,11 +63,19 @@ def prepareMyNextSweep(k, folder_name):
             _ = future.result()
 
 #### Linearised
-def prepareShootingUpdate(folder_name, sweep_name, interval_name):#should start from sweep2, after interval2 is done
+def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should start from sweep2, after interval2 is done
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     print('Preparing Shooting Update for '+interval_name+".\n")
+    next_sweep=mysweep.format(k)
+    next_interval=myinterval.format(i)
+    shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/")
+    zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
+    current_sweep_current_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    current_sweep_next_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"
+    next_sweep_current_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"
+    next_sweep_next_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+next_interval+"/"
     print("Copy code VIOLET.\n")
-
+    shutil.copy(current_sweep_current_interval+"p" , zero_shootingUpdate)
     print("Copy code RED.\n")
 
     print("Copy code BLUE.\n")
@@ -110,8 +118,11 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     shutil.copytree(src_constant , dest_constant)
     shutil.copytree(src_system, dest_system)
     #copy theta dir
-    starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    #starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    starttime_source=glob.glob(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/0.*")
+    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    print(str(starttime_dest))
     shutil.copytree(starttime_source, starttime_dest)
     #copy lin files
     shutil.copy(linP_path, starttime_dest)
