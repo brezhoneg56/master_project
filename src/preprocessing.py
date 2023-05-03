@@ -72,23 +72,26 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
         shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/")
     zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
-    
-    
     print("Copy code VIOLET.\n")
-    startTime=bc.startingTime_right(theta, n, T, t, i)
-    src_violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)+"/"
+    src_violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.startingTime(theta, n, T, t, i))+"/"
     #dest_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)
-    shutil.copy(src_violet_folder+"p", zero_shootingUpdate+"pEnd_left")
-    shutil.copy(src_violet_folder+"U", zero_shootingUpdate+"UEnd_left")
-    shutil.copy(src_violet_folder+"Uf", zero_shootingUpdate+"UfEnd_left")
-    shutil.copy(src_violet_folder+"phi", zero_shootingUpdate+"phiEnd_left")
+    shutil.copy(src_violet_folder+"p", zero_shootingUpdate+"pStart_left")
+    shutil.copy(src_violet_folder+"U", zero_shootingUpdate+"UStart_left")
+    shutil.copy(src_violet_folder+"Uf", zero_shootingUpdate+"UfStart_left")
+    shutil.copy(src_violet_folder+"phi", zero_shootingUpdate+"phiStart_left")
     print("Copy code VIOLET done.\n")
-    
-    
     print("Copy code RED.\n")
-
+    src_red_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.endingTime(theta, n, T, t, i))+"/"
+    shutil.copy(src_red_folder+"p", zero_shootingUpdate+"pEnd_left")
+    shutil.copy(src_red_folder+"U", zero_shootingUpdate+"UEnd_left")
+    shutil.copy(src_red_folder+"Uf", zero_shootingUpdate+"UfEnd_left")
+    shutil.copy(src_red_folder+"phi", zero_shootingUpdate+"phiEnd_left")
+    print("Copy code RED done.\n")
     print("Copy code BLUE.\n")
-
+    shutil.copy(src_red_folder+"linU", zero_shootingUpdate+"dUdu")
+    shutil.copy(src_red_folder+"linP", zero_shootingUpdate+"dPdp")
+    shutil.copy(src_red_folder+"linUf", zero_shootingUpdate+"dUduf")
+    print("Copy code GREEN done.\n")
     print("Copy code GREEN.\n")
 
 def initializeLinearisation(folder_name, sweep_name):
