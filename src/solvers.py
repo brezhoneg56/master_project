@@ -33,6 +33,8 @@ def pimpleDyMFoam(folder_name, sweep_name, i):
 def linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+    if not os.path.exists(basepath+folder_name+"/"+sweep_name):    
+        os.mkdir(basepath+folder_name+"/"+sweep_name)
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
     if not os.path.exists(lin_pimple_path):    
         os.mkdir(lin_pimple_path)
