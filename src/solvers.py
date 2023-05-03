@@ -77,13 +77,21 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
 #        bc.sweep_1_initialization(folder_name)
 #        loop_pimpleDyMFoam(folder_name)
 
-def computeShootingUpdate():
+def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
-    print(".")
-def computeSteffensenMethod():
-    #executes in for-k sweep and for-i interval:
-        #prepareLinearization()
-        #linearisedPimpleDyMFoam()
-        #prepareShootingUpdate()
-        #computeShootingUpdate()
-        print("stef test")
+    print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
+
+def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
+    #Initialisation of Sweep 1  
+    sweep_name="sweep1"
+    k=1;
+    pre.prepareLinearization(folder_name, sweep_name, k) ##WORKS
+    for k in range (1, n+1):
+        sweep_name=mysweep.format(k)
+        for i in range (1, k+1):
+            interval_name=myinterval.format(i)
+            linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
+            if i>1:
+                pre.prepareShootingUpdate(folder_name, sweep_name, interval_name)
+                computeShootingUpdate(folder_name, sweep_name, interval_name)
+            print("stef test")

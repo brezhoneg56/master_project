@@ -22,15 +22,8 @@ if os.path.exists(folder_name):
 
 #Primitive shooting : WOrks
 #sol.primal_nofastpropagator_seq()
-k=4
 #Steffensen shooting : ongoing
 os.chdir(steffensen_path)
 sweep_name="sweep1"
-#Everything should then go in shootingUpdate function
-prep.prepareLinearization(folder_name, sweep_name,k)
-for i in range(1, k+1):
-    interval_name=myinterval.format(i)
-    sol.linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
-    if i>1:
-        prep.prepareShootingUpdate(folder_name, sweep_name, interval_name)
-#prep.prepareSteffensen(n, theta, folder_name, steffensen_path, primitive_path, ref_cases)
+
+sol.computeSteffensenMethod(folder_name)
