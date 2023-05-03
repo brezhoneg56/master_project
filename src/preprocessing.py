@@ -103,9 +103,9 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     #Copy of constant and system files
-    src_system=primal_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+    src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
     dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
-    src_constant=primal_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+    src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
     dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
     shutil.copytree(src_constant , dest_constant)
     shutil.copytree(src_system, dest_system)
