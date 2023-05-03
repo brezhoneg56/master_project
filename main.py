@@ -24,6 +24,6 @@ if os.path.exists(folder_name):
 #sol.primal_nofastpropagator_seq()
 #Steffensen shooting : ongoing
 os.chdir(steffensen_path)
-sweep_name="sweep1"
+#sweep_name="sweep1"
 
 sol.computeSteffensenMethod(folder_name)
