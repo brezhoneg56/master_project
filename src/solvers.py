@@ -34,6 +34,7 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
+    os.mkdir(lin_pimple_path)
     os.chdir(lin_pimple_path)
     with open("logfile.txt","w") as logfile:
         result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
