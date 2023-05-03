@@ -98,6 +98,6 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
                 pre.prepareLinearization(folder_name, sweep_name, interval_name, i) ##WORKS
             linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
             if i>1:
-                pre.prepareShootingUpdate(folder_name, sweep_name, interval_name)
+                pre.prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i)
                 computeShootingUpdate(folder_name, sweep_name, interval_name)
-            print("stef test")
+            print("Steff test")
