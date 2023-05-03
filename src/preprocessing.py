@@ -124,7 +124,7 @@ def initializeLinearisation(folder_name, sweep_name):
 def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #Paths for variables
     if i==1 and sweep_name=="sweep1":
-        exit()
+        return
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
