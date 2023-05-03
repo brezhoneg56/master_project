@@ -71,13 +71,17 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/"):
         shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/")
         zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
-    current_sweep_current_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
-    current_sweep_next_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"
-    next_sweep_current_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"
-    next_sweep_next_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+next_interval+"/"
+    
+    
+    mytime="0.{}"
     print("Copy code VIOLET.\n")
+    violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+mytime
+    for l in range(0,n):
+        print(bc.startingTime_right(theta, n, T, t, l))
+    
     #shutil.copy(current_sweep_current_interval+"p" , zero_shootingUpdate)
-    print(current_sweep_current_interval+"p")
+    
+    
     print("Copy code RED.\n")
 
     print("Copy code BLUE.\n")

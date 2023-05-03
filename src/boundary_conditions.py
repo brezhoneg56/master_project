@@ -19,6 +19,16 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
         else:
             return round(number,3)
             
+def startingTime_right(theta, n, T, t, i):
+    deltaT=T/n
+    compteur_debut=(i-1)*deltaT+t
+    compteur_fin=i*deltaT
+    for l in range(int(compteur_debut*1000),int(compteur_fin*1000)+1,int(t*1000)):
+        pas=l/1000
+        #print("\n\n timesource="+str(time_source/1000)+" and l="+str(l/1000))
+        time_source=str(decimal_analysis(theta+pas))
+        return(time_source)
+        
 def sweep_1_initialization(folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
     k=1
