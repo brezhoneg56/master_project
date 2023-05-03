@@ -129,9 +129,8 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
         time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+pas))
         time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+pas))
         shutil.copytree(time_source, time_dest)
-    
-    shutil.copy(linP_path, starttime_dest)
-    shutil.copy(linU_path, starttime_dest)
+    shutil.copytree(linP_path, starttime_dest)
+    shutil.copytree(linU_path, starttime_dest)
     #copy fv files
     shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
     shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
