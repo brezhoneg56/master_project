@@ -68,8 +68,9 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     print('Preparing Shooting Update for '+interval_name+".\n")
     next_sweep=mysweep.format(k)
     next_interval=myinterval.format(i)
-    shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/")
-    zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
+    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/"):
+        shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/")
+        zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
     current_sweep_current_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
     current_sweep_next_interval=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"
     next_sweep_current_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"
