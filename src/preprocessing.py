@@ -119,7 +119,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     shutil.copytree(src_system, dest_system)
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
 
     compteur_debut=(i-1)*deltaT+t
     compteur_fin=i*deltaT
