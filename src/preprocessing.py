@@ -128,7 +128,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     #Copy of constant and system files
-    while i==1:
+    while i>1:
         src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
         dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
         src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
