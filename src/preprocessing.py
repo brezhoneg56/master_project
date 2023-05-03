@@ -74,8 +74,7 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name):#should start 
 
     print("Copy code GREEN.\n")
 
-
-def prepareLinearization(folder_name, sweep_name): ##WORKS
+def initializeLinearisation(folder_name, sweep_name):
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     print("Preparing linearisation...\n")
@@ -97,19 +96,31 @@ def prepareLinearization(folder_name, sweep_name): ##WORKS
     shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     shutil.copy(fvSolution_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
-    for i in range(2, n+1):#Loop for every interval but int1
-        interval_name=myinterval.format(i)
-        #copy theta dir
-        starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-        starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-        shutil.copytree(starttime_source, starttime_dest)
-        shutil.copy(linP_path, starttime_dest)
-        shutil.copy(linU_path, starttime_dest)
-        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-        print("Files successfully copied for "+interval_name+".\n")
-        #copy fv files
-        #copy lin files
+
+def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
+    #Paths for variables
+    linP_path=ref_cases+"/boundaryConditions/linP"
+    linU_path=ref_cases+"/boundaryConditions/linU"
+    fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
+    fvSolution_path=ref_cases+"/controlBib/fvSolution"
+    #Copy of constant and system files
+    src_system=primal_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    src_constant=primal_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    shutil.copytree(src_constant , dest_constant)
+    shutil.copytree(src_system, dest_system)
+    #copy theta dir
+    starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    shutil.copytree(starttime_source, starttime_dest)
+    #copy lin files
+    shutil.copy(linP_path, starttime_dest)
+    shutil.copy(linU_path, starttime_dest)
+    #copy fv files
+    shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+    shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+    print("Files successfully copied for "+interval_name+".\n")
 
 
 
