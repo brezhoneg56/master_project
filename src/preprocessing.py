@@ -118,12 +118,12 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     shutil.copytree(src_constant , dest_constant)
     shutil.copytree(src_system, dest_system)
     #copy theta dir
-    #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    #starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    starttime_source=glob.glob(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/0.*")
-    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    time_source=glob.glob(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/0.*")
+    time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
     print(str(starttime_dest))
-    shutil.copytree(starttime_source, starttime_dest)
+    shutil.copytree(time_source, time_dest)
     #copy lin files
     shutil.copy(linP_path, starttime_dest)
     shutil.copy(linU_path, starttime_dest)
