@@ -71,7 +71,7 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/"):
         shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/")
-        zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
+    zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
     
     
     print("Copy code VIOLET.\n")
