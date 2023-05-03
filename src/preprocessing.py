@@ -127,7 +127,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     for l in range(int(compteur_debut*1000),int(compteur_fin*1000)+1,int(t*1000)):
         pas=l/1000
         #print("\n\n timesource="+str(time_source/1000)+" and l="+str(l/1000))
-        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+pas)
+        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+pas))
         shutil.copytree(time_source, time_dest)
     
     shutil.copy(linP_path, starttime_dest)
