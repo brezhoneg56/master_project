@@ -73,12 +73,12 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
         zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
     
     
-    mytime="0.{}"
     print("Copy code VIOLET.\n")
-    violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+mytime
-    for l in range(0,n):
-        print(bc.startingTime_right(theta, n, T, t, l))
-    
+    startTime=bc.startingTime_right(theta, n, T, t, i)
+    src_violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)+"/"
+    dest_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)
+    shutil.copy(src_violet_folder+"p", dest_violet_folder)
+    print("Copy code VIOLET done.\n")
     #shutil.copy(current_sweep_current_interval+"p" , zero_shootingUpdate)
     
     
