@@ -31,5 +31,6 @@ theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=4; #Amount of sweeps in the first loop
 deltaT=T/n
+t=0.001 #Sampling size for OpenFoam Computations
 myinterval="interval{}"
 mysweep="sweep{}"

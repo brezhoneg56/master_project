@@ -10,7 +10,7 @@ import sys
 #sys.path.append('../')
 
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
-from config import n, theta, T, a, deltaT, myinterval, mysweep
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 
 def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'

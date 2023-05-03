@@ -14,7 +14,7 @@ import sys
 import glob
 #sys.path.append('../')
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
-from config import n, theta, T, a, deltaT, myinterval, mysweep
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 
 #### Primal Primitive
@@ -120,16 +120,13 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    #for t in range(0, 1000*(deltaT+T), 1000*deltaT):
-    
-    t=1000*(deltaT+T)
-    print(t)    
-    time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta/1000)+str(t/1000)
+
     time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
-    print(time_source)
-    shutil.copytree(time_source, time_dest)
-        #copy lin files
-    
+    for l in range(0,int(T*1000)+1,int(t*1000)):
+        pas=l/1000
+        #print("\n\n timesource="+str(time_source/1000)+" and l="+str(l/1000))
+        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta+pas)
+        shutil.copytree(time_source, time_dest)
     
     shutil.copy(linP_path, starttime_dest)
     shutil.copy(linU_path, starttime_dest)
