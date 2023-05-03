@@ -128,16 +128,16 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     #Copy of constant and system files
-    src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-    src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
-    shutil.copytree(src_constant , dest_constant)
-    shutil.copytree(src_system, dest_system)
+    while i==1:
+        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+        shutil.copytree(src_constant , dest_constant)
+        shutil.copytree(src_system, dest_system)
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
-
     compteur_debut=(i-1)*deltaT+t
     compteur_fin=i*deltaT
     for l in range(int(compteur_debut*1000),int(compteur_fin*1000)+1,int(t*1000)):
