@@ -92,10 +92,10 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
         print("Starting for "+sweep_name+".\n")
-        for i in range (1, k+1):
-            interval_name=myinterval.format(i)
-            linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
-            if i>1:
-                pre.prepareShootingUpdate(folder_name, sweep_name, interval_name)
-                computeShootingUpdate(folder_name, sweep_name, interval_name)
-            print("stef test")
+        i=k
+        interval_name=myinterval.format(i)
+        linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
+        if i>1:
+            pre.prepareShootingUpdate(folder_name, sweep_name, interval_name)
+            computeShootingUpdate(folder_name, sweep_name, interval_name)
+        print("stef test")
