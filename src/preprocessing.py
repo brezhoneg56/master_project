@@ -75,7 +75,7 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name):#should start 
     print("Copy code GREEN.\n")
 
 
-def prepareLinearization(folder_name, sweep_name, k): ##WORKS
+def prepareLinearization(folder_name, sweep_name): ##WORKS
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     print("Preparing linearisation...\n")
@@ -97,7 +97,7 @@ def prepareLinearization(folder_name, sweep_name, k): ##WORKS
     shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     shutil.copy(fvSolution_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
-    for i in range(2, k+1):#Loop for every interval but int1
+    for i in range(2, n+1):#Loop for every interval but int1
         interval_name=myinterval.format(i)
         #copy theta dir
         starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"

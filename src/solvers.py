@@ -84,8 +84,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
     #Initialisation of Sweep 1  
     sweep_name="sweep1"
-    k=1;
-    pre.prepareLinearization(folder_name, sweep_name, k) ##WORKS
+    pre.prepareLinearization(folder_name, sweep_name) ##WORKS
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
         for i in range (1, k+1):
