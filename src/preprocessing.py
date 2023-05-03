@@ -104,9 +104,9 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     #Copy of constant and system files
     src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
     src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
     shutil.copytree(src_constant , dest_constant)
     shutil.copytree(src_system, dest_system)
     #copy theta dir
