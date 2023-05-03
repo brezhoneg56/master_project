@@ -120,12 +120,17 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    for t in range(0, 1000*(deltaT+T), 1000*deltaT):
-        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta/1000)+str(t/1000)
-        time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
-        print(time_source)
-        shutil.copytree(time_source, time_dest)
+    #for t in range(0, 1000*(deltaT+T), 1000*deltaT):
+    
+    t=1000*(deltaT+T)
+    print(t)    
+    time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(theta/1000)+str(t/1000)
+    time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"
+    print(time_source)
+    shutil.copytree(time_source, time_dest)
         #copy lin files
+    
+    
     shutil.copy(linP_path, starttime_dest)
     shutil.copy(linU_path, starttime_dest)
     #copy fv files
