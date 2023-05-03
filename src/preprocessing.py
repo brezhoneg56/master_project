@@ -78,7 +78,6 @@ def initializeLinearisation(folder_name, sweep_name):
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     print("Preparing linearisation...\n")
-    interval_name="interval1"
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
     os.mkdir(steffensen_path+folder_name+"/sweep1/")
