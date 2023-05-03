@@ -30,8 +30,9 @@ def pimpleDyMFoam(folder_name, sweep_name, i):
     print("End of loop for interval "+str(i)+".")
     return(result)
 
-def linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i):
+def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
+    interval_name=myinterval.format(i)
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     if not os.path.exists(basepath+folder_name+"/"+sweep_name):    
         os.mkdir(basepath+folder_name+"/"+sweep_name)
@@ -47,9 +48,7 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i):
     print("Done.\n\n")
     print("End of loop for interval "+str(i)+".")
     return(result)
-    
-    
-    
+
 def loop_pimpleDyMFoam(folder_name):
     deltaT=T/n
     for k in range(1, n+1):
@@ -94,10 +93,9 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
         print("Starting for "+sweep_name+".\n")
         for i in range (1, n+1):
             interval_name=myinterval.format(i)
-            if i>1:
-                pre.prepareLinearization(folder_name, sweep_name, interval_name, i) ##WORKS
-            linearisedPimpleDyMFoam(folder_name, sweep_name, interval_name, i)
-            if i>1:
-                pre.prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i)
-                computeShootingUpdate(folder_name, sweep_name, interval_name)
-            print("Steff test")
+            pre.prepareLinearization(folder_name, sweep_name, interval_name, i)
+            linearisedPimpleDyMFoam(folder_name, sweep_name, i)
+        for i in range(2, n+1):
+            pre.prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i)
+            computeShootingUpdate(folder_name, sweep_name, interval_name)
+            print("Shooting Updated.\n")

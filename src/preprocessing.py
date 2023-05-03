@@ -93,6 +93,11 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     shutil.copy(src_red_folder+"linUf", zero_shootingUpdate+"dUduf")
     print("Copy code GREEN done.\n")
     print("Copy code GREEN.\n")
+    src_green_folder=primitive_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.startingTime(theta, n, T, t, i))+"/"
+    shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP_left")
+    shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
+    shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
+    shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
 
 def initializeLinearisation(folder_name, sweep_name):
     #Copy files to prepare linearisedPimpleDyMFoam
