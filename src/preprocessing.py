@@ -75,7 +75,8 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     next_sweep_current_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"
     next_sweep_next_interval=steffensen_path+folder_name+"/"+next_sweep+"/"+next_interval+"/"
     print("Copy code VIOLET.\n")
-    shutil.copy(current_sweep_current_interval+"p" , zero_shootingUpdate)
+    #shutil.copy(current_sweep_current_interval+"p" , zero_shootingUpdate)
+    print(current_sweep_current_interval+"p")
     print("Copy code RED.\n")
 
     print("Copy code BLUE.\n")
