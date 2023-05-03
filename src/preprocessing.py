@@ -70,7 +70,8 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     next_interval=myinterval.format(i)
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/"):
         shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/")
-        zero_shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
+        os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/")
+        zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/shootingUpdate/0/"
     
     
     print("Copy code VIOLET.\n")
