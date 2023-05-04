@@ -173,7 +173,7 @@ def prepareNextLinearization(folder_name, k):
     
         time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
         time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-        if not sweep_name=="sweep1":
+        if not sweep_name=="sweep1" or interval_name=="interval1":
             shutil.copytree(src_constant , dest_constant)
             shutil.copytree(src_system, dest_system)
             print(time_source)
