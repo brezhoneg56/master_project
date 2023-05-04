@@ -101,87 +101,116 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
 
 ################################### LINEARIZATION PREPROCESSING ########################################
 def initializeLinearisation(folder_name, sweep_name):
+    #### IS ONLY THOUGHT FOR SWEEP1
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     print("Preparing linearisation...\n")
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
-    #os.mkdir(steffensen_path+folder_name+"/sweep1/")
     #Paths for variables
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
     fvSolution_path=ref_cases+"/controlBib/fvSolution"
     
-    #Copy Sweep k, interval 1 : preparing sweep1/int1
+    #Copy Sweep k, interval i : preparing sweep1
     shutil.copytree(primitive_path+folder_name+"/sweep1/" , steffensen_path+folder_name+"/sweep1/")
     
-    shutil.copy(linP_path, steffensen_path+folder_name+"/sweep1/interval1/"+str(theta)+"/")
-    shutil.copy(linU_path, steffensen_path+folder_name+"/sweep1/interval1/"+str(theta)+"/")
-    shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
-    shutil.copy(fvSolution_path, steffensen_path+folder_name+"/sweep1/interval1/system/")
-    print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
-
-def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
-    print("Preparing "+interval_name+" in "+sweep_name+".\n")
-    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name):
-        os.mkdir(steffensen_path+folder_name+"/"+sweep_name)
-        print("New Sweep added !")
-    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
-        os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
-        print("New Interval added !")
-    linP_path=ref_cases+"/boundaryConditions/linP"
-    linU_path=ref_cases+"/boundaryConditions/linU"
-    fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
-    fvSolution_path=ref_cases+"/controlBib/fvSolution"
-    #Copy of constant and system files
-    src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-    dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-    src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-    dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
-    
-    #copy theta dir
-    starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
-    compteur_debut=(i-1)*deltaT
-    compteur_fin=i*deltaT
-    
-    time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-    time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-    if not sweep_name=="sweep1":
+    for i in range(1, n+1):
+        interval_name=myinterval.format(i)
+        starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
+        compteur_debut=(i-1)*deltaT
+        
+        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        
+        #Copy of constant and system files
+        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
         shutil.copytree(src_constant , dest_constant)
         shutil.copytree(src_system, dest_system)
         print(time_source)
         print("\n\n"+time_dest)
         shutil.copytree(time_source, time_dest)
     
-    shutil.copy2(linP_path, starttime_dest)
-    shutil.copy2(linU_path, starttime_dest)
-    #copy fv file
-    shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-    shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-    print("Files successfully copied for "+interval_name+".\n")
+        shutil.copy2(linP_path, starttime_dest)
+        shutil.copy2(linU_path, starttime_dest)
+        #copy fv file
+        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        print("Files successfully copied for "+interval_name+".\n")
 
+    print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
 
+def prepareNextLinearization(folder_name, k):
+    sweep_name=mysweep.format(k+1)
+    #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k+1
+    print("Preparing " +sweep_name+".\n")
+    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name):
+        os.mkdir(steffensen_path+folder_name+"/"+sweep_name)
+        print("New Sweep added !")
+    for i in range(1, n+1):
+        interval_name=myinterval.format(i)
+        os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
+        print("New Interval added !")
+        linP_path=ref_cases+"/boundaryConditions/linP"
+        linU_path=ref_cases+"/boundaryConditions/linU"
+        fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
+        fvSolution_path=ref_cases+"/controlBib/fvSolution"
+        #Copy of constant and system files
+        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+        
+        #copy theta dir
+        starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
+        compteur_debut=(i-1)*deltaT
+    
+        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        if not sweep_name=="sweep1":
+            shutil.copytree(src_constant , dest_constant)
+            shutil.copytree(src_system, dest_system)
+            print(time_source)
+            print("\n\n"+time_dest)
+            shutil.copytree(time_source, time_dest)
+    
+        shutil.copy2(linP_path, starttime_dest)
+        shutil.copy2(linU_path, starttime_dest)
+        #copy fv file
+        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        print("Files successfully copied for "+interval_name+".\n")
 
+def prepareNextSweepSteffenson(folder_name, k):
+    next_sweep=mysweep.format(k+1)
+    if not os.path.exists(steffensen_path+folder_name+"/"+next_sweep):
+        os.mkdir(steffensen_path+folder_name+"/"+next_sweep)
+        print("New Sweep added !")
+    for i in range(1, n+1):
+        os.mkdir(steffensen_path+folder_name+"/"+next_sweep+"/"+myinterval.format(i))
+        
+        
+        
+    #for k in range(1,n+1): #LOOP for all sweeps in folder_name
+    #    for i in range(1,n+1):
+    #        myinterval="interval{}"
+    #        mysweep="sweep{}"
+    #        sweep_name=mysweep.format(k)
+    #        interval_name=myinterval.format(i)
+    #        os.chdir(steffensen_path)
+    #        if i>1:
+    #            os.path.join(folder_name,sweep_name)
+    #            print("\nStarting shooting of "+sweep_name+" with Steffensen's method.\n")##
 
-
-def WRONGprepareNextSweepSteffenson(k, folder_name):
-    for k in range(1,n+1): #LOOP for all sweeps in folder_name
-        for i in range(1,n+1):
-            myinterval="interval{}"
-            mysweep="sweep{}"
-            sweep_name=mysweep.format(k)
-            interval_name=myinterval.format(i)
-            os.chdir(steffensen_path)
-            if i>1:
-                os.path.join(folder_name,sweep_name)
-                print("\nStarting shooting of "+sweep_name+" with Steffensen's method.\n")
-
-                fvSchemes_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSchemes"
-                fvSolutions_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSolutions"
-                os.copy(fvSchemes_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
-                os.copy(fvSolutions_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
-                print("Copy Done. Starting linearisedPimpleDyMFoam...\n")
+#                fvSchemes_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSchemes"
+#                fvSolutions_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/controlBib/fvSolutions"
+#                os.copy(fvSchemes_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
+#                os.copy(fvSolutions_path, steffensen_path+'/'+sweep_name+'/'+interval_name+'/')
+#                print("Copy Done. Starting linearisedPimpleDyMFoam...\n")
 
 
 

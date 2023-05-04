@@ -88,10 +88,11 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
         print("Starting linearisation process for "+sweep_name+".\n")
         for i in range (1, n+1):
             interval_name=myinterval.format(i)
-            pre.prepareLinearization(folder_name, sweep_name, interval_name, i)
             linearisedPimpleDyMFoam(folder_name, sweep_name, i)
-    for k in range (1, n+1):
-        sweep_name=mysweep.format(k)
+        pre.prepareNextLinearization(folder_name, k)
+        #Quand le sweep est fini, il faut prep le sweep d'après pour pouvoir copier GREEN
+    #for k in range (1, n+1):
+        #sweep_name=mysweep.format(k)
         print("Starting shooting update process for "+sweep_name+".\n")
         for i in range(2, n+1):
             interval_name=myinterval.format(i)
