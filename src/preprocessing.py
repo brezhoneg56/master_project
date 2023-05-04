@@ -154,13 +154,13 @@ def prepareNextLinearization(folder_name, k):
     
     for i in range(1, n+1):
         interval_name=myinterval.format(i)
-        os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
         print("New Interval added !")
         linP_path=ref_cases+"/boundaryConditions/linP"
         linU_path=ref_cases+"/boundaryConditions/linU"
         fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
         fvSolution_path=ref_cases+"/controlBib/fvSolution"
         if not interval_name=="interval1":
+            os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
             #Copy of constant and system files
             src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
             dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
