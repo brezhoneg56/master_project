@@ -67,13 +67,13 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     print('Preparing Shooting Update for '+interval_name+".\n")
     next_sweep=mysweep.format(k)
-    next_interval=myinterval.format(i)
+    next_interval=myinterval.format(i+1)
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/"):
         shootingUpdate=os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/")
     zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
     print("Copy code VIOLET for "+sweep_name+" and "+interval_name+"\n")
-    src_violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
+    src_violet_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
     #dest_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)
     shutil.copy(src_violet_folder+"p", zero_shootingUpdate+"pStart_left")
     shutil.copy(src_violet_folder+"U", zero_shootingUpdate+"UStart_left")
@@ -81,7 +81,7 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     shutil.copy(src_violet_folder+"phi", zero_shootingUpdate+"phiStart_left")
     print("Copy code VIOLET done.\n")
     print("Copy code RED.\n")
-    src_red_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+i*deltaT))+"/"
+    src_red_folder=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     shutil.copy(src_red_folder+"p", zero_shootingUpdate+"pEnd_left")
     shutil.copy(src_red_folder+"U", zero_shootingUpdate+"UEnd_left")
     shutil.copy(src_red_folder+"Uf", zero_shootingUpdate+"UfEnd_left")
@@ -93,7 +93,7 @@ def prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i):#should 
     shutil.copy(src_red_folder+"linUf", zero_shootingUpdate+"dUduf")
     print("Copy code GREEN done.\n")
     print("Copy code GREEN.\n")
-    src_green_folder=primitive_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.decimal_analysis(theta(i-1)*deltaT))+"/"
+    src_green_folder=primitive_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.decimal_analysis(theta(i-2)*deltaT))+"/"
     shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP_left")
     shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
