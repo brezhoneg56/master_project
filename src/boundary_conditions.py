@@ -6,11 +6,8 @@ Created on Mon Apr 17 17:05:09 2023
 """
 import os
 import shutil
-#import subprocess
 import fileinput
 import sys
-#sys.path.append('../')
-
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
@@ -18,7 +15,9 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
             return round(number,2)
         else:
             return round(number,3)
-        
+  ########################################################################################################
+
+  ################################ PRIMAL PRIMITIVE INITIALIZATIONS ######################################      
 def sweep_1_initialization(folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
     k=1
@@ -71,7 +70,9 @@ def sweep_1_initialization(folder_name):
     print("Sweep 1 initialization is done.")
     return(folder_name)
 
+########################################################################################################
 
+################################## SOME RANDOM USEFUL FUNCTIONS ########################################
 def copytree(src, dst, symlinks=False, ignore=None):
     """
     This is an improved version of shutil.copytree which allows writing to

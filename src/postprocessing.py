@@ -7,11 +7,11 @@ Created on Tue Apr 18 10:30:18 2023
 import os
 from src import boundary_conditions as bc
 import sys
-#sys.path.append('../')
-
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
+########################################################################################################
 
+################################ PRIMAL PRIMITIVE POSTPROCESSING #######################ä###############
 def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
@@ -28,10 +28,9 @@ def preparePostProcessing(folder_name, sweep_name):
 def computePressureDropFoam(folder_name, sweep_name):
     os.chdir(basepath+folder_name+'/'+sweep_name+"/postProcessing")
     #Open a log file        
-    with open("pressureDrop.txt","w") as logfile: ###Erreor openfoam vient de la à priori car on ouvre deux fois le logfile
+    with open("pressureDrop.txt","w") as logfile:
         result=os.system('computePressureDropFoam start end > pressureDrop.txt')            
         print("\nComputation of Pressure Drop for "+sweep_name+" is done.\n\nWriting into pressureDrop.txt ...")
-    #os.chdir(basepath)     
     #Writing the pressureDrop line into txt file
     with open("pressureDrop.txt","r") as f:
         os.chdir(basepath+folder_name)
@@ -39,7 +38,6 @@ def computePressureDropFoam(folder_name, sweep_name):
        # lines=f.readlines()
             for line in f:
                 if "pressureDrop" in line:
-                    #os.chdir(basepath+folder_name)
                     mapression.write(line)
                     print(line)
         mapression.close()

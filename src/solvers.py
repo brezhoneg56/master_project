@@ -7,14 +7,12 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
-#from .. import main
 import sys
-#sys.path.append('../')
-
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
-print(primal_path+primitive_path+steffensen_path+calcs_undeformed+ref_cases+ref_cases_mod_def+project_path+basepath)
+########################################################################################################
 
+#################################### OPENFOAM SINGLE SOLVERS ##########################################
 def pimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
@@ -49,6 +47,12 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
     print("End of loop for interval "+str(i)+".")
     return(result)
 
+def computeShootingUpdate(folder_name, sweep_name, interval_name):
+    # Calls compute shootingupdate from openfoam
+    print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
+########################################################################################################
+
+####################################### OPENFOAM PROCESSES #############################################
 def loop_pimpleDyMFoam(folder_name):
     deltaT=T/n
     for k in range(1, n+1):
@@ -63,6 +67,9 @@ def loop_pimpleDyMFoam(folder_name):
             pre.prepareMyNextSweep(k, folder_name)
             break
     return(myinterval, mysweep)
+########################################################################################################
+
+################################## FUNCTIONS FOR MAIN EXECUTION ########################################
 
 def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     for s in range(a, n+1):
@@ -71,18 +78,6 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         os.mkdir(folder_name)
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
-        
-#NO def primal_nofastpropagator_steffensen(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
-#    for s in range(a, n+1):
-#        print(s)
-#        folder_name=str(s)+"_intervals"
-#        os.mkdir(folder_name)
-#        bc.sweep_1_initialization(folder_name)
-#        loop_pimpleDyMFoam(folder_name)
-
-def computeShootingUpdate(folder_name, sweep_name, interval_name):
-    # Calls compute shootingupdate from openfoam
-    print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
 
 def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
     #Initialisation of Sweep 1  
