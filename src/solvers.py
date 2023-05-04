@@ -89,7 +89,17 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
         print("\n\nStarting linearisation process for "+sweep_name+".\n")
-        for i in range (1, n+1):
+        interval_name=myinterval.format(1)
+        linearisedPimpleDyMFoam(folder_name, sweep_name, 1)
+        pre.prepareNextLinearization(folder_name, k, 1)
+        print("Starting shooting update process for "+sweep_name+".\n")
+        #for i in range(2, n+1):
+        #interval_name=myinterval.format(2)
+        pre.prepareShootingUpdate(folder_name, sweep_name, k, 2)
+        computeShootingUpdate(folder_name, sweep_name, interval_name)
+        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, 1)
+        print("Shooting Updated.\n")
+        for i in range (2, n+1):
             interval_name=myinterval.format(i)
             linearisedPimpleDyMFoam(folder_name, sweep_name, i)
             pre.prepareNextLinearization(folder_name, k, i)
