@@ -135,8 +135,7 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
     src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
     dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
-    shutil.copytree(src_constant , dest_constant)
-    shutil.copytree(src_system, dest_system)
+    
     #copy theta dir
     #starttime_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
@@ -147,9 +146,10 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #print("\n\n timesource="+str(time_source/1000)+" and l="+str(l/1000))
     time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
     time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-    shutil.copytree(time_source, time_dest)
-    
-    
+    if i!=1 and sweep_name!="sweep1":
+        shutil.copytree(src_constant , dest_constant)
+        shutil.copytree(src_system, dest_system)
+        shutil.copytree(time_source, time_dest)
     
     shutil.copy2(linP_path, starttime_dest)
     shutil.copy2(linU_path, starttime_dest)
