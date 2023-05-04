@@ -96,6 +96,6 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
         print("Starting shooting update process for "+sweep_name+".\n")
         for i in range(2, n+1):
             interval_name=myinterval.format(i)
-            pre.prepareShootingUpdate(folder_name, sweep_name, interval_name, k, i)
+            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
             computeShootingUpdate(folder_name, sweep_name, interval_name)
             print("Shooting Updated.\n")
