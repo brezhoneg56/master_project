@@ -161,11 +161,11 @@ def prepareNextLinearization(folder_name, k):
         fvSolution_path=ref_cases+"/controlBib/fvSolution"
         if not interval_name=="interval1":
             os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
-            #Copy of constant and system files
-            src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-            dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-            src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-            dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+        #Copy of constant and system files
+        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
         
         #copy theta dir
         starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
