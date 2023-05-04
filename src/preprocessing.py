@@ -150,6 +150,8 @@ def prepareNextLinearization(folder_name, k):
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name):
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name)
         print("New Sweep added !")
+        shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/interval1/" , steffensen_path+folder_name+"/"+sweep_name+"/interval1/")
+    
     for i in range(1, n+1):
         interval_name=myinterval.format(i)
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
@@ -158,11 +160,12 @@ def prepareNextLinearization(folder_name, k):
         linU_path=ref_cases+"/boundaryConditions/linU"
         fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
         fvSolution_path=ref_cases+"/controlBib/fvSolution"
-        #Copy of constant and system files
-        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+        if not interval_name=="interval1":
+            #Copy of constant and system files
+            src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+            dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+            src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+            dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
         
         #copy theta dir
         starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
