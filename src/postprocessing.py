@@ -7,6 +7,7 @@ Created on Tue Apr 18 10:30:18 2023
 import os
 from src import boundary_conditions as bc
 import sys
+import shutil
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 ########################################################################################################
@@ -45,3 +46,9 @@ def computePressureDropFoam(folder_name, sweep_name):
     os.chdir(basepath) #back to main path
     print("Done.\n\n")
     return(result)
+
+def shootingUpdateP(folder_name, sweep_name, interval_name, k, i):
+    src_shootP=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/shootingUpdateP"
+    dest_shootP=steffensen_path+folder_name+"/"+mysweep(k+1)+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))
+    shutil.copy(src_shootP, dest_shootP)
+    return("Shooting Update done. Preparing for next loop...\n")
