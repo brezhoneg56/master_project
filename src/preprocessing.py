@@ -152,7 +152,9 @@ def prepareNextLinearization(folder_name, k):
     
     for i in range(1, n+1):
         interval_name=myinterval.format(i)
-        print("New Interval added !")
+        if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
+            shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name , steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
+            print("New Interval copied !")        
         linP_path=ref_cases+"/boundaryConditions/linP"
         linU_path=ref_cases+"/boundaryConditions/linU"
         fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
