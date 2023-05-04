@@ -61,6 +61,8 @@ def prepareMyNextSweep(k, folder_name):
 
 ################################# PRIMAL STEFFENSEN PREPROCESSING ######################################
 def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
+    if k==0 and i==-1:
+        return
     #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
     print('Preparing Shooting Update for '+interval_name+".\n")
