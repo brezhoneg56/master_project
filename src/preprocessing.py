@@ -133,7 +133,7 @@ def initializeLinearisation(folder_name, sweep_name):
         #shutil.copytree(src_system, dest_system)
         print(time_source)
         print("\n\n"+time_dest)
-        shutil.copytree(time_source, time_dest)
+        #shutil.copytree(time_source, time_dest)
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
