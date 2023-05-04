@@ -123,6 +123,13 @@ def initializeLinearisation(folder_name, sweep_name):
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
 
 def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
+    print("Preparing "+interval_name+" in "+sweep_name+".\n")
+    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name):
+        os.mkdir(steffensen_path+folder_name+"/"+sweep_name)
+        print("New Sweep added !")
+    if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
+        os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
+        print("New Interval added !")
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"
     fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
