@@ -47,9 +47,9 @@ def computePressureDropFoam(folder_name, sweep_name):
     print("Done.\n\n")
     return(result)
 
-def shootingUpdateP(folder_name, sweep_name, interval_name, k, i):
+def shootingUpdateP(folder_name, sweep_name, interval_name, k, i, pressure):
     startingTime=str(bc.decimal_analysis(theta+(i-2)*deltaT))
-    src_shootP=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/shootingUpdateP"
+    src_shootP=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/"+pressure
     dest_shootP=steffensen_path+folder_name+"/"+mysweep.format(k+1)+"/"+interval_name+"/"+startingTime
     shutil.copy(src_shootP, dest_shootP)
     return("Shooting Update done. Preparing for next loop...\n")
