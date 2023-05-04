@@ -130,12 +130,11 @@ def initializeLinearisation(folder_name, sweep_name):
         #copy fv file
         shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
         shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-        print("\nFiles successfully copied for "+interval_name+".\n")
 
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
 
 def prepareNextLinearization(folder_name, k):
-    while k+1<=n:
+    if k+1<=n:
         sweep_name=mysweep.format(k+1) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k+1
         print("Preparing " +sweep_name+".\n")
