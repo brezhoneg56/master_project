@@ -125,12 +125,12 @@ def initializeLinearisation(folder_name, sweep_name):
         time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
         
         #Copy of constant and system files
-        src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
-        dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
-        src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
-        dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
-        shutil.copytree(src_constant , dest_constant)
-        shutil.copytree(src_system, dest_system)
+        #src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
+        #dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
+        #src_constant=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant/"
+        #dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
+        #shutil.copytree(src_constant , dest_constant)
+        #shutil.copytree(src_system, dest_system)
         print(time_source)
         print("\n\n"+time_dest)
         shutil.copytree(time_source, time_dest)
