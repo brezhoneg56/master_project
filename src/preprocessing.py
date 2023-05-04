@@ -99,8 +99,8 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     
     src_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
     src_system=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
-    shutil.copytree(src_constant, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant")
-    shutil.copytree(src_system, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/system")
+    shutil.copytree(src_constant, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/")
+    shutil.copytree(src_system, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/system/")
 
 ########################################################################################################
 
