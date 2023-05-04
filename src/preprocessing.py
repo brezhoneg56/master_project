@@ -159,8 +159,8 @@ def prepareNextLinearization(folder_name, k):
         linU_path=ref_cases+"/boundaryConditions/linU"
         fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
         fvSolution_path=ref_cases+"/controlBib/fvSolution"
-        if not interval_name=="interval1":
-            os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
+        #if not interval_name=="interval1":
+        #    os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
         #Copy of constant and system files
         src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
         dest_system=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system"
@@ -173,13 +173,13 @@ def prepareNextLinearization(folder_name, k):
     
         time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
         time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-        if not sweep_name=="sweep1":
-            if not interval_name=="interval1":
-                shutil.copytree(src_constant , dest_constant)
-                shutil.copytree(src_system, dest_system)
-                print(time_source)
-                print("\n\n"+time_dest)
-                shutil.copytree(time_source, time_dest)
+        #if not sweep_name=="sweep1":
+        #    if not interval_name=="interval1":
+        #        shutil.copytree(src_constant , dest_constant)
+        #        shutil.copytree(src_system, dest_system)
+        #        print(time_source)
+        #        print("\n\n"+time_dest)
+        #        shutil.copytree(time_source, time_dest)
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
