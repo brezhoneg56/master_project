@@ -21,7 +21,7 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
             
 def startingTime(theta, n, T, t, i):
     deltaT=T/n
-    compteur_debut=(i-1)*deltaT+t
+    compteur_debut=(i-1)*deltaT
     compteur_fin=i*deltaT
     for l in range(int(compteur_debut*1000),int(compteur_fin*1000)+1,int(t*1000)):
         pas=l/1000
