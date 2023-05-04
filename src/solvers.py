@@ -50,6 +50,10 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
 def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
+    os.chdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
+    with open("logfile.txt","w") as logfile:
+        result=subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
+    return(result)
 ########################################################################################################
 
 ####################################### OPENFOAM PROCESSES #############################################
@@ -89,12 +93,11 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
             interval_name=myinterval.format(i)
             linearisedPimpleDyMFoam(folder_name, sweep_name, i)
         pre.prepareNextLinearization(folder_name, k)
-        #Quand le sweep est fini, il faut prep le sweep d'après pour pouvoir copier GREEN
-    #for k in range (1, n+1):
-        #sweep_name=mysweep.format(k)
-        print("Starting shooting update process for "+sweep_name+".\n")
-        for i in range(2, n+1):
+        if i>1:
+            print("Starting shooting update process for "+sweep_name+".\n")
+            #for i in range(2, n+1):
             interval_name=myinterval.format(i)
             pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
             computeShootingUpdate(folder_name, sweep_name, interval_name)
+            post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i)
             print("Shooting Updated.\n")
