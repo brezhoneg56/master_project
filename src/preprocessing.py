@@ -133,7 +133,7 @@ def initializeLinearisation(folder_name, sweep_name):
 
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
 
-def prepareNextLinearization(folder_name, k):
+def prepareNextLinearization(folder_name, k, i):
     if k+1<=n:
         sweep_name=mysweep.format(k+1) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k+1
@@ -143,24 +143,24 @@ def prepareNextLinearization(folder_name, k):
             print("New Sweep added !")
             shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/interval1/" , steffensen_path+folder_name+"/"+sweep_name+"/interval1/")
     
-        for i in range(1, n+1):
-            interval_name=myinterval.format(i)
-            if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
-                shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name , steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
-                print("New Interval copied !")        
-            linP_path=ref_cases+"/boundaryConditions/linP"
-            linU_path=ref_cases+"/boundaryConditions/linU"
-            fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
-            fvSolution_path=ref_cases+"/controlBib/fvSolution"
-            
-            #copy theta dir
-            starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
-            shutil.copy2(linP_path, starttime_dest)
-            shutil.copy2(linU_path, starttime_dest)
-            #copy fv file
-            shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-            shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-            print("Files successfully copied for "+interval_name+".\n")
+        #for i in range(1, n+1):
+        interval_name=myinterval.format(i)
+        if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
+            shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name , steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
+            print("New Interval copied !")        
+        linP_path=ref_cases+"/boundaryConditions/linP"
+        linU_path=ref_cases+"/boundaryConditions/linU"
+        fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
+        fvSolution_path=ref_cases+"/controlBib/fvSolution"
+        
+        #copy theta dir
+        starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
+        shutil.copy2(linP_path, starttime_dest)
+        shutil.copy2(linU_path, starttime_dest)
+        #copy fv file
+        shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
+        print("Files successfully copied for "+interval_name+".\n")
 
 
         
