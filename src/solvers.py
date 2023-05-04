@@ -54,7 +54,6 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 
 ####################################### OPENFOAM PROCESSES #############################################
 def loop_pimpleDyMFoam(folder_name):
-    deltaT=T/n
     for k in range(1, n+1):
         sweep_name=mysweep.format(k)
         ## COMPUTE MY INTERVAL
@@ -85,7 +84,7 @@ def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i inte
     pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
-        print("Starting linearisation process for "+sweep_name+".\n")
+        print("\n\nStarting linearisation process for "+sweep_name+".\n")
         for i in range (1, n+1):
             interval_name=myinterval.format(i)
             linearisedPimpleDyMFoam(folder_name, sweep_name, i)

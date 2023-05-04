@@ -43,7 +43,7 @@ def prepareMyNextSweep(k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
     sweep_name=mysweep.format(k+1)
     previous_sweep_name=mysweep.format(k)
-    sweep_path=os.path.join(folder_name,sweep_name)
+    os.path.join(folder_name,sweep_name)
     print("\nStarting shooting of "+sweep_name+"\n") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
@@ -118,10 +118,10 @@ def initializeLinearisation(folder_name, sweep_name):
     for i in range(1, n+1):
         interval_name=myinterval.format(i)
         starttime_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))
-        compteur_debut=(i-1)*deltaT
+        #compteur_debut=(i-1)*deltaT
         
-        time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-        time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        #time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
+        #time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
         
         #Copy of constant and system files
         #src_system=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system/"
@@ -130,8 +130,6 @@ def initializeLinearisation(folder_name, sweep_name):
         #dest_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/constant"
         #shutil.copytree(src_constant , dest_constant)
         #shutil.copytree(src_system, dest_system)
-        print(time_source)
-        print("\n\n"+time_dest)
         #shutil.copytree(time_source, time_dest)
     
         shutil.copy2(linP_path, starttime_dest)
@@ -139,7 +137,7 @@ def initializeLinearisation(folder_name, sweep_name):
         #copy fv file
         shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
         shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-        print("Files successfully copied for "+interval_name+".\n")
+        print("\nFiles successfully copied for "+interval_name+".\n")
 
     print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
 
@@ -173,12 +171,13 @@ def prepareNextLinearization(folder_name, k):
     
         time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
         time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-        if not sweep_name=="sweep1" or interval_name=="interval1":
-            shutil.copytree(src_constant , dest_constant)
-            shutil.copytree(src_system, dest_system)
-            print(time_source)
-            print("\n\n"+time_dest)
-            shutil.copytree(time_source, time_dest)
+        if not sweep_name=="sweep1":
+            if not interval_name=="interval1":
+                shutil.copytree(src_constant , dest_constant)
+                shutil.copytree(src_system, dest_system)
+                print(time_source)
+                print("\n\n"+time_dest)
+                shutil.copytree(time_source, time_dest)
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)

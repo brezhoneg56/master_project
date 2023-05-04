@@ -21,7 +21,7 @@ def preparePostProcessing(folder_name, sweep_name):
     for x in range(1,n+1):
         list_dir=list_dir+["interval"+str(x)]
     for list_dir in list_dir:
-        dest_dir=os.path.join(postPro_destination,list_dir)
+        os.path.join(postPro_destination,list_dir)
         bc.copytree(list_dir,postPro_destination)
     print("ready for postProcessing ...")
 
