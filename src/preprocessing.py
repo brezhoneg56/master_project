@@ -146,9 +146,11 @@ def prepareLinearization(folder_name, sweep_name, interval_name, i): ##WORKS
     #print("\n\n timesource="+str(time_source/1000)+" and l="+str(l/1000))
     time_source=primitive_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
     time_dest=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+compteur_debut))
-    if i!=1 and sweep_name!="sweep1":
+    if not i==1 and sweep_name=="sweep1":
         shutil.copytree(src_constant , dest_constant)
         shutil.copytree(src_system, dest_system)
+        print(time_source)
+        print("\n\n"+time_dest)
         shutil.copytree(time_source, time_dest)
     
     shutil.copy2(linP_path, starttime_dest)
