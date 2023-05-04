@@ -17,8 +17,9 @@ os.chdir(basepath)
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################
 #AUTOMATIC FILE DELETION/CREATIION
 folder_name="5_intervals"
-#if os.path.exists(folder_name):
-#    shutil.rmtree(folder_name)
+if os.path.exists(folder_name):
+    shutil.rmtree(folder_name)
+    print("Previous directory named "+folder_name+" has been replaced.")
 
 #Primitive shooting : WOrks
 #sol.primal_nofastpropagator_seq()
