@@ -56,7 +56,7 @@ print("Done")
 
 sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
 i=1
-post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
+post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i)
 print("Shooting Updated.\n")
 
 #for i in range (1, n+1):

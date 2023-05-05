@@ -77,9 +77,8 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     shutil.copy(src_violet_folder+"Uf", zero_shootingUpdate+"UfStart_left")
     shutil.copy(src_violet_folder+"phi", zero_shootingUpdate+"phiStart_left")
     print("Copy code VIOLET done.\n")
-    print("Copy code RED.\n"+sweep_name+" and "+interval_name)
+    print("Copy code RED for "+sweep_name+" and "+interval_name+".\n")
     src_red_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
-    print(src_red_folder)
     shutil.copy(src_red_folder+"p", zero_shootingUpdate+"pEnd_left")
     shutil.copy(src_red_folder+"U", zero_shootingUpdate+"UEnd_left")
     shutil.copy(src_red_folder+"Uf", zero_shootingUpdate+"UfEnd_left")
@@ -89,10 +88,10 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     shutil.copy(src_red_folder+"linU", zero_shootingUpdate+"dUdu")
     shutil.copy(src_red_folder+"linP", zero_shootingUpdate+"dPdp")
     shutil.copy(src_red_folder+"linUf", zero_shootingUpdate+"dUduf")
-    print("Copy code GREEN done.\n")
+    print("Copy code BLUE done.\n")
     print("Copy code GREEN.\n")
     src_green_folder=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
-    shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP_left")
+    shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP") #instead of shootingUpdateP
     shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
     shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
