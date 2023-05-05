@@ -44,11 +44,14 @@ for k in range (1, n+1):
         print("prepareNextLinearization\n")
         pre.prepareNextLinearization(folder_name, k, i)
         print("Done\n")
-    for i in range (1,n+1):
+    for i in range (2,n+1):
         print("Starting shooting update process for "+sweep_name+".\n")
         #for i in range(2, n+1):
         interval_name=myinterval.format(i)
         print("prepareShootingUpdate\n")
+        
+        
+        
         pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
         print("Done")
         sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
