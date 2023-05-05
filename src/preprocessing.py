@@ -91,14 +91,14 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     print("Copy code BLUE done.\n")
     print("Copy code GREEN.\n")
     src_green_folder=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
-    shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP") #instead of shootingUpdateP
+    shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP_left") #instead of shootingUpdateP_left
     shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
     shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/"):
         print("Check")
         src_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
-        src_system=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
+        src_system=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/system/"
         shutil.copytree(src_constant, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/")
         shutil.copytree(src_system, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/system/")
 
