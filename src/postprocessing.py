@@ -16,14 +16,13 @@ def preparePostProcessing(folder_name, sweep_name):
     destination_file=basepath+folder_name+'/'+sweep_name+'/'
     postPro_destination=destination_file+"postProcessing"
     os.chdir(destination_file)
-    print("Preparing for postProcessing of "+sweep_name+"\n")
     list_dir=[]
     for x in range(1,n+1):
         list_dir=list_dir+["interval"+str(x)]
     for list_dir in list_dir:
         os.path.join(postPro_destination,list_dir)
         bc.copytree(list_dir,postPro_destination)
-    print("ready for postProcessing ...")
+    print("ready for postProcessing of "+sweep_name+"...\n")
 
 def computePressureDropFoam(folder_name, sweep_name):
     os.chdir(basepath+folder_name+'/'+sweep_name+"/postProcessing")

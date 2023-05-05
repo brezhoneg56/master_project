@@ -70,44 +70,45 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/")
     zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
-    print("Copy code VIOLET for "+sweep_name+" and "+interval_name+"\n")
+    #print("Copy code VIOLET for "+sweep_name+" and "+interval_name+"\n")
     src_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
     shutil.copy(src_violet_folder+"p", zero_shootingUpdate+"pStart_left")
     shutil.copy(src_violet_folder+"U", zero_shootingUpdate+"UStart_left")
     shutil.copy(src_violet_folder+"Uf", zero_shootingUpdate+"UfStart_left")
     shutil.copy(src_violet_folder+"phi", zero_shootingUpdate+"phiStart_left")
-    print("Copy code VIOLET done.\n")
-    print("Copy code RED for "+sweep_name+" and "+interval_name+".\n")
+    print("Copy code VIOLET done.")
+    #print("Copy code RED for "+sweep_name+" and "+interval_name+".\n")
     src_red_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     shutil.copy(src_red_folder+"p", zero_shootingUpdate+"pEnd_left")
     shutil.copy(src_red_folder+"U", zero_shootingUpdate+"UEnd_left")
     shutil.copy(src_red_folder+"Uf", zero_shootingUpdate+"UfEnd_left")
     shutil.copy(src_red_folder+"phi", zero_shootingUpdate+"phiEnd_left")
-    print("Copy code RED done.\n")
-    print("Copy code BLUE.\n")
+    print("Copy code RED done.")
+    #print("Copy code BLUE.\n")
     shutil.copy(src_red_folder+"linU", zero_shootingUpdate+"dUdu")
     shutil.copy(src_red_folder+"linP", zero_shootingUpdate+"dPdp")
     shutil.copy(src_red_folder+"linUf", zero_shootingUpdate+"dUduf")
-    print("Copy code BLUE done.\n")
-    print("Copy code GREEN.\n")
+    print("Copy code BLUE done.")
+    #print("Copy code GREEN.\n")
     src_green_folder=steffensen_path+folder_name+"/"+next_sweep+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
     shutil.copy(src_green_folder+"p", zero_shootingUpdate+"shootingUpdateP_left") #instead of shootingUpdateP_left
     shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
     shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
-    print("Copy code ORANGE.\n")
+    print("Copy code GREEN done.")
+    #print("Copy code ORANGE.\n")
     src_orange_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     shutil.copy(src_orange_folder+"p", zero_shootingUpdate+"pStart_right")
     shutil.copy(src_orange_folder+"U", zero_shootingUpdate+"UStart_right")
     shutil.copy(src_orange_folder+"Uf", zero_shootingUpdate+"UfStart_right")
     shutil.copy(src_orange_folder+"phi", zero_shootingUpdate+"phiStart_right")
-    print("Copy code ORANGE done.\n")
+    print("Copy code ORANGE done.")
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/"):
         src_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
         src_system=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/system/"
         shutil.copytree(src_constant, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/")
         shutil.copytree(src_system, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/system/")
-        print("Ready for copy code YELLOW")
+    print("Ready for copy code YELLOW")
 
 ########################################################################################################
 
@@ -138,23 +139,18 @@ def initializeLinearisation(folder_name, sweep_name):
         shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
         shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
 
-    print("Prepartion done. Starting linearisedPimpleDyMFoam...\n")
-
 def prepareNextLinearization(folder_name, k, i):
     if k+1<=n:
         sweep_name=mysweep.format(k+1) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k+1
-        print("Preparing " +sweep_name+".\n")
         if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name):
             os.mkdir(steffensen_path+folder_name+"/"+sweep_name)
-            print("New Sweep added !")
             shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/interval1/" , steffensen_path+folder_name+"/"+sweep_name+"/interval1/")
     
         #for i in range(1, n+1):
         interval_name=myinterval.format(i)
         if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name):
             shutil.copytree(primitive_path+folder_name+"/"+sweep_name+"/"+interval_name , steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name)
-            print("New Interval copied !")        
         linP_path=ref_cases+"/boundaryConditions/linP"
         linU_path=ref_cases+"/boundaryConditions/linU"
         fvSchemes_path=ref_cases+"/controlBib/fvSchemes"
@@ -167,7 +163,7 @@ def prepareNextLinearization(folder_name, k, i):
         #copy fv file
         shutil.copy(fvSchemes_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
         shutil.copy(fvSolution_path, steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-        print("Files successfully copied for "+interval_name+".\n")
+        print("Files successfully copied for "+interval_name+". Ready for next linearisation\n")
 
 
         

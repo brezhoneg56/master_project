@@ -49,10 +49,9 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
     os.chdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
-    #with open("logfile.txt","w") as logfile:
-        #result=subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
-    subprocess.run(['computeShootingUpdate'])    
-    #return(result)
+    with open("logfile.txt","w") as logfile:
+        subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
+    #subprocess.run(['computeShootingUpdate'])    
 ########################################################################################################
 
 ####################################### OPENFOAM PROCESSES #############################################
@@ -82,32 +81,28 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         loop_pimpleDyMFoam(folder_name)
 
 def computeSteffensenMethod(folder_name):
+    print("\n\nStarting Steffensen's Method for "+folder_name+".\n")
     #Initialisation of Sweep 1  
     sweep_name="sweep1"
-    pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
-    for k in range (1, n+1):
+    pre.initializeLinearisation(folder_name, sweep_name)
+    #Linearisation preparation and cmputation from Sweep 2 to n
+    for k in range (2, n+1):
         sweep_name=mysweep.format(k)
-        print("\n\nStarting linearisation process for "+sweep_name+".\n")
         for i in range (1, n+1):
             interval_name=myinterval.format(i)  
-            print("\nlinearisedPimpleDyMFoam\n" )
             sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
-            print("Done\n")
-            print("prepareNextLinearization\n")
             pre.prepareNextLinearization(folder_name, k, i)
-            print("Linearisation Preparation Done\n")
+    # Preparation and Computation of shootingUpdate
+    for k in range (1, n):
         for i in range (2, n+1):
+            #if not k==n:
             m=1
             print("Starting shooting update process for "+sweep_name+".\n")
             #for i in range(2, n+1):
             interval_name=myinterval.format(i)
-            print("prepareShootingUpdate\n")
-            if not k==n:
-                pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
-            print("Shooting Preparation Done")
+            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
             interval_name=myinterval.format(m)
             sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
-            print("Shooting Updated.\n")
             m=m+1
     print("Steffensen's Method terminated.")
