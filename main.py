@@ -52,6 +52,7 @@ print("prepareShootingUpdate\n")
 pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
 print("Done")
 sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
+i=1
 post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
 print("Shooting Updated.\n")
 
