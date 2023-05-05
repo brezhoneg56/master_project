@@ -11,7 +11,6 @@ from config import primal_path, primitive_path, steffensen_path, calcs_undeforme
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep;
 from src import solvers as sol, preprocessing as pre, postprocessing as post
 import shutil
-import sys
 ######### PATHS ##########################
 os.chdir(basepath)
 ################################        COMPUTE MY SWEEPs : sweep k in [1-n]       ################################

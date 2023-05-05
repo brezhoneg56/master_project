@@ -7,7 +7,6 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
-import sys
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
 ########################################################################################################
@@ -103,43 +102,12 @@ def computeSteffensenMethod(folder_name):
             #for i in range(2, n+1):
             interval_name=myinterval.format(i)
             print("prepareShootingUpdate\n")
-            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
+            if not k==n:
+                pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
             print("Shooting Preparation Done")
-        
             interval_name=myinterval.format(m)
             sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
             print("Shooting Updated.\n")
             m=m+1
     print("Steffensen's Method terminated.")
-
-
-def OLDcomputeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
-    #Initialisation of Sweep 1  
-    sweep_name="sweep1"
-    pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
-    for k in range (1, n+1):
-        sweep_name=mysweep.format(k)
-        print("\n\nStarting linearisation process for "+sweep_name+".\n")
-        interval_name=myinterval.format(1)
-        linearisedPimpleDyMFoam(folder_name, sweep_name, 1)
-        pre.prepareNextLinearization(folder_name, k, 1)
-        print("Starting shooting update process for "+sweep_name+".\n")
-        #for i in range(2, n+1):
-        #interval_name=myinterval.format(2)
-        pre.prepareShootingUpdate(folder_name, sweep_name, k, 2)
-        computeShootingUpdate(folder_name, sweep_name, interval_name)
-        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, 1, "shootingUpdateP_left")
-        print("Shooting Updated.\n")
-        for i in range (2, n+1):
-            interval_name=myinterval.format(i)
-            linearisedPimpleDyMFoam(folder_name, sweep_name, i)
-            pre.prepareNextLinearization(folder_name, k, i)
-            
-            print("Starting shooting update process for "+sweep_name+".\n")
-            #for i in range(2, n+1):
-            interval_name=myinterval.format(i)
-            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
-            computeShootingUpdate(folder_name, sweep_name, interval_name)
-            post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
-            print("Shooting Updated.\n")

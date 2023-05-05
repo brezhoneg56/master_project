@@ -7,7 +7,6 @@ Created on Mon Apr 17 17:05:09 2023
 import os
 import shutil
 import fileinput
-import sys
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales

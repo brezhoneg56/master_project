@@ -9,7 +9,6 @@ import shutil
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
-import sys
 import glob
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
@@ -61,8 +60,6 @@ def prepareMyNextSweep(k, folder_name):
 
 ################################# PRIMAL STEFFENSEN PREPROCESSING ######################################
 def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
-    if k>n:
-        return
     #Copy Violet, Red, Blue, Green and Orange to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
     next_interval=myinterval.format(i)
