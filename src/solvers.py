@@ -39,21 +39,23 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
         os.mkdir(lin_pimple_path)
         print("Directory created at "+lin_pimple_path+".\n")
     os.chdir(lin_pimple_path)
-    with open("logfile.txt","w") as logfile:
-        result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
+    #with open("logfile.txt","w") as logfile:
+        #result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
+    subprocess.run(['linearisedPimpleDyMFoam'])            
     print("Computation of "+interval_name+" is done.\n\nWriting into pimple.log ...\n")
     os.chdir(basepath) #back to main path
     print("Done.\n\n")
     print("End of loop for interval "+str(i)+".")
-    return(result)
+    #return(result)
 
 def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
     os.chdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
-    with open("logfile.txt","w") as logfile:
-        result=subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
-    return(result)
+    #with open("logfile.txt","w") as logfile:
+        #result=subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
+    subprocess.run(['computeShootingUpdate'])    
+    #return(result)
 ########################################################################################################
 
 ####################################### OPENFOAM PROCESSES #############################################
