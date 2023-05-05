@@ -4,6 +4,7 @@ Created on Tue May  2 12:10:07 2023
 
 @author: Lucie
 """
+import colorama
 from colorama import init, Fore, Style
 ####### CONFIG FILE ########
 # Here, you can adapt the different paths to your structure.
