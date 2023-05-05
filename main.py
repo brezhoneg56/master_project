@@ -11,7 +11,7 @@ from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name;
 from src import solvers as sol, preprocessing as pre, postprocessing as post
 import shutil
 #########                  PATH                        ###########################################################################################
-c.headings()
+c.headings2()
 os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 

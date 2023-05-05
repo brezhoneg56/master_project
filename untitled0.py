@@ -7,5 +7,5 @@ Created on Fri May  5 13:16:46 2023
 
 import config as c
 
-c.headings()
+c.headings2()
 #c.headings2()
