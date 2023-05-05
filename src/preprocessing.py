@@ -66,7 +66,7 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     print('Preparing Shooting Update for '+interval_name+".\n")
     next_sweep=mysweep.format(k+1)
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/"):
-        #shutil.rmtree(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
+        shutil.rmtree(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
         os.mkdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/")
     zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
