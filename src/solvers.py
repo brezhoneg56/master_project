@@ -103,5 +103,5 @@ def computeSteffensenMethod(folder_name):
             m=m+1
             if k==n-1:
                 print("Steffensen's Method terminated. Sweep "+k+"updated.")
-                return
+                return(0)
 
