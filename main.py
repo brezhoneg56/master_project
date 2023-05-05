@@ -16,8 +16,9 @@ os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 
 if os.path.exists(folder_name):
-    shutil.rmtree(folder_name)
-    print("Previous directory named "+folder_name+" has been replaced.")
+    #shutil.rmtree(folder_name)
+    folder_name=folder_name+"_bis"
+    print("WARNING: Directory already exists. "+folder_name+" has been created.")
 
 ######             CHOICE OF COMPUTATION                ##########################################################################################
 

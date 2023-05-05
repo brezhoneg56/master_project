@@ -50,4 +50,3 @@ def shootingUpdateP(folder_name, sweep_name, interval_name, k, i):
     src_shootP=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/shootingUpdateP"
     dest_shootP=steffensen_path+folder_name+"/"+mysweep.format(k+1)+"/"+interval_name+"/"+startingTime
     shutil.copy(src_shootP, dest_shootP)
-    return("Shooting Update done. Preparing for next loop...\n")

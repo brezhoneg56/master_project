@@ -42,7 +42,7 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
 
 def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
-    print("Computing Shooting Update for "+sweep_name+" in "+interval_name+".\n")
+    print("Computing Shooting Update for "+sweep_name+".\n")
     os.chdir(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/")
     with open("logfile.txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
@@ -102,6 +102,6 @@ def computeSteffensenMethod(folder_name):
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
             m=m+1
             if k==n-1:
-                print("Steffensen's Method terminated. Sweep "+k+"updated.")
+                print("Steffensen's Method terminated. Sweep "+str(k)+"updated.")
                 return(0)
 
