@@ -55,6 +55,8 @@ pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
 print("Shooting Preparation Done")
 
 i=1
+interval_name=myinterval.format(i)
+
 sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
 post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i)
 print("Shooting Updated.\n")
