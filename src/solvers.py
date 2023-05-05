@@ -15,16 +15,14 @@ from config import n, theta, T, a, deltaT, myinterval, mysweep
 def pimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
-    print("Executing pimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
+    print("Executing pimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'.')
     os.chdir(pimple_path) #Entering logfile path
     
     #Open a log file and pipe the output of PimpleDyMFoam into the log        
     with open("logfile.txt","w") as logfile:
         result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
-    print("Computation of "+interval_name+" is done.\n\nWriting into pimple.log ...\n")
+    print("Computation of "+interval_name+" is done. Writing into pimple.log ...\n")
     os.chdir(basepath) #back to main path
-    print("Done.\n\n")
-    print("End of loop for interval "+str(i)+".")
     return(result)
 
 def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
@@ -33,17 +31,14 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
     lin_pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
     if not os.path.exists(basepath+folder_name+"/"+sweep_name):    
         os.mkdir(basepath+folder_name+"/"+sweep_name)
-    print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+'\n\n')
+    print("Executing linearisedPimpleDyMFoam in "+folder_name+'/'+sweep_name+'/'+interval_name+".")
     if not os.path.exists(lin_pimple_path):    
         os.mkdir(lin_pimple_path)
-        print("Directory created at "+lin_pimple_path+".\n")
     os.chdir(lin_pimple_path)
     with open("logfile.txt","w") as logfile:
         subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
-    print("Computation of "+interval_name+" is done.\n\nWriting into pimple.log ...\n")
+    print("Computation of "+interval_name+" is done. Writing into pimple.log ...\n")
     os.chdir(basepath) #back to main path
-    print("Done.\n\n")
-    print("End of loop for interval "+str(i)+".")
 
 def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
@@ -86,9 +81,9 @@ def computeSteffensenMethod(folder_name):
     sweep_name="sweep1"
     pre.initializeLinearisation(folder_name, sweep_name)
     #Linearisation preparation and cmputation from Sweep 2 to n
-    for k in range (2, n+1):
+    for k in range (1, n+1):
         sweep_name=mysweep.format(k)
-        for i in range (1, n+1):
+        for i in range (2, n+1):
             interval_name=myinterval.format(i)  
             sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
             pre.prepareNextLinearization(folder_name, k, i)
