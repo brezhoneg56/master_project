@@ -38,9 +38,15 @@ for k in range (1, n+1):
     
     for i in range (1, n+1):
         interval_name=myinterval.format(i)
+        print("\nlinearisedPimpleDyMFoam\n")
         sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
+        print("Done\n")
+        print("prepareNextLinearization\n")
         pre.prepareNextLinearization(folder_name, k, i)
+        print("Done\n")
+        print("shootingUpdateP\n")
         post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
+        print("Done\n")
     for i in range (1,n+1):
         print("Starting shooting update process for "+sweep_name+".\n")
         #for i in range(2, n+1):
