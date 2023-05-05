@@ -39,14 +39,12 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
         os.mkdir(lin_pimple_path)
         print("Directory created at "+lin_pimple_path+".\n")
     os.chdir(lin_pimple_path)
-    #with open("logfile.txt","w") as logfile:
-        #result=subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
-    subprocess.run(['linearisedPimpleDyMFoam'])            
+    with open("logfile.txt","w") as logfile:
+        subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
     print("Computation of "+interval_name+" is done.\n\nWriting into pimple.log ...\n")
     os.chdir(basepath) #back to main path
     print("Done.\n\n")
     print("End of loop for interval "+str(i)+".")
-    #return(result)
 
 def computeShootingUpdate(folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam

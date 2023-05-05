@@ -42,7 +42,7 @@ for i in range (1, n+1):
     print("Done\n")
     print("prepareNextLinearization\n")
     pre.prepareNextLinearization(folder_name, k, i)
-    print("Done\n")
+    print("Linearisation Preparation Done\n")
 
 
 i=2
@@ -52,10 +52,10 @@ interval_name=myinterval.format(i)
 print("prepareShootingUpdate\n")
     
 pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
-print("Done")
+print("Shooting Preparation Done")
 
-sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
 i=1
+sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
 post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i)
 print("Shooting Updated.\n")
 
