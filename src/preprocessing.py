@@ -61,8 +61,9 @@ def prepareMyNextSweep(k, folder_name):
 
 ################################# PRIMAL STEFFENSEN PREPROCESSING ######################################
 def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
-    #Copy Violet, Red, Blue and Green to prepare yellow (cf model)
+    #Copy Violet, Red, Blue, Green and Orange to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
+    next_interval=myinterval.format(i)
     print('Preparing Shooting Update for '+interval_name+".\n")
     next_sweep=mysweep.format(k+1)
     if os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/"):
@@ -72,7 +73,6 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     zero_shootingUpdate=steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/0/"
     print("Copy code VIOLET for "+sweep_name+" and "+interval_name+"\n")
     src_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
-    #dest_violet_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+interval_name+"/"+str(startTime)
     shutil.copy(src_violet_folder+"p", zero_shootingUpdate+"pStart_left")
     shutil.copy(src_violet_folder+"U", zero_shootingUpdate+"UStart_left")
     shutil.copy(src_violet_folder+"Uf", zero_shootingUpdate+"UfStart_left")
@@ -96,12 +96,19 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     shutil.copy(src_green_folder+"U", zero_shootingUpdate+"shootingUpdateU_left")
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
     shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
+    print("Copy code ORANGE.\n")
+    src_orange_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
+    shutil.copy(src_orange_folder+"p", zero_shootingUpdate+"pStart_right")
+    shutil.copy(src_orange_folder+"U", zero_shootingUpdate+"UStart_right")
+    shutil.copy(src_orange_folder+"Uf", zero_shootingUpdate+"UfStart_right")
+    shutil.copy(src_orange_folder+"phi", zero_shootingUpdate+"phiStart_right")
+    print("Copy code ORANGE done.\n")
     if not os.path.exists(steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/"):
-        print("Check")
         src_constant=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/constant/"
         src_system=steffensen_path+folder_name+"/"+sweep_name+"/"+myinterval.format(i)+"/system/"
         shutil.copytree(src_constant, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/constant/")
         shutil.copytree(src_system, steffensen_path+folder_name+"/"+sweep_name+"/preProcessing/system/")
+        print("Ready for copy code YELLOW")
 
 ########################################################################################################
 
