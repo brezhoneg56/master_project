@@ -4,7 +4,7 @@ Created on Tue May  2 12:10:07 2023
 
 @author: Lucie
 """
-
+from colorama import init, Fore, Style
 ####### CONFIG FILE ########
 # Here, you can adapt the different paths to your structure.
 
@@ -35,3 +35,43 @@ deltaT=T/n
 t=0.001 #Sampling size for OpenFoam Computations
 myinterval="interval{}"
 mysweep="sweep{}"
+
+
+
+
+#### HEADINGS #########
+def headings():
+    heading = """║                        .?77777777777777$.                       ║     
+║                      777..777777777777$+                        ║
+║                     .77    7777777777$$$                        ║
+║                     .777 .7777777777$$$$                        ║
+║                     .7777777777777$$$$$$                        ║
+║                     ..........:77$$$$$$$                        ║
+║                .77777777777777777$$$$$$$$$.=======.             ║
+║                777777777777777777$$$$$$$$$$.========            ║
+║                7777777777777777$$$$$$$$$$$$$.=========          ║
+║                77777777777777$$$$$$$$$$$$$$$.=========          ║
+║                777777777777$$$$$$$$$$$$$$$$ :========+.         ║
+║                77777777777$$$$$$$$$$$$$$+..=========++~         ║
+║                777777777$$..~=====================+++++         ║
+║                77777777$~.~~~~=~=================+++++.         ║
+║                777777$$$.~~~===================++++++.          ║
+║                77777$$$$.~~==================++++++++:          ║
+║                7$$$$$$$.==================++++++++++.           ║
+║                .,$$$$$$.================++++++++++~.            ║
+║                     .=========~.........                        ║
+║                     .=============++++++                        ║
+║                     .===========+++..+++                        ║
+║                     .==========+++.  .++                        ║
+║                      ,=======++++++,,++,                        ║
+║                      ..=====+++++++++=.                         ║
+║                                 ..~+=...                        ║    """           
+    print(Fore.RED+heading.center(80)+ Style.RESET_ALL)
+    print(Fore.YELLOW + '╔═════════════════════════════════════════════════════════════════╗' + Style.RESET_ALL)
+    print(Fore.RED    +                          heading.center(80)                           +  Style.RESET_ALL)
+    print(Fore.YELLOW + '║               Launching Python Shooting Manager!                ║' + Style.RESET_ALL)
+    print(Fore.YELLOW + '║       This program requires a working version of OpenFOAM       ║' + Style.RESET_ALL)
+    print(Fore.YELLOW + '╚═════════════════════════════════════════════════════════════════╝' + Style.RESET_ALL)
+
+
+    
