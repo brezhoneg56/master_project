@@ -9,7 +9,7 @@ Created on Wed Apr 12 09:42:28 2023
 import os
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath;
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep;
-from src import solvers as sol, preprocessing as prep
+from src import solvers as sol, preprocessing as pre, postprocessing as post
 import shutil
 import sys
 ######### PATHS ##########################
@@ -25,4 +25,28 @@ if os.path.exists(folder_name):
 #sol.primal_nofastpropagator_seq()
 #Steffensen shooting : ongoing
 os.chdir(steffensen_path)
-sol.computeSteffensenMethod(folder_name)
+#sol.computeSteffensenMethod(folder_name)
+
+#############     FUNCTION     #####################################################################
+#Initialisation of Sweep 1  
+sweep_name="sweep1"
+pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
+for k in range (1, n+1):
+    sweep_name=mysweep.format(k)
+    print("\n\nStarting linearisation process for "+sweep_name+".\n")
+    
+    
+    for i in range (1, n+1):
+        interval_name=myinterval.format(i)
+        sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
+        pre.prepareNextLinearization(folder_name, k, i)
+        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
+    for i in range (1,n+1):
+        print("Starting shooting update process for "+sweep_name+".\n")
+        #for i in range(2, n+1):
+        interval_name=myinterval.format(i)
+        pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
+        sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
+        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, i, "shootingUpdateP")
+        print("Shooting Updated.\n")
+#####################################################################################################
