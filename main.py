@@ -9,6 +9,7 @@ import config as c
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath;
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name;
 from src import solvers as sol, preprocessing as pre, postprocessing as post
+import sys
 import shutil
 #########                  PATH                        ###########################################################################################
 c.headings()
@@ -20,7 +21,7 @@ if os.path.exists(folder_name):
     if ans=="Y" or ans=="y":
         shutil.rmtree(folder_name)
     else:
-        exit
+        sys.exit()
     
 
 ######             CHOICE OF COMPUTATION                ##########################################################################################
