@@ -101,5 +101,7 @@ def computeSteffensenMethod(folder_name):
             sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
             m=m+1
-    print("Steffensen's Method terminated.")
+            if k==n-1:
+                print("Steffensen's Method terminated. Sweep "+k+"updated.")
+                return
 
