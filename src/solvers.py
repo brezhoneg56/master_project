@@ -82,7 +82,39 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
 
-def computeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
+def computeSteffensenMethod(folder_name):
+    #Initialisation of Sweep 1  
+    sweep_name="sweep1"
+    pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
+    for k in range (1, n+1):
+        sweep_name=mysweep.format(k)
+        print("\n\nStarting linearisation process for "+sweep_name+".\n")
+        for i in range (1, n+1):
+            interval_name=myinterval.format(i)  
+            print("\nlinearisedPimpleDyMFoam\n" )
+            sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
+            print("Done\n")
+            print("prepareNextLinearization\n")
+            pre.prepareNextLinearization(folder_name, k, i)
+            print("Linearisation Preparation Done\n")
+        for i in range (2, n+1):
+            m=1
+            print("Starting shooting update process for "+sweep_name+".\n")
+            #for i in range(2, n+1):
+            interval_name=myinterval.format(i)
+            print("prepareShootingUpdate\n")
+            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
+            print("Shooting Preparation Done")
+        
+            interval_name=myinterval.format(m)
+            sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
+            post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
+            print("Shooting Updated.\n")
+            m=m+1
+    print("Steffensen's Method terminated.")
+
+
+def OLDcomputeSteffensenMethod(folder_name):#executes in for-k sweep and for-i interval:
     #Initialisation of Sweep 1  
     sweep_name="sweep1"
     pre.initializeLinearisation(folder_name, sweep_name) ##WORKS
