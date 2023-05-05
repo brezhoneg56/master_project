@@ -13,9 +13,9 @@ import shutil
 os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 
-#if os.path.exists(folder_name):
-#    shutil.rmtree(folder_name)
-#    print("Previous directory named "+folder_name+" has been replaced.")
+if os.path.exists(folder_name):
+    shutil.rmtree(folder_name)
+    print("Previous directory named "+folder_name+" has been replaced.")
 
 ######             CHOICE OF COMPUTATION                ##########################################################################################
 
