@@ -97,7 +97,7 @@ def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from swee
     shutil.copy(src_green_folder+"Uf", zero_shootingUpdate+"shootingUpdateUf_left")
     shutil.copy(src_green_folder+"phi", zero_shootingUpdate+"shootingUpdatePhi_left")
     print("Copy code ORANGE.\n")
-    src_orange_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"+str(bc.decimal_analysis(theta+(i-2)*deltaT))+"/"
+    src_orange_folder=steffensen_path+folder_name+"/"+sweep_name+"/"+next_interval+"/"+str(bc.decimal_analysis(theta+(i-1)*deltaT))+"/"
     shutil.copy(src_orange_folder+"p", zero_shootingUpdate+"pStart_right")
     shutil.copy(src_orange_folder+"U", zero_shootingUpdate+"UStart_right")
     shutil.copy(src_orange_folder+"Uf", zero_shootingUpdate+"UfStart_right")
