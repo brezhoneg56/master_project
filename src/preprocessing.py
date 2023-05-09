@@ -56,7 +56,7 @@ def OLDprepareMyNextSweep(k, folder_name):
         futures = [executor.submit(preparenextSweepStartingFiles, folder_name, previous_sweep_name, sweep_name, i) for i in range(k+1, n+1)]
         for future in futures:
             _ = future.result()
-def prepareMyNextSweep(k, n, folder_name, basepath, theta, deltaT):
+def prepareMyNextSweep(k, folder_name):
     myinterval="interval{}"
     mysweep="sweep{}"
     sweep_name=mysweep.format(k+1)
