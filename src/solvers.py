@@ -71,7 +71,7 @@ def OLDloop_pimpleDyMFoam(folder_name):
 
 ## PARALLEL TEST #################
 
-def loop_pimpleDyMFoam(folder_name):
+def NOTloop_pimpleDyMFoam(folder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
@@ -94,6 +94,30 @@ def loop_pimpleDyMFoam(folder_name):
     pool.join()
     pool.close()
     return(myinterval, mysweep)
+
+
+def loop_pimpleDyMFoam(folder_name):
+    pool = multiprocessing.Pool()
+    for k in range(1, n+1):
+        sweep_name = mysweep.format(k)
+        print("\nStarting shooting of "+sweep_name+"\n")
+        if k==1:
+            pimpleDyMFoam(folder_name, sweep_name, 1)
+            pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(2, n+1)])
+        if k!=1:
+            pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
+        post.preparePostProcessing(folder_name, sweep_name)
+        post.computePressureDropFoam(folder_name, sweep_name)
+        while (k<n):
+            pre.prepareMyNextSweep(k, folder_name)
+            break
+    pool.close()
+    pool.join()
+    return(myinterval, mysweep)
+
+
+
+
 ######################################
 
 
