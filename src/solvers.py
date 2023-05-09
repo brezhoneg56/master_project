@@ -9,6 +9,7 @@ import subprocess
 import multiprocessing
 import sys
 import shutil
+import time
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
@@ -93,35 +94,7 @@ def loop_pimpleDyMFoam(folder_name):
             break
     pool.close()
     pool.join()
-    
-    
-    
-    
     return(myinterval, mysweep)
-
-
-def nonloop_pimpleDyMFoam(folder_name):
-    pool = multiprocessing.Pool()
-    for k in range(1, n+1):
-        sweep_name = mysweep.format(k)
-        print("\nStarting shooting of "+sweep_name+"\n")
-        if k==1:
-            pimpleDyMFoam(folder_name, sweep_name, 1)
-            pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(2, n+1)])
-        if k!=1:
-            pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
-        post.preparePostProcessing(folder_name, sweep_name)
-        post.computePressureDropFoam(folder_name, sweep_name)
-        while (k<n):
-            pre.prepareMyNextSweep(k, folder_name)
-            break
-    pool.close()
-    pool.join()
-    return(myinterval, mysweep)
-
-
-
-
 ######################################
 
 
@@ -132,6 +105,7 @@ def nonloop_pimpleDyMFoam(folder_name):
 ################################## FUNCTIONS FOR MAIN EXECUTION ########################################
 
 def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
+    start_time=time.time()
     for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals_parallel"
@@ -147,8 +121,14 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         os.mkdir(folder_name)
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
-        
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    num_minutes=int(elapsed_time/60)
+    num_seconds=elapsed_time%60
+    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+
 def computeSteffensenMethod(folder_name):
+    start_time=time.time()
     print("\n\nStarting Steffensen's Method for "+folder_name+".\n")
     #Initialisation of Sweep 1  
     sweep_name="sweep1"
@@ -177,4 +157,8 @@ def computeSteffensenMethod(folder_name):
             if k==n-1:
                 print("Steffensen's Method terminated. Sweep "+str(k)+"updated.")
                 return(0)
-
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    num_minutes=int(elapsed_time/60)
+    num_seconds=elapsed_time%60
+    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")

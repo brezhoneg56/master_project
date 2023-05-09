@@ -14,7 +14,6 @@ import sys
 import shutil
 #########                  PATH                        ###########################################################################################
 c.headings()
-start_time=time.time()
 os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 
@@ -27,7 +26,6 @@ os.chdir(basepath)
     
 
 ######             CHOICE OF COMPUTATION                ##########################################################################################
-
 #Primitive shooting :
 sol.primal_nofastpropagator_seq()
 
@@ -35,7 +33,4 @@ sol.primal_nofastpropagator_seq()
 #sol.computeSteffensenMethod(folder_name)
 
 ##################################################################################################################################################
-end_time = time.time()
-elapsed_time = end_time - start_time
 
-print("Elapsed time:", elapsed_time, "seconds")

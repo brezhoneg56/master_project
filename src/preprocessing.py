@@ -37,7 +37,7 @@ def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, 
     shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
     shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
     shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
-    print("Computing for: \n"+sweep_name+"\n"+interval_name+"\n"+"Previous end time, that is current start time: "+str(endTime))
+    print("Computing for: "+sweep_name+" and "+interval_name+". Previous end time, that is current start time: "+str(endTime))
 
 def OLDprepareMyNextSweep(k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
@@ -62,7 +62,7 @@ def prepareMyNextSweep(k, folder_name):
     sweep_name=mysweep.format(k+1)
     previous_sweep_name=mysweep.format(k)
     sweep_path=os.path.join(folder_name,sweep_name)
-    print("\nStarting shooting of "+sweep_name+"\n") 
+    print("\nStarting shooting of "+sweep_name+". ") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     for x in range(1,k+1):
         interval_name=myinterval.format(x)
@@ -91,7 +91,7 @@ def prepareMyNextSweep(k, folder_name):
         shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
         shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
         
-        print("Computing for: \n"+sweep_name+"\n"+interval_name+"\n"+"Previous end time, that is current start time: "+str(endTime))
+        print("Computing for: \n"+sweep_name+"\n"+interval_name+". Previous end time, that is current start time: "+str(endTime))
 ########################################################################################################
 
 ################################# PRIMAL STEFFENSEN PREPROCESSING ######################################

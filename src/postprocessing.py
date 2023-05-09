@@ -29,7 +29,7 @@ def computePressureDropFoam(folder_name, sweep_name):
     #Open a log file        
     with open("pressureDrop.txt","w") as logfile:
         result=os.system('computePressureDropFoam start end > pressureDrop.txt')            
-        print("\nComputation of Pressure Drop for "+sweep_name+" is done.\n\nWriting into pressureDrop.txt ...")
+        print("\nComputation of Pressure Drop for "+sweep_name+" is done.\nWriting into pressureDrop.txt ...")
     #Writing the pressureDrop line into txt file
     with open("pressureDrop.txt","r") as f:
         os.chdir(basepath+folder_name)
@@ -42,7 +42,7 @@ def computePressureDropFoam(folder_name, sweep_name):
         mapression.close()
     f.close()
     os.chdir(basepath) #back to main path
-    print("Done.\n\n")
+    print("Done.\n")
     return(result)
 
 def shootingUpdateP(folder_name, sweep_name, interval_name, k, i):
