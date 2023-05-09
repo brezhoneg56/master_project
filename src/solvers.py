@@ -86,8 +86,8 @@ def loop_pimpleDyMFoam(folder_name):
         while (k<n):
             pre.prepareMyNextSweep(k, folder_name)
             break
-        pool.close()
         pool.join()
+    pool.close()
     return(myinterval, mysweep)
 ######################################
 
@@ -114,7 +114,7 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         os.mkdir(folder_name)
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
-
+        
 def computeSteffensenMethod(folder_name):
     print("\n\nStarting Steffensen's Method for "+folder_name+".\n")
     #Initialisation of Sweep 1  
