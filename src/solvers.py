@@ -78,7 +78,7 @@ def loop_pimpleDyMFoam(folder_name):
         print("\nStarting shooting of "+sweep_name+"\n")
         if k==1:
             pimpleDyMFoam(folder_name, sweep_name, 1)
-            pool.map(pimpleDyMFoam, folder_name, sweep_name), range(int(k+1), int(n+1))
+            pool.map(pimpleDyMFoam, folder_name, sweep_name), range(2, n+1)
         #for i in range(k, n+1):
         #    pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
         #i=k
