@@ -91,7 +91,7 @@ def prepareMyNextSweep(k, folder_name):
         shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
         shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
         
-        print("Computing for: \n"+sweep_name+"\n"+interval_name+". Previous end time, that is current start time: "+str(endTime))
+        print("Computing for: "+sweep_name+" and "+interval_name+". Previous end time, that is current start time: "+str(endTime))
 ########################################################################################################
 
 ################################# PRIMAL STEFFENSEN PREPROCESSING ######################################

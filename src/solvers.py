@@ -55,7 +55,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 ########################################################################################################
 
 ####################################### OPENFOAM PROCESSES #############################################
-def OLDloop_pimpleDyMFoam(folder_name):
+def VERY_OLDloop_pimpleDyMFoam(folder_name):
     for k in range(1, n+1):
         sweep_name=mysweep.format(k)
         ## COMPUTE MY INTERVAL
@@ -77,16 +77,7 @@ def loop_pimpleDyMFoam(folder_name):
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
         print("\nStarting shooting of "+sweep_name+"\n")
-        #if k==1:
-        #    pimpleDyMFoam(folder_name, sweep_name, 1)
-        #    pool.map(pimpleDyMFoam, folder_name, sweep_name), range(2, n+1)
-        #for i in range(k, n+1):
-        #    pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
-        #i=k
-        #pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
         pool.map(partial(pimpleDyMFoam, folder_name, sweep_name), range(k, n+1))
-        #if k!=1:
-         #   pool.map(pimpleDyMFoam, folder_name, sweep_name), range(k, n+1)
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
@@ -96,7 +87,47 @@ def loop_pimpleDyMFoam(folder_name):
     pool.join()
     return(myinterval, mysweep)
 ######################################
+#### V1 to test
+import concurrent.futures
 
+def loop_pimpleDyMFoamv1(folder_name):
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        futures = []
+        for k in range(1, n+1):
+            sweep_name = mysweep.format(k)
+            print("\nStarting shooting of "+sweep_name+"\n")
+            for i in range(k, n+1):
+                futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
+            post.preparePostProcessing(folder_name, sweep_name)
+            post.computePressureDropFoam(folder_name, sweep_name)
+            while (k<n):
+                pre.prepareMyNextSweep(k, folder_name)
+                break
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+    return(myinterval, mysweep)
+
+# v2 to test
+
+def pimpleDyMFoam_wrapper(args):
+    folder_name, sweep_name, i = args
+    return pimpleDyMFoam(folder_name, sweep_name, i)
+
+def loop_pimpleDyMFoamv2(folder_name):
+    pool = multiprocessing.Pool()
+    for k in range(1, n+1):
+        sweep_name = mysweep.format(k)
+        print("\nStarting shooting of "+sweep_name+"\n")
+        args = [(folder_name, sweep_name, i) for i in range(k, n+1)]
+        pool.map(pimpleDyMFoam_wrapper, args)
+        post.preparePostProcessing(folder_name, sweep_name)
+        post.computePressureDropFoam(folder_name, sweep_name)
+        while (k<n):
+            pre.prepareMyNextSweep(k, folder_name)
+            break
+    pool.close()
+    pool.join()
+    return(myinterval, mysweep)
 
 
 
