@@ -106,7 +106,8 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
             ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
             if ans=="Y" or ans=="y":
                 for g in range(1, n+1):
-                    shutil.rmtree("sweep"+str(g))
+                    if os.path.exists("sweep"+str(g)):
+                        shutil.rmtree("sweep"+str(g))
                 shutil.rmtree(folder_name)
             else:
                 sys.exit()
