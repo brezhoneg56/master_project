@@ -82,11 +82,10 @@ def loop_pimpleDyMFoam(folder_name):
             pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
-        pool.close()
         while (k<n):
             pre.prepareMyNextSweep(k, folder_name)
             break
-        
+        pool.close()
         pool.join()
     return(myinterval, mysweep)
 ######################################
