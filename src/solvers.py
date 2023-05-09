@@ -81,7 +81,7 @@ def loop_pimpleDyMFoam(folder_name):
         #for i in range(k, n+1):
         #    pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
         #i=k
-        pool.map(run_pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
+        pool.map(sol.pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
