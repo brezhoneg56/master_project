@@ -2,7 +2,7 @@
 """
 Created on Tue May  2 12:10:07 2023
 
-@author: Lucie
+@author: Julien
 """
 #import colorama
 #from colorama import Fore, Style
