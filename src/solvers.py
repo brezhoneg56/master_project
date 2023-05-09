@@ -91,8 +91,12 @@ def loop_pimpleDyMFoam(folder_name):
         while (k<n):
             pre.prepareMyNextSweep(k, folder_name)
             break
-    pool.join()
     pool.close()
+    pool.join()
+    
+    
+    
+    
     return(myinterval, mysweep)
 
 
