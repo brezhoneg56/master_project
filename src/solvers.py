@@ -104,10 +104,10 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         folder_name=str(s)+"_intervals_parallel"
         if os.path.exists(folder_name):
             ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
-        if ans=="Y" or ans=="y":
-            shutil.rmtree(folder_name)
-        else:
-            sys.exit()
+            if ans=="Y" or ans=="y":
+                shutil.rmtree(folder_name)
+            else:
+                sys.exit()
         os.mkdir(folder_name)
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)
