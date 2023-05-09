@@ -6,6 +6,7 @@ Created on Tue Apr 18 10:27:15 2023
 """
 import os
 import subprocess
+import multiprocessing
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
@@ -50,7 +51,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 ########################################################################################################
 
 ####################################### OPENFOAM PROCESSES #############################################
-def loop_pimpleDyMFoam(folder_name):
+def OLDloop_pimpleDyMFoam(folder_name):
     for k in range(1, n+1):
         sweep_name=mysweep.format(k)
         ## COMPUTE MY INTERVAL
@@ -63,6 +64,33 @@ def loop_pimpleDyMFoam(folder_name):
             pre.prepareMyNextSweep(k, folder_name)
             break
     return(myinterval, mysweep)
+
+
+## PARALLEL TEST #################
+
+def run_pimpleDyMFoam(folder_name, sweep_name, i):
+    sol.pimpleDyMFoam(folder_name, sweep_name, i)
+
+def loop_pimpleDyMFoam(folder_name):
+    pool = multiprocessing.Pool()
+    for k in range(1, n+1):
+        sweep_name = mysweep.format(k)
+        print("\nStarting shooting of "+sweep_name+"\n")
+        for i in range(k, n+1):
+            pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
+        pool.close()
+        pool.join()
+        post.preparePostProcessing(folder_name, sweep_name)
+        post.computePressureDropFoam(folder_name, sweep_name)
+        while (k<n):
+            pre.prepareMyNextSweep(k, folder_name)
+            break
+    return(myinterval, mysweep)
+######################################
+
+
+
+
 ########################################################################################################
 
 ################################## FUNCTIONS FOR MAIN EXECUTION ########################################

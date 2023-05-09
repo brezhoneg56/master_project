@@ -27,9 +27,9 @@ if os.path.exists(folder_name):
 ######             CHOICE OF COMPUTATION                ##########################################################################################
 
 #Primitive shooting :
-#sol.primal_nofastpropagator_seq()
+sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting :
-sol.computeSteffensenMethod(folder_name)
+#sol.computeSteffensenMethod(folder_name)
 
 ##################################################################################################################################################
