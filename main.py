@@ -5,6 +5,7 @@ Created on Wed Apr 12 09:42:28 2023
 @author: jcosson
 """
 import os
+import time
 import config as c
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath;
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name;
@@ -13,6 +14,7 @@ import sys
 import shutil
 #########                  PATH                        ###########################################################################################
 c.headings()
+start_time=time.time()
 os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 
@@ -33,3 +35,7 @@ sol.primal_nofastpropagator_seq()
 #sol.computeSteffensenMethod(folder_name)
 
 ##################################################################################################################################################
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print("Elapsed time:", elapsed_time, "seconds")
