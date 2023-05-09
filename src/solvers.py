@@ -7,6 +7,8 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 import multiprocessing
+import system as sys
+import shutil
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
@@ -100,6 +102,12 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
     for s in range(a, n+1):
         print(s)
         folder_name=str(s)+"_intervals_parallel"
+        if os.path.exists(folder_name):
+            ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+        if ans=="Y" or ans=="y":
+            shutil.rmtree(folder_name)
+        else:
+            sys.exit()
         os.mkdir(folder_name)
         bc.sweep_1_initialization(folder_name)
         loop_pimpleDyMFoam(folder_name)

@@ -6,6 +6,7 @@ Created on Mon Apr 17 17:40:10 2023
 """
 import os
 import shutil
+import system as sys
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
@@ -118,6 +119,12 @@ def initializeLinearisation(folder_name, sweep_name):
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     print("Preparing linearisation...\n")
+    if os.path.exists(folder_name):
+        ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+    if ans=="Y" or ans=="y":
+        shutil.rmtree(folder_name)
+    else:
+        sys.exit()
     #Creating folders
     os.mkdir(steffensen_path+folder_name)
     #Paths for variables

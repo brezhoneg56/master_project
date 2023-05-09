@@ -16,12 +16,12 @@ c.headings()
 os.chdir(basepath)
 ####         AUTOMATIC FILE DELETION/CREATIION           #########################################################################################
 
-if os.path.exists(folder_name):
-    ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
-    if ans=="Y" or ans=="y":
-        shutil.rmtree(folder_name)
-    else:
-        sys.exit()
+#if os.path.exists(folder_name):
+#    ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+#    if ans=="Y" or ans=="y":
+#        shutil.rmtree(folder_name)
+#    else:
+#        sys.exit()
     
 
 ######             CHOICE OF COMPUTATION                ##########################################################################################
