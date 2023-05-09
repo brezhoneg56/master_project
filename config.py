@@ -21,7 +21,7 @@ ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/ref
 #MY PROJECTS PATHS
 project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
 # CHOOSE YOUR BASE WORKING PATH
-basepath=steffensen_path
+basepath=primitive_path
 
 ## VARIABLES
 # After testing is done, please uncomment the following
