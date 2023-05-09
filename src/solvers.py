@@ -7,7 +7,7 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import subprocess
 import multiprocessing
-import system as sys
+import sys
 import shutil
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath

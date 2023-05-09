@@ -6,7 +6,7 @@ Created on Mon Apr 17 17:40:10 2023
 """
 import os
 import shutil
-import system as sys
+import sys
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
