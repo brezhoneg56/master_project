@@ -78,9 +78,9 @@ def loop_pimpleDyMFoam(folder_name):
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
         print("\nStarting shooting of "+sweep_name+"\n")
-        #for i in range(k, n+1):
-        #    pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
-        pool.map(run_pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
+        for i in range(k, n+1):
+        #   pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
+            pool.map(run_pimpleDyMFoam, [(folder_name, sweep_name, i)]) #for i in range(k, n+1)])
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
