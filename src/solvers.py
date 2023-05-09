@@ -9,6 +9,7 @@ import subprocess
 import multiprocessing
 import sys
 import shutil
+from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
@@ -70,9 +71,6 @@ def OLDloop_pimpleDyMFoam(folder_name):
 
 ## PARALLEL TEST #################
 
-def run_pimpleDyMFoam(folder_name, sweep_name, i):
-    sol.pimpleDyMFoam(folder_name, sweep_name, i)
-
 def loop_pimpleDyMFoam(folder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
@@ -81,7 +79,8 @@ def loop_pimpleDyMFoam(folder_name):
         #for i in range(k, n+1):
         #    pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
         #i=k
-        pool.map(sol.pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
+        #pool.map(pimpleDyMFoam, [(folder_name, sweep_name, i) for i in range(k, n+1)])
+        pool.map(partial(pimpleDyMFoam, folder_name, sweep_name), range(k, n+1))
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
