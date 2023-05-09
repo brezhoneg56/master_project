@@ -78,13 +78,13 @@ def loop_pimpleDyMFoam(folder_name):
         print("\nStarting shooting of "+sweep_name+"\n")
         for i in range(k, n+1):
             pool.apply_async(run_pimpleDyMFoam, args=(folder_name, sweep_name, i))
-        pool.close()
-        pool.join()
         post.preparePostProcessing(folder_name, sweep_name)
         post.computePressureDropFoam(folder_name, sweep_name)
         while (k<n):
             pre.prepareMyNextSweep(k, folder_name)
             break
+    pool.close()
+    pool.join()
     return(myinterval, mysweep)
 ######################################
 
