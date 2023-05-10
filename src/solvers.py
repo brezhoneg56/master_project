@@ -97,7 +97,8 @@ def loop_pimpleDyMFoam(folder_name):
             sweep_name = mysweep.format(k)
             print("\nStarting shooting of "+sweep_name+"\n")
             for i in range(k, n+1):
-                futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
+                with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+                    futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
             concurrent.futures.wait(futures)
             post.preparePostProcessing(folder_name, sweep_name)
             post.computePressureDropFoam(folder_name, sweep_name)
