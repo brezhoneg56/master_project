@@ -13,7 +13,7 @@ import time
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
-from config import n, theta, T, a, deltaT, myinterval, mysweep
+from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
 ######################### OPENFOAM SINGLE SOLVERS #########################
@@ -138,7 +138,7 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
     start_time=time.time()
     for s in range(a, n+1):
         print(s)
-        folder_name=str(s)+"_intervals_parallel"
+        #folder_name=str(s)+"_intervals_parallel"
         if os.path.exists(folder_name):
             ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
             if ans=="Y" or ans=="y":
