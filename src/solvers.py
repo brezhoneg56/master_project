@@ -14,9 +14,9 @@ from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
 from config import n, theta, T, a, deltaT, myinterval, mysweep
-########################################################################################################
+###########################################################################
 
-#################################### OPENFOAM SINGLE SOLVERS ##########################################
+######################### OPENFOAM SINGLE SOLVERS #########################
 def pimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name
@@ -52,9 +52,9 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
     with open("logfile.txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
     #subprocess.run(['computeShootingUpdate'])    
-########################################################################################################
+###########################################################################
 
-####################################### OPENFOAM PROCESSES #############################################
+#########################    OPENFOAM PROCESSES   #########################
 def VERY_OLDloop_pimpleDyMFoam(folder_name):
     for k in range(1, n+1):
         sweep_name=mysweep.format(k)
@@ -72,7 +72,7 @@ def VERY_OLDloop_pimpleDyMFoam(folder_name):
 
 ## PARALLEL TEST #################
 
-def loop_pimpleDyMFoam(folder_name):
+def yes_loop_pimpleDyMFoam(folder_name): ## ongoing test 15_intervals
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
@@ -90,7 +90,7 @@ def loop_pimpleDyMFoam(folder_name):
 #### V1 to test
 import concurrent.futures
 
-def loop_pimpleDyMFoamv1(folder_name):
+def loop_pimpleDyMFoam(folder_name):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
         for k in range(1, n+1):
@@ -112,7 +112,6 @@ def loop_pimpleDyMFoamv1(folder_name):
 def pimpleDyMFoam_wrapper(args):
     folder_name, sweep_name, i = args
     return pimpleDyMFoam(folder_name, sweep_name, i)
-
 def loop_pimpleDyMFoamv2(folder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
@@ -131,9 +130,9 @@ def loop_pimpleDyMFoamv2(folder_name):
 
 
 
-########################################################################################################
+###########################################################################
 
-################################## FUNCTIONS FOR MAIN EXECUTION ########################################
+######################### FUNCTIONS FOR MAIN EXECUTION #########################
 
 def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting method) primal_nofastpropagator_steffensen
     start_time=time.time()
