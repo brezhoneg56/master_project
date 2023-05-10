@@ -90,7 +90,7 @@ def yes_loop_pimpleDyMFoam(folder_name): ## ongoing test 15_intervals
 #### V1 to test
 import concurrent.futures
 
-def loop_pimpleDyMFoam(folder_name):
+def loop_pimpleDyMFoamv1(folder_name):
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
         futures = []
         for k in range(1, n+1):
@@ -103,17 +103,17 @@ def loop_pimpleDyMFoam(folder_name):
             post.computePressureDropFoam(folder_name, sweep_name)
             if (k<n): #instead of while
                 pre.prepareMyNextSweep(k, folder_name)
-                break
+                #break
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
-    return(myinterval, mysweep)
+    #return(myinterval, mysweep)
 
 # v2 to test
 
 def pimpleDyMFoam_wrapper(args):
     folder_name, sweep_name, i = args
     return pimpleDyMFoam(folder_name, sweep_name, i)
-def loop_pimpleDyMFoamv2(folder_name):
+def loop_pimpleDyMFoamvfolder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
@@ -124,7 +124,7 @@ def loop_pimpleDyMFoamv2(folder_name):
         post.computePressureDropFoam(folder_name, sweep_name)
         if (k<n): #instaed of while
             pre.prepareMyNextSweep(k, folder_name)
-            break
+            #break
     pool.close()
     pool.join()
     return(myinterval, mysweep)
