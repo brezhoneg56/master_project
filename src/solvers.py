@@ -113,7 +113,7 @@ def loop_pimpleDyMFoamv1(folder_name):
 def pimpleDyMFoam_wrapper(args):
     folder_name, sweep_name, i = args
     return pimpleDyMFoam(folder_name, sweep_name, i)
-def loop_pimpleDyMFoamvfolder_name):
+def loop_pimpleDyMFoamvfolder_name(folder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
