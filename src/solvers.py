@@ -90,7 +90,7 @@ def yes_loop_pimpleDyMFoam(folder_name): ## ongoing test 15_intervals
 #### V1 to test
 import concurrent.futures
 
-def loop_pimpleDyMFoam(folder_name):
+def loop_pimpleDyMFoamv1(folder_name):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
         for k in range(1, n+1):
@@ -112,7 +112,7 @@ def loop_pimpleDyMFoam(folder_name):
 def pimpleDyMFoam_wrapper(args):
     folder_name, sweep_name, i = args
     return pimpleDyMFoam(folder_name, sweep_name, i)
-def loop_pimpleDyMFoamv2(folder_name):
+def loop_pimpleDyMFoam(folder_name):
     pool = multiprocessing.Pool()
     for k in range(1, n+1):
         sweep_name = mysweep.format(k)
