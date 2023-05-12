@@ -91,7 +91,7 @@ def yes_loop_pimpleDyMFoam(folder_name): ## ongoing test 15_intervals
 import concurrent.futures
 
 def loop_pimpleDyMFoam(folder_name):
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
         futures = []
         for k in range(1, n+1):
             sweep_name = mysweep.format(k)
