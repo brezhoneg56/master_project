@@ -57,7 +57,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 
 #########################    OPENFOAM PROCESSES   #########################
 
-def OLD_loop_pimpleDyMFoam(folder_name): #Version V1 : Parallel call for all intervals within one sweep
+def loop_pimpleDyMFoamv1(folder_name): #Version V1 : Parallel call for all intervals within one sweep
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
@@ -76,7 +76,7 @@ def OLD_loop_pimpleDyMFoam(folder_name): #Version V1 : Parallel call for all int
             result = future.result()
     #return(myinterval, mysweep)
 
-def loop_pimpleDyMFoam(folder_name): #preempting ressources to spare waiting time
+def loop_pimpleDyMFoamv3(folder_name): #preempting ressources to spare waiting time
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
         results = []
@@ -100,6 +100,21 @@ def loop_pimpleDyMFoam(folder_name): #preempting ressources to spare waiting tim
             post.preparePostProcessing(folder_name, sweep_name)
             post.computePressureDropFoam(folder_name, sweep_name)
 
+def loop_pimpleDyMFoam(folder_name): #v4
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        futures = []
+        for k in range(1, n+1):
+            sweep_name = mysweep.format(k)
+            print("\nStarting shooting of "+sweep_name+"\n")
+            for i in range(k, n+1):
+                futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
+            concurrent.futures.wait(futures)
+            futures.append(executor.submit(post.preparePostProcessing, folder_name, sweep_name))
+            futures.append(executor.submit(post.computePressureDropFoam, folder_name, sweep_name))
+            if k < n:
+                futures.append(executor.submit(pre.prepareMyNextSweep, k, folder_name))
+    for future in concurrent.futures.as_completed(futures):
+        result = future.result()
 
 ###########################################################################
 
