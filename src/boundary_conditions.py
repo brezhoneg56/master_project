@@ -47,7 +47,7 @@ def sweep_1_initialization(folder_name):
         
         # Deleting wrong polyMesh/points in the starting time directory
         polyMesh_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/constant/polyMesh/points'
-        print('The file '+folder_name+'/'+sweep_name+'/'+interval_name+'/constant/polyMesh/points has been succefully removed.\n\n')
+        print('The file '+folder_name+'/'+sweep_name+'/'+interval_name+'/constant/polyMesh/points has been succefully removed.')
         os.remove(polyMesh_path)
         file=destination_startTime+'/'+str(startTime)+'/polyMesh/points'
         if os.path.exists(file):
