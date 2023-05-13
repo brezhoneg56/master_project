@@ -101,12 +101,12 @@ def copytree(src, dst, symlinks=False, ignore=None):
             file_extension = parts[-1]
             # make a new file name inserting ~1 between name and extension
             for j in range(len(parts)-1):
-                file_name  + = parts[j]
+                file_name  += parts[j]
                 if j < len(parts)-2:
-                    file_name  + = '.'
+                    file_name  += '.'
             suffix = file_name  +  '~'  +  str(i)  +  '.'  +  file_extension
             dstname = os.path.join(dst, suffix)
-            i + =1
+            i +=1
         try:
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
