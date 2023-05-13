@@ -57,7 +57,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 
 #########################    OPENFOAM PROCESSES   #########################
 
-def loop_pimpleDyMFoamv1(folder_name): #Version V1 : Parallel call for all intervals within one sweep
+def loop_pimpleDyMFoam(folder_name): #Version V1 : Parallel call for all intervals within one sweep
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
@@ -75,46 +75,6 @@ def loop_pimpleDyMFoamv1(folder_name): #Version V1 : Parallel call for all inter
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
     #return(myinterval, mysweep)
-
-def loop_pimpleDyMFoamv3(folder_name): #preempting ressources to spare waiting time
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        futures = []
-        results = []
-        for k in range(1, n+1):
-            sweep_name = mysweep.format(k)
-            print("\nStarting shooting of "+sweep_name+"\n")
-            for i in range(k, n+1):
-                futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
-            # Wait for all the futures to complete before moving on to the next stage
-            concurrent.futures.wait(futures)
-            # Append the results of the futures to a list
-            results.extend([future.result() for future in futures])
-            # Clear the futures list for the next sweep
-            futures.clear()
-            # If this is not the last sweep, prepare the next sweep
-            if k < n:
-                pre.prepareMyNextSweep(k, folder_name)
-        # At this point, all the pimpleDyMFoam calls have completed, so we can process the results
-        for k in range(1, n+1):
-            sweep_name = mysweep.format(k)
-            post.preparePostProcessing(folder_name, sweep_name)
-            post.computePressureDropFoam(folder_name, sweep_name)
-
-def loop_pimpleDyMFoam(folder_name): #v4
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        futures = []
-        for k in range(1, n+1):
-            sweep_name = mysweep.format(k)
-            print("\nStarting shooting of "+sweep_name+"\n")
-            for i in range(k, n+1):
-                futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
-            concurrent.futures.wait(futures)
-            if k < n:
-                futures.append(executor.submit(pre.prepareMyNextSweep, k, folder_name))
-            futures.append(executor.submit(post.preparePostProcessing, folder_name, sweep_name))
-            futures.append(executor.submit(post.computePressureDropFoam, folder_name, sweep_name))
-    for future in concurrent.futures.as_completed(futures):
-        result = future.result()
 
 ###########################################################################
 
