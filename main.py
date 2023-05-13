@@ -12,16 +12,16 @@ from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name;
 from src import solvers as sol, preprocessing as pre, postprocessing as post
 import sys
 import shutil
-###########################                  PATH                     ###########################
+######################                  PATH                     ######################
 c.headings()
 os.chdir(basepath)
 
-###########################           CHOICE OF COMPUTATION           ###########################
+######################           CHOICE OF COMPUTATION           ######################
 #Primitive shooting :
 #sol.primal_nofastpropagator_seq()
 
 #Steffensen shooting :
 sol.computeSteffensenMethod(sol.primal_nofastpropagator_seq())
 
-#################################################################################################
+#######################################################################################
 
