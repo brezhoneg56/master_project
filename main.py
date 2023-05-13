@@ -22,6 +22,8 @@ os.chdir(basepath)
 
 #Steffensen shooting :
 #sol.computeSteffensenMethod(sol.primal_nofastpropagator_seq())
+
+basepath=steffensen_path
 sol.computeSteffensenMethod(folder_name)
 
 ###########################################################################
