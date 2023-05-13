@@ -14,9 +14,9 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
             return round(number,2)
         else:
             return round(number,3)
-  ########################################################################################################
+###########################################################################
 
-  ################################ PRIMAL PRIMITIVE INITIALIZATIONS ######################################      
+################  PRIMAL PRIMITIVE INITIALIZATIONS  #######################      
 def sweep_1_initialization(folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
     k=1
@@ -24,42 +24,42 @@ def sweep_1_initialization(folder_name):
     sweep_name=mysweep.format(k)
     sweep_path=os.path.join(folder_name,sweep_name)
     os.mkdir(sweep_path)
-    print("\nThe directory "+folder_name+" has been created at this place: \n"+basepath+"\n\n")
-    for i in range(1,n+1):
+    print("\nThe directory " + folder_name + " has been created at this place: \n" + basepath + "\n\n")
+    for i in range(1,n + 1):
         interval_name=myinterval.format(i)
             
         # Fetching Directory constant
-        source_constant=calcs_undeformed+'constant'
-        destination_constant=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+        source_constant=calcs_undeformed + 'constant'
+        destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
         
         # Fetching Directory system
-        source_system=calcs_undeformed+'system'
-        destination_system=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+        source_system=calcs_undeformed + 'system'
+        destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
         
         # Fetching Directory with starting time
-        startTime=decimal_analysis(theta+deltaT*(i-1))
-        endTime=decimal_analysis(theta+deltaT*i)
-        source_startTime=calcs_undeformed+str(startTime)
-        destination_startTime=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+        startTime=decimal_analysis(theta + deltaT*(i-1))
+        endTime=decimal_analysis(theta + deltaT*i)
+        source_startTime=calcs_undeformed + str(startTime)
+        destination_startTime=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         shutil.copytree(source_startTime,os.path.join(destination_startTime,os.path.basename(source_startTime)))
         
         # Deleting wrong polyMesh/points in the starting time directory
-        polyMesh_path=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/constant/polyMesh/points'
-        print('The file '+folder_name+'/'+sweep_name+'/'+interval_name+'/constant/polyMesh/points has been succefully removed.')
+        polyMesh_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh/points'
+        print('The file ' + folder_name + '/' + sweep_name + '/' + interval_name + '/constant/polyMesh/points has been succefully removed.')
         os.remove(polyMesh_path)
-        file=destination_startTime+'/'+str(startTime)+'/polyMesh/points'
+        file=destination_startTime + '/' + str(startTime) + '/polyMesh/points'
         if os.path.exists(file):
-            shutil.rmtree(destination_startTime+'/'+str(startTime)+'/polyMesh')
+            shutil.rmtree(destination_startTime + '/' + str(startTime) + '/polyMesh')
         
         #Fetching the right polyMesh
-        source_newPolyMesh=ref_cases_mod_def+"constant/polyMesh/points"
-        destination_newPolyMesh=basepath+folder_name+"/"+sweep_name+"/"+interval_name+'/constant/polyMesh'
+        source_newPolyMesh=ref_cases_mod_def + "constant/polyMesh/points"
+        destination_newPolyMesh=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh'
         shutil.copy(source_newPolyMesh,destination_newPolyMesh)
 
         #Modify the controlDict file to ajust startTime and endTime        
-        controlDict_path=folder_name+'/'+sweep_name+'/'+interval_name+'/system/controlDict'
+        controlDict_path=folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
         for line in fileinput.input(controlDict_path, inplace=True):
             if line.startswith('startTime'):
                 line = 'startTime       {};\n'.format(startTime)
@@ -69,9 +69,9 @@ def sweep_1_initialization(folder_name):
     print("Sweep 1 initialization is done.")
     return(folder_name)
 
-########################################################################################################
+###########################################################################
 
-################################## SOME RANDOM USEFUL FUNCTIONS ########################################
+###################  SOME RANDOM USEFUL FUNCTIONS #########################
 def copytree(src, dst, symlinks=False, ignore=None):
     """
     This is an improved version of shutil.copytree which allows writing to
@@ -101,12 +101,12 @@ def copytree(src, dst, symlinks=False, ignore=None):
             file_extension = parts[-1]
             # make a new file name inserting ~1 between name and extension
             for j in range(len(parts)-1):
-                file_name += parts[j]
+                file_name  + = parts[j]
                 if j < len(parts)-2:
-                    file_name += '.'
-            suffix = file_name + '~' + str(i) + '.' + file_extension
+                    file_name  + = '.'
+            suffix = file_name  +  '~'  +  str(i)  +  '.'  +  file_extension
             dstname = os.path.join(dst, suffix)
-            i+=1
+            i + =1
         try:
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
