@@ -39,7 +39,7 @@ def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, 
     shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
     print("Computing for: "+sweep_name+" and "+interval_name+". Previous end time, that is current start time: "+str(endTime))
 
-def OLDprepareMyNextSweep(k, folder_name):
+def prepareMyNextSweep(k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
     sweep_name=mysweep.format(k+1)
     previous_sweep_name=mysweep.format(k)
@@ -56,7 +56,8 @@ def OLDprepareMyNextSweep(k, folder_name):
         futures = [executor.submit(preparenextSweepStartingFiles, folder_name, previous_sweep_name, sweep_name, i) for i in range(k+1, n+1)]
         for future in futures:
             _ = future.result()
-def prepareMyNextSweep(k, folder_name):
+
+def seq_prepareMyNextSweep(k, folder_name): #Sequential
     myinterval="interval{}"
     mysweep="sweep{}"
     sweep_name=mysweep.format(k+1)
