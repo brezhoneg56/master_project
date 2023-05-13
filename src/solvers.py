@@ -109,10 +109,10 @@ def loop_pimpleDyMFoam(folder_name): #v4
             for i in range(k, n+1):
                 futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
             concurrent.futures.wait(futures)
-            futures.append(executor.submit(post.preparePostProcessing, folder_name, sweep_name))
-            futures.append(executor.submit(post.computePressureDropFoam, folder_name, sweep_name))
             if k < n:
                 futures.append(executor.submit(pre.prepareMyNextSweep, k, folder_name))
+            futures.append(executor.submit(post.preparePostProcessing, folder_name, sweep_name))
+            futures.append(executor.submit(post.computePressureDropFoam, folder_name, sweep_name))
     for future in concurrent.futures.as_completed(futures):
         result = future.result()
 
