@@ -21,7 +21,7 @@ def copyShootDirs(x, folder_name, previous_sweep_name, sweep_name):
         interval_name=myinterval.format(x)
         source_interval=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name
         destination_interval=basepath + folder_name + "/" + sweep_name
-        shutil.copytree(source_interval,os.path.join(destination_interval,os.path.basename(source_interval)))
+        shutil.copytree(source_interval,os.path.join(destination_interval, os.path.basename(source_interval)))
 
 def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i):
     interval_name=myinterval.format(i)
@@ -34,9 +34,9 @@ def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, 
     source_endTime=basepath + folder_name + "/" + previous_sweep_name + "/" + previous_interval_name + '/' + str(endTime)        
     destination_endTime=basepath + folder_name + "/" + sweep_name + "/" + interval_name        
     
-    shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
-    shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
-    shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
+    shutil.copytree(source_constant,os.path.join(destination_constant, os.path.basename(source_constant)))
+    shutil.copytree(source_system,os.path.join(destination_system, os.path.basename(source_system)))
+    shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
     print("Computing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is current start time: " + str(endTime))
 
 def prepareMyNextSweep(k, folder_name):
@@ -69,7 +69,7 @@ def seq_prepareMyNextSweep(k, folder_name): #Sequential
         interval_name=myinterval.format(x)
         source_interval=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name
         destination_interval=basepath + folder_name + "/" + sweep_name
-        shutil.copytree(source_interval,os.path.join(destination_interval,os.path.basename(source_interval)))
+        shutil.copytree(source_interval, os.path.join(destination_interval, os.path.basename(source_interval)))
     #pimpleDyMFoam(folder_name, sweep_name, interval_name)
     #preparePostProcessing(folder_name, sweep_name)
     #computePressureDropFoam(folder_name, sweep_name)    
@@ -88,9 +88,9 @@ def seq_prepareMyNextSweep(k, folder_name): #Sequential
         source_endTime=basepath + folder_name + "/" + previous_sweep_name + "/" + previous_interval_name + '/' + str(endTime)        
         destination_endTime=basepath + folder_name + "/" + sweep_name + "/" + interval_name        
         
-        shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
-        shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
-        shutil.copytree(source_endTime,os.path.join(destination_endTime,os.path.basename(source_endTime)))
+        shutil.copytree(source_constant, os.path.join(destination_constant, os.path.basename(source_constant)))
+        shutil.copytree(source_system, os.path.join(destination_system, os.path.basename(source_system)))
+        shutil.copytree(source_endTime, os.path.join(destination_endTime, os.path.basename(source_endTime)))
         
         print("Computing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is current start time: " + str(endTime))
 ###########################################################################
@@ -175,6 +175,7 @@ def initializeLinearisation(folder_name, sweep_name):
     for i in range(1, n + 1):
         interval_name=myinterval.format(i)
         starttime_dest=steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
