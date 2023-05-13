@@ -154,15 +154,15 @@ def initializeLinearisation(folder_name, sweep_name):
     #### IS ONLY THOUGHT FOR SWEEP1
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
-    print("Preparing linearisation...\n")
     if os.path.exists(folder_name):
-        ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
-    if ans=="Y" or ans=="y":
-        shutil.rmtree(folder_name)
-    else:
-        sys.exit()
+        #ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+        print("Preparing linearisation...\n")
+    #if ans=="Y" or ans=="y":
+    #    shutil.rmtree(folder_name)
+    #else:
+    #    sys.exit()
     #Creating folders
-    os.mkdir(steffensen_path+folder_name)
+    #os.mkdir(steffensen_path+folder_name)
     #Paths for variables
     linP_path=ref_cases+"/boundaryConditions/linP"
     linU_path=ref_cases+"/boundaryConditions/linU"

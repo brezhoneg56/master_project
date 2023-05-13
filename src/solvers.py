@@ -102,6 +102,7 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
     num_minutes=int(elapsed_time/60)
     num_seconds=elapsed_time%60
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+    return(folder_name)
 
 def computeSteffensenMethod(folder_name):
     start_time=time.time()

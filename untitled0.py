@@ -1,11 +1,18 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May  5 13:16:46 2023
+Created on Sat May 13 11:23:47 2023
 
-@author: Lucie
+@author: julien
 """
 
-import config as c
+def function1():
+    print("koukou")
+    ans=input("Enter name: ")
+    return(ans)
 
-c.headings2()
-#c.headings2()
+def function2(ans):
+    print(ans)
+    
+
+function2(function1())
