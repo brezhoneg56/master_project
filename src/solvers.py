@@ -86,7 +86,7 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint+shooting m
         print(s)
         #folder_name=str(s)+"_intervals_parallel"
         if os.path.exists(folder_name):
-            ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+            ans=input("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n")
             if ans=="Y" or ans=="y":
                 for g in range(1, n+1):
                     if os.path.exists("sweep"+str(g)):

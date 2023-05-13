@@ -155,7 +155,7 @@ def initializeLinearisation(folder_name, sweep_name):
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     if os.path.exists(folder_name):
-        #ans=input(print("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n"))
+        #ans=input("WARNING: Directory "+folder_name+" already exists. Do you want to replace it ? (Y/N)     \n   \n")
         print("Preparing linearisation...\n")
     #if ans=="Y" or ans=="y":
     #    shutil.rmtree(folder_name)
