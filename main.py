@@ -13,7 +13,7 @@ from src import solvers as sol, preprocessing as pre, postprocessing as post
 import sys
 import shutil
 ################                  PATH                     ################
-c.headings()^
+c.headings()
 ################           CHOICE OF COMPUTATION           ################
 #Primitive shooting :
 basepath=primitive_path
