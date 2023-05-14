@@ -96,7 +96,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
                 sys.exit()
         os.mkdir(folder_name)
         bc.sweep_1_initialization(basepath, folder_name)
-        loop_pimpleDyMFoam(folder_name)
+        loop_pimpleDyMFoam(basepath, folder_name)
     end_time = time.time()
     elapsed_time = end_time - start_time
     num_minutes=int(elapsed_time/60)
@@ -115,8 +115,8 @@ def computeSteffensenMethod(basepath, folder_name):
         sweep_name=mysweep.format(k)
         for i in range (1, n + 1):
             interval_name=myinterval.format(i)  
-            sol.linearisedPimpleDyMFoam(folder_name, sweep_name, i)
-            pre.prepareNextLinearization(folder_name, k, i)
+            sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
+            pre.prepareNextLinearization(basepath, folder_name, k, i)
     # Preparation and Computation of shootingUpdate
     for k in range (1, n + 1):
         for i in range (2, n + 1):
