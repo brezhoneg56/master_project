@@ -7,7 +7,7 @@ Created on Tue Apr 18 10:30:18 2023
 import os
 from src import boundary_conditions as bc
 import shutil
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 ###########################################################################
 

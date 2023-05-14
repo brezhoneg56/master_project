@@ -13,7 +13,7 @@ import time
 import concurrent.futures
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
@@ -80,7 +80,7 @@ def loop_pimpleDyMFoam(folder_name): #Version V1 : Parallel call for all interva
 
 ###################### FUNCTIONS FOR MAIN EXECUTION #######################
 
-def primal_nofastpropagator_seq(): #change name (eg primal or adjoint + shooting method) primal_nofastpropagator_steffensen
+def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + shooting method) primal_nofastpropagator_steffensen
     start_time=time.time()
     for s in range(a, n + 1):
         print(s)
@@ -104,7 +104,7 @@ def primal_nofastpropagator_seq(): #change name (eg primal or adjoint + shooting
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
     return(folder_name)
 
-def computeSteffensenMethod(folder_name):
+def computeSteffensenMethod(basepath, folder_name):
     start_time=time.time()
     print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
     #Initialisation of Sweep 1  

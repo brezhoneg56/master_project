@@ -11,7 +11,7 @@ from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
 import glob
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath
+from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################

@@ -7,24 +7,25 @@ Created on Wed Apr 12 09:42:28 2023
 import os
 import time
 import config as c
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, basepath;
+from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path;
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name;
 from src import solvers as sol, preprocessing as pre, postprocessing as post
 import sys
 import shutil
 ################                  PATH                     ################
 c.headings()
-os.chdir(basepath)
-
 ################           CHOICE OF COMPUTATION           ################
 #Primitive shooting :
-#sol.primal_nofastpropagator_seq()
+basepath=primitive_path
+os.chdir(basepath)
+#sol.primal_nofastpropagator_seq(basepath)
 
 #Steffensen shooting :
 #sol.computeSteffensenMethod(sol.primal_nofastpropagator_seq())
 
 basepath=steffensen_path
-sol.computeSteffensenMethod(folder_name)
+os.chdir(basepath)
+sol.computeSteffensenMethod(steffensen_path, folder_name)
 
 ###########################################################################
 
