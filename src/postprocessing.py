@@ -12,7 +12,7 @@ from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 ###########################################################################
 
 #################  PRIMAL PRIMITIVE POSTPROCESSING ########################
-def preparePostProcessing(folder_name, sweep_name):
+def preparePostProcessing(basepath, folder_name, sweep_name):
     destination_file=basepath + folder_name + '/' + sweep_name + '/'
     postPro_destination=destination_file + "postProcessing"
     os.chdir(destination_file)
@@ -24,7 +24,7 @@ def preparePostProcessing(folder_name, sweep_name):
         bc.copytree(list_dir,postPro_destination)
     print("ready for postProcessing of " + sweep_name + "...\n")
 
-def computePressureDropFoam(folder_name, sweep_name):
+def computePressureDropFoam(basepath, folder_name, sweep_name):
     os.chdir(basepath + folder_name + '/' + sweep_name + "/postProcessing")
     #Open a log file        
     with open("pressureDrop.txt","w") as logfile:
@@ -45,7 +45,7 @@ def computePressureDropFoam(folder_name, sweep_name):
     print("Done.\n")
     return(result)
 
-def shootingUpdateP(folder_name, sweep_name, interval_name, k, i):
+def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     startingTime=str(bc.decimal_analysis(theta + (i-2)*deltaT))
     src_shootP=steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/0/shootingUpdateP"
     dest_shootP=steffensen_path + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime

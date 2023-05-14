@@ -17,13 +17,13 @@ from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
 
 ##################  PRIMAL PRIMITIVE PREPROCESSING ########################
-def copyShootDirs(x, folder_name, previous_sweep_name, sweep_name):
+def copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name):
         interval_name=myinterval.format(x)
         source_interval=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name
         destination_interval=basepath + folder_name + "/" + sweep_name
         shutil.copytree(source_interval,os.path.join(destination_interval, os.path.basename(source_interval)))
 
-def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i):
+def preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i):
     interval_name=myinterval.format(i)
     destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
     destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
@@ -39,7 +39,7 @@ def preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, 
     shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
     print("Computing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is current start time: " + str(endTime))
 
-def prepareMyNextSweep(k, folder_name):
+def prepareMyNextSweep(basepath, k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
     sweep_name=mysweep.format(k + 1)
     previous_sweep_name=mysweep.format(k)
@@ -48,16 +48,16 @@ def prepareMyNextSweep(k, folder_name):
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
     for x in range(1,k + 1):
-        copyShootDirs(x, folder_name, previous_sweep_name, sweep_name)
+        copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name)
     #Preparing shooting directories from sweep1 data 
     #for i in range(k + 1,n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
     #    preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i)
     with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(preparenextSweepStartingFiles, folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
+        futures = [executor.submit(preparenextSweepStartingFiles, basepath,  folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
         for future in futures:
             _ = future.result()
 
-def seq_prepareMyNextSweep(k, folder_name): #Sequential
+def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
     myinterval="interval{}"
     mysweep="sweep{}"
     sweep_name=mysweep.format(k + 1)
@@ -96,7 +96,7 @@ def seq_prepareMyNextSweep(k, folder_name): #Sequential
 ###########################################################################
 
 #################  PRIMAL STEFFENSEN PREPROCESSING  #######################
-def prepareShootingUpdate(folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
+def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
     #Copy Violet, Red, Blue, Green and Orange to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
     next_interval=myinterval.format(i)

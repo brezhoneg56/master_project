@@ -18,7 +18,7 @@ from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
 ######################### OPENFOAM SINGLE SOLVERS #########################
-def pimpleDyMFoam(folder_name, sweep_name, i):
+def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name
     print("Executing pimpleDyMFoam in " + folder_name + '/' + sweep_name + '/' + interval_name + '.')
@@ -31,7 +31,7 @@ def pimpleDyMFoam(folder_name, sweep_name, i):
     os.chdir(basepath) #back to main path
     return(result)
 
-def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
+def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name
@@ -46,7 +46,7 @@ def linearisedPimpleDyMFoam(folder_name, sweep_name, i):
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
     os.chdir(basepath) #back to main path
 
-def computeShootingUpdate(folder_name, sweep_name, interval_name):
+def computeShootingUpdate(basepath, folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for " + sweep_name + ".\n")
     os.chdir(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/")
@@ -57,7 +57,7 @@ def computeShootingUpdate(folder_name, sweep_name, interval_name):
 
 #########################    OPENFOAM PROCESSES   #########################
 
-def loop_pimpleDyMFoam(folder_name): #Version V1 : Parallel call for all intervals within one sweep
+def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for all intervals within one sweep
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
@@ -95,7 +95,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
             else:
                 sys.exit()
         os.mkdir(folder_name)
-        bc.sweep_1_initialization(folder_name)
+        bc.sweep_1_initialization(basepath, folder_name)
         loop_pimpleDyMFoam(folder_name)
     end_time = time.time()
     elapsed_time = end_time - start_time

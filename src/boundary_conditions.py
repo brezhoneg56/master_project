@@ -17,7 +17,7 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
 ###########################################################################
 
 ################  PRIMAL PRIMITIVE INITIALIZATIONS  #######################      
-def sweep_1_initialization(folder_name):
+def sweep_1_initialization(basepath, folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
     k=1
     os.chdir(basepath)    
