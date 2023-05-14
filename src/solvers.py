@@ -116,7 +116,7 @@ def computeSteffensenMethod(basepath, folder_name):
         for i in range (1, n + 1):
             interval_name=myinterval.format(i)  
             sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
-            pre.prepareNextLinearization(basepath, folder_name, k, i)
+            pre.prepareNextLinearization(folder_name, k, i)
     # Preparation and Computation of shootingUpdate
     for k in range (1, n + 1):
         for i in range (2, n + 1):
