@@ -11,7 +11,7 @@ from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
 import glob
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
@@ -102,20 +102,20 @@ def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start
     next_interval=myinterval.format(i)
     print('Preparing Shooting Update for ' + sweep_name + ".\n")
     next_sweep=mysweep.format(k + 1)
-    if not os.path.exists(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/"):
-        #shutil.rmtree(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/")
-        os.mkdir(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/")
-        os.mkdir(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/0/")
-    zero_shootingUpdate=steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/0/"
+    if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/"):
+        #shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
+        os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
+        os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/0/")
+    zero_shootingUpdate=basepath + folder_name + "/" + sweep_name + "/preProcessing/0/"
     #print("Copy code VIOLET for " + sweep_name + " and " + interval_name + "\n")
-    src_violet_folder=steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
+    src_violet_folder=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
     shutil.copy(src_violet_folder + "p", zero_shootingUpdate + "pStart_left")
     shutil.copy(src_violet_folder + "U", zero_shootingUpdate + "UStart_left")
     shutil.copy(src_violet_folder + "Uf", zero_shootingUpdate + "UfStart_left")
     shutil.copy(src_violet_folder + "phi", zero_shootingUpdate + "phiStart_left")
     print("Copy code VIOLET done.")
     #print("Copy code RED for " + sweep_name + " and " + interval_name + ".\n")
-    src_red_folder=steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
+    src_red_folder=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     shutil.copy(src_red_folder + "p", zero_shootingUpdate + "pEnd_left")
     shutil.copy(src_red_folder + "U", zero_shootingUpdate + "UEnd_left")
     shutil.copy(src_red_folder + "Uf", zero_shootingUpdate + "UfEnd_left")
@@ -127,42 +127,39 @@ def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start
     shutil.copy(src_red_folder + "linUf", zero_shootingUpdate + "dUduf")
     print("Copy code BLUE done.")
     #print("Copy code GREEN.\n")
-    src_green_folder=steffensen_path + folder_name + "/" + next_sweep + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
+    src_green_folder=basepath + folder_name + "/" + next_sweep + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
     shutil.copy(src_green_folder + "p", zero_shootingUpdate + "shootingUpdateP_left") #instead of shootingUpdateP_left
     shutil.copy(src_green_folder + "U", zero_shootingUpdate + "shootingUpdateU_left")
     shutil.copy(src_green_folder + "Uf", zero_shootingUpdate + "shootingUpdateUf_left")
     shutil.copy(src_green_folder + "phi", zero_shootingUpdate + "shootingUpdatePhi_left")
     print("Copy code GREEN done.")
     #print("Copy code ORANGE.\n")
-    src_orange_folder=steffensen_path + folder_name + "/" + sweep_name + "/" + next_interval + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
+    src_orange_folder=basepath + folder_name + "/" + sweep_name + "/" + next_interval + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     shutil.copy(src_orange_folder + "p", zero_shootingUpdate + "pStart_right")
     shutil.copy(src_orange_folder + "U", zero_shootingUpdate + "UStart_right")
     shutil.copy(src_orange_folder + "Uf", zero_shootingUpdate + "UfStart_right")
     shutil.copy(src_orange_folder + "phi", zero_shootingUpdate + "phiStart_right")
     print("Copy code ORANGE done.")
-    if not os.path.exists(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/constant/"):
-        src_constant=steffensen_path + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/constant/"
-        src_system=steffensen_path + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/system/"
-        shutil.copytree(src_constant, steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/constant/")
-        shutil.copytree(src_system, steffensen_path + folder_name+"/"+sweep_name+"/preProcessing/system/")
+    if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/constant/"):
+        src_constant=basepath + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/constant/"
+        src_system=basepath + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/system/"
+        shutil.copytree(src_constant, basepath + folder_name + "/" + sweep_name + "/preProcessing/constant/")
+        shutil.copytree(src_system, basepath + folder_name+"/"+sweep_name+"/preProcessing/system/")
     print("Ready for copy code YELLOW")
 
 ###########################################################################
 
 ####################  LINEARIZATION PREPROCESSING #########################
-def initializeLinearisation(folder_name, sweep_name):
+def initializeLinearisation(basepath, folder_name, sweep_name):
     #### IS ONLY THOUGHT FOR SWEEP1
     #Copy files to prepare linearisedPimpleDyMFoam
     print("\n")
     if os.path.exists(folder_name):
-        #ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
         print("Preparing linearisation...\n")
-    #if ans=="Y" or ans=="y":
-    #    shutil.rmtree(folder_name)
-    #else:
-    #    sys.exit()
-    #Creating folders
-    #os.mkdir(steffensen_path + folder_name)
+    else:
+        print("ERROR: No such file or directory. Exiting Shooting Manager")
+        sys.exit()
+    
     #Paths for variables
     linP_path=ref_cases + "/boundaryConditions/linP"
     linU_path=ref_cases + "/boundaryConditions/linU"
@@ -170,43 +167,43 @@ def initializeLinearisation(folder_name, sweep_name):
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
     
     #Copy Sweep k, interval i : preparing sweep1
-    shutil.copytree(primitive_path + folder_name + "/sweep1/" , steffensen_path + folder_name + "/sweep1/")
+    #shutil.copytree(primitive_path + folder_name + "/sweep1/" , basepath + folder_name + "/sweep1/")
     
     for i in range(1, n + 1):
         interval_name=myinterval.format(i)
-        starttime_dest=steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
         print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
         #copy fv file
-        shutil.copy(fvSchemes_path, steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        shutil.copy(fvSolution_path, steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
 
-def prepareNextLinearization(folder_name, k, i):
+def prepareNextLinearization(basepath, folder_name, k, i):
     if k + 1<=n:
         sweep_name=mysweep.format(k + 1) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k + 1
-        if not os.path.exists(steffensen_path + folder_name + "/" + sweep_name):
-            os.mkdir(steffensen_path + folder_name + "/" + sweep_name)
-            shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/interval1/" , steffensen_path + folder_name + "/" + sweep_name + "/interval1/")
+        #if not os.path.exists(basepath + folder_name + "/" + sweep_name):
+        #    os.mkdir(basepath + folder_name + "/" + sweep_name)
+        #    shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/interval1/" , basepath + folder_name + "/" + sweep_name + "/interval1/")
     
         #for i in range(1, n + 1):
         interval_name=myinterval.format(i)
-        if not os.path.exists(steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name):
-            shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/" + interval_name , steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name)
+        #if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name):
+        #    shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/" + interval_name , basepath + folder_name + "/" + sweep_name + "/" + interval_name)
         linP_path=ref_cases + "/boundaryConditions/linP"
         linU_path=ref_cases + "/boundaryConditions/linU"
         fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
         fvSolution_path=ref_cases + "/controlBib/fvSolution"
         
         #copy theta dir
-        starttime_dest=steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
         #copy fv file
-        shutil.copy(fvSchemes_path, steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        shutil.copy(fvSolution_path, steffensen_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         print("Files successfully copied for " + interval_name + ". Ready for next linearisation\n")
 
 

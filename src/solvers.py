@@ -25,7 +25,7 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     os.chdir(pimple_path) #Entering logfile path
     
     #Open a log file and pipe the output of PimpleDyMFoam into the log        
-    with open("logfile.txt","w") as logfile:
+    with open("PDFlogfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
         #result=subprocess.run(['pimpleDyMFoam'])                 
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
@@ -36,13 +36,13 @@ def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name
-    if not os.path.exists(basepath + folder_name + "/" + sweep_name):    
-        os.mkdir(basepath + folder_name + "/" + sweep_name)
+    #if not os.path.exists(basepath + folder_name + "/" + sweep_name):    
+    #    os.mkdir(basepath + folder_name + "/" + sweep_name)
     print("Executing linearisedPimpleDyMFoam in " + folder_name + '/' + sweep_name + '/' + interval_name + ".")
-    if not os.path.exists(lin_pimple_path):    
-        os.mkdir(lin_pimple_path)
+    #if not os.path.exists(lin_pimple_path):    
+    #    os.mkdir(lin_pimple_path)
     os.chdir(lin_pimple_path)
-    with open("lin_logfile.txt","w") as logfile:
+    with open("lin_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
     os.chdir(basepath) #back to main path
@@ -50,8 +50,8 @@ def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
 def computeShootingUpdate(basepath, folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for " + sweep_name + ".\n")
-    os.chdir(steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/")
-    with open("logfile.txt","w") as logfile:
+    os.chdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
+    with open("shooting_update_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
     #subprocess.run(['computeShootingUpdate'])    
 ###########################################################################
@@ -59,6 +59,7 @@ def computeShootingUpdate(basepath, folder_name, sweep_name, interval_name):
 #########################    OPENFOAM PROCESSES   #########################
 
 def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for all intervals within one sweep
+    start_time=time.time()
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
@@ -75,6 +76,7 @@ def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for a
                 #break
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
+    bc.time(start_time)
     #return(myinterval, mysweep)
 
 ###########################################################################
@@ -103,9 +105,54 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
     num_minutes=int(elapsed_time/60)
     num_seconds=elapsed_time%60
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+    bc.time(start_time)
     return(folder_name)
 
 def computeSteffensenMethod(basepath, folder_name):
+    start_time=time.perf_counter()
+    print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
+    #Initialisation of Sweep 1  
+    sweep_name="sweep1"
+    pre.initializeLinearisation(basepath, folder_name, sweep_name)
+    #Linearisation preparation and cmputation from Sweep 2 to n
+    for k in range (1, n+1):
+        sweep_name=mysweep.format(k)
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            futures = []
+            for i in range (1, n+1):
+                futures.append(executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i))
+                #interval_name=myinterval.format(i)  
+                #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
+                #concurrent.futures.wait(futures)
+                pre.prepareNextLinearization(basepath, folder_name, k, i)
+    # Preparation and Computation of shootingUpdate
+    for k in range (1, n):
+        for i in range (2, n+1):
+            sweep_name=mysweep.format(k)
+            #if not k==n:
+            m=1
+            print("Starting shooting update process for " + sweep_name + ".\n")
+            #for i in range(2, n + 1):
+            interval_name=myinterval.format(i)
+            pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
+            interval_name=myinterval.format(m)
+            sol.computeShootingUpdate(basepath, folder_name, sweep_name, interval_name)
+            post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
+            m=m + 1
+            if k==n-1:
+                print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
+                return(0)
+        if k>3:
+            g=k-2
+            post.erase_all_files(basepath, folder_name, g)
+    print(bc.time(start_time))
+
+
+
+#### OLD FUNCTIONS:
+
+
+def OLD_computeSteffensenMethod(basepath, folder_name): #Works in Steffensens path. Now we want everything in the same folder
     start_time=time.time()
     print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
     #Initialisation of Sweep 1  
@@ -146,7 +193,6 @@ def computeSteffensenMethod(basepath, folder_name):
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
 
 
-#### OLD FUNCTIONS:
 def VERY_OLDloop_pimpleDyMFoam(folder_name): #sequential Version
     for k in range(1, n + 1):
         sweep_name=mysweep.format(k)

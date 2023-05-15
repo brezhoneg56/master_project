@@ -130,3 +130,10 @@ def copytree(src, dst, symlinks=False, ignore=None):
         errors.extend((src, dst, str(why)))
     if errors:
         raise BaseException(errors)
+
+def time(start_time):
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+    num_minutes=int(elapsed_time/60)
+    num_seconds=elapsed_time%60
+    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")

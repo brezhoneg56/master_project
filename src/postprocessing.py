@@ -7,7 +7,7 @@ Created on Tue Apr 18 10:30:18 2023
 import os
 from src import boundary_conditions as bc
 import shutil
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 ###########################################################################
 
@@ -47,6 +47,27 @@ def computePressureDropFoam(basepath, folder_name, sweep_name):
 
 def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     startingTime=str(bc.decimal_analysis(theta + (i-2)*deltaT))
-    src_shootP=steffensen_path + folder_name + "/" + sweep_name + "/preProcessing/0/shootingUpdateP"
-    dest_shootP=steffensen_path + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime
+    src_shootP=basepath + folder_name + "/" + sweep_name + "/preProcessing/0/shootingUpdateP"
+    dest_shootP=basepath + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime
     shutil.copy(src_shootP, dest_shootP)
+
+def erasefiles(basepath, folder_name, sweep_name, interval_name):
+    path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+    os.chdir(path_files)
+    for filename in os.listdir(path_files):
+        if filename.startswith('0.'):
+            file_path = os.path.join(path_files, filename)
+            try:
+                shutil.rmtree(file_path)
+            except Exception as e1:
+                print("Error while deleting directory: " + str(e1))
+                try:
+                    os.remove(file_path)
+                except Exception as e2:
+                    print("Error while deleting file: " + str(e2))
+def erase_all_files(basepath, folder_name, k):
+    sweep_name=mysweep.format(k)
+    for i in range(1, n+1):
+            interval_name=myinterval.format(i)
+            erasefiles(basepath, folder_name, sweep_name, interval_name)
+            print("The files were succefully deleted. See exceptions above.")
