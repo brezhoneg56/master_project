@@ -109,7 +109,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
     return(folder_name)
 
 def computeSteffensenMethod(basepath, folder_name):
-    start_time=time.time()
+    start_time=time.perf_counter()
     print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
     #Initialisation of Sweep 1  
     sweep_name="sweep1"

@@ -18,7 +18,7 @@ c.headings()
 #Primitive shooting :
 basepath=primitive_path
 os.chdir(basepath)
-sol.primal_nofastpropagator_seq(basepath)
+#sol.primal_nofastpropagator_seq(basepath)
 
 sol.computeSteffensenMethod(basepath, folder_name)
 ################################################################
