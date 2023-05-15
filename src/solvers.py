@@ -65,7 +65,7 @@ def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for a
         for k in range(1, n + 1):
             sweep_name = mysweep.format(k)
             print("\nStarting shooting of " + sweep_name + "\n")
-            for i in range(k, n + 1):
+            for i in range(k, n+1):
                 futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
             concurrent.futures.wait(futures)
             post.preparePostProcessing(basepath, folder_name, sweep_name)
