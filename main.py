@@ -27,7 +27,8 @@ basepath=steffensen_path
 os.chdir(basepath)
 #sol.computeSteffensenMethod(steffensen_path, folder_name)
 
-for k in range (1, n + 1):
+for k in range (1, n):
+    start_sweep=time.time()
     for i in range (2, n + 1):
         sweep_name=mysweep.format(k)
         #if not k==n:
@@ -44,6 +45,7 @@ for k in range (1, n + 1):
             print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
             #return(0)
     end_time = time.time()
+    print(end_time-start_sweep)
     #elapsed_time = end_time - start_time
     #num_minutes=int(elapsed_time/60)
     #num_seconds=elapsed_time%60
