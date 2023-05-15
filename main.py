@@ -38,7 +38,7 @@ for k in range (1, n + 1):
         pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
         interval_name=myinterval.format(m)
         sol.computeShootingUpdate(steffensen_path, folder_name, sweep_name, interval_name)
-        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
+        post.shootingUpdateP(steffensen_path, folder_name, sweep_name, interval_name, k, m)
         m=m + 1
         if k==n-1:
             print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
