@@ -25,7 +25,30 @@ os.chdir(basepath)
 
 basepath=steffensen_path
 os.chdir(basepath)
-sol.computeSteffensenMethod(steffensen_path, folder_name)
+#sol.computeSteffensenMethod(steffensen_path, folder_name)
+
+for k in range (1, n + 1):
+    for i in range (2, n + 1):
+        sweep_name=mysweep.format(k)
+        #if not k==n:
+        m=1
+        print("Starting shooting update process for " + sweep_name + ".\n")
+        #for i in range(2, n + 1):
+        interval_name=myinterval.format(i)
+        pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
+        interval_name=myinterval.format(m)
+        sol.computeShootingUpdate(steffensen_path, folder_name, sweep_name, interval_name)
+        post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
+        m=m + 1
+        if k==n-1:
+            print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
+            #return(0)
+    end_time = time.time()
+    #elapsed_time = end_time - start_time
+    #num_minutes=int(elapsed_time/60)
+    #num_seconds=elapsed_time%60
+    #print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+
 
 ###########################################################################
 
