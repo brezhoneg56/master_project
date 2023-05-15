@@ -60,4 +60,4 @@ def erasefiles(basepath, folder_name, sweep_name, interval_name):
             try:
                 shutil.rmtree(file_path)
             except Exception as e:
-                print(f"Error while deleting directory: {e}")
+                print("Error while deleting directory: " + str(e))
