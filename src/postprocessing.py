@@ -59,5 +59,9 @@ def erasefiles(basepath, folder_name, sweep_name, interval_name):
             file_path = os.path.join(path_files, filename)
             try:
                 shutil.rmtree(file_path)
-            except Exception as e:
-                print("Error while deleting directory: " + str(e))
+            except Exception as e1:
+                try:
+                    os.remove(file_path)
+                except Exception as e2:
+                    print("Error while deleting directory: " + str(e2))
+    print("The files were succefully deleted. See exceptions above.")
