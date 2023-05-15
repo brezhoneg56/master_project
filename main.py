@@ -18,34 +18,16 @@ c.headings()
 #Primitive shooting :
 basepath=primitive_path
 os.chdir(basepath)
+
 #sol.primal_nofastpropagator_seq(basepath)
+#sol.computeSteffensenMethod(basepath, folder_name)
 
-sol.computeSteffensenMethod(basepath, folder_name)
+for k in range(1, n+1):
+    sweep_name=mysweep.format(k)
+    for i in range(1, n+1):
+        interval_name=myinterval.format(i)
+        post.erasefiles(basepath, folder_name, sweep_name, interval_name)
+
 ################################################################
-#for k in range (1, n):
-#    start_sweep=time.time()
-#    for i in range (2, n + 1):
-#        sweep_name=mysweep.format(k)
-#        #if not k==n:
-#        m=1
-#        print("Starting shooting update process for " + sweep_name + ".\n")
-#        #for i in range(2, n + 1):
-#        interval_name=myinterval.format(i)
-#        pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
-#        interval_name=myinterval.format(m)
-#        sol.computeShootingUpdate(steffensen_path, folder_name, sweep_name, interval_name)
-#        post.shootingUpdateP(steffensen_path, folder_name, sweep_name, interval_name, k, m)
-#        m=m + 1
-#        if k==n-1:
-#            print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
-#            #return(0)
-#    end_time = time.time()
-#    print(end_time-start_sweep)
-    #elapsed_time = end_time - start_time
-    #num_minutes=int(elapsed_time/60)
-    #num_seconds=elapsed_time%60
-    #print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
 
-
-###########################################################################
 

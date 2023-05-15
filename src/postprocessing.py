@@ -50,3 +50,12 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     src_shootP=basepath + folder_name + "/" + sweep_name + "/preProcessing/0/shootingUpdateP"
     dest_shootP=basepath + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime
     shutil.copy(src_shootP, dest_shootP)
+
+def erasefiles(basepath, folder_name, sweep_name, interval_name):
+    path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+    os.chdir(path_files)
+    for filename in os.listdir(path_files):
+        if filename.startswith('0.'):
+            file_path = os.path.join(path_files, filename)
+            shutil.rmtree(file_path)
+    
