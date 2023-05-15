@@ -25,7 +25,7 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     os.chdir(pimple_path) #Entering logfile path
     
     #Open a log file and pipe the output of PimpleDyMFoam into the log        
-    with open("logfile.txt","w") as logfile:
+    with open("PDFlogfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
         #result=subprocess.run(['pimpleDyMFoam'])                 
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
@@ -42,7 +42,7 @@ def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #if not os.path.exists(lin_pimple_path):    
     #    os.mkdir(lin_pimple_path)
     os.chdir(lin_pimple_path)
-    with open("lin_logfile.txt","w") as logfile:
+    with open("lin_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
     os.chdir(basepath) #back to main path
@@ -51,7 +51,7 @@ def computeShootingUpdate(basepath, folder_name, sweep_name, interval_name):
     # Calls compute shootingupdate from openfoam
     print("Computing Shooting Update for " + sweep_name + ".\n")
     os.chdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
-    with open("shooting_update_logfile.txt","w") as logfile:
+    with open("shooting_update_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
     #subprocess.run(['computeShootingUpdate'])    
 ###########################################################################
@@ -140,9 +140,9 @@ def computeSteffensenMethod(basepath, folder_name):
             post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
             m=m + 1
             if k==n-1:
-                print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
+                print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
                 return(0)
-    bc.time(start_time)
+    print(bc.time(start_time))
 
 
 
