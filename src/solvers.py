@@ -142,6 +142,9 @@ def computeSteffensenMethod(basepath, folder_name):
             if k==n-1:
                 print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
                 return(0)
+        if k>3:
+            g=k-2
+            post.erase_all_files(basepath, folder_name, g)
     print(bc.time(start_time))
 
 

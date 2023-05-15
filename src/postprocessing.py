@@ -65,10 +65,9 @@ def erasefiles(basepath, folder_name, sweep_name, interval_name):
                     os.remove(file_path)
                 except Exception as e2:
                     print("Error while deleting file: " + str(e2))
-def erase_all_files(basepath, folder_name):
-    for k in range(1, n+1):
-        sweep_name=mysweep.format(k)
-        for i in range(1, n+1):
+def erase_all_files(basepath, folder_name, k):
+    sweep_name=mysweep.format(k)
+    for i in range(1, n+1):
             interval_name=myinterval.format(i)
             erasefiles(basepath, folder_name, sweep_name, interval_name)
             print("The files were succefully deleted. See exceptions above.")

@@ -22,7 +22,7 @@ os.chdir(basepath)
 sol.primal_nofastpropagator_seq(basepath)
 sol.computeSteffensenMethod(basepath, folder_name)
 
-post.erase_all_files(basepath, folder_name)
+#post.erase_all_files(basepath, folder_name)
 ################################################################
 
 
