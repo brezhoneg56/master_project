@@ -19,15 +19,10 @@ c.headings()
 basepath=primitive_path
 os.chdir(basepath)
 
-#sol.primal_nofastpropagator_seq(basepath)
-#sol.computeSteffensenMethod(basepath, folder_name)
+sol.primal_nofastpropagator_seq(basepath)
+sol.computeSteffensenMethod(basepath, folder_name)
 
-for k in range(1, n+1):
-    sweep_name=mysweep.format(k)
-    for i in range(1, n+1):
-        interval_name=myinterval.format(i)
-        post.erasefiles(basepath, folder_name, sweep_name, interval_name)
-
+post.erase_all_files(basepath, folder_name)
 ################################################################
 
 
