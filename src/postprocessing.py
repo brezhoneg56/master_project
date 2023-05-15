@@ -57,5 +57,7 @@ def erasefiles(basepath, folder_name, sweep_name, interval_name):
     for filename in os.listdir(path_files):
         if filename.startswith('0.'):
             file_path = os.path.join(path_files, filename)
-            shutil.rmtree(file_path)
-    
+            try:
+                shutil.rmtree(file_path)
+            except Exception as e:
+                print(f"Error while deleting directory: {e}")
