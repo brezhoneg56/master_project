@@ -67,8 +67,8 @@ def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for a
             for i in range(k, n + 1):
                 futures.append(executor.submit(pimpleDyMFoam, folder_name, sweep_name, i))
             concurrent.futures.wait(futures)
-            post.preparePostProcessing(folder_name, sweep_name)
-            post.computePressureDropFoam(folder_name, sweep_name)
+            post.preparePostProcessing(basepath, folder_name, sweep_name)
+            post.computePressureDropFoam(basepath, folder_name, sweep_name)
             if (k<n): #instead of while
                 pre.prepareMyNextSweep(k, folder_name)
                 #break
