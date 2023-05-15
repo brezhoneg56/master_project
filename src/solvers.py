@@ -127,7 +127,7 @@ def computeSteffensenMethod(basepath, folder_name):
             print("Starting shooting update process for " + sweep_name + ".\n")
             #for i in range(2, n + 1):
             interval_name=myinterval.format(i)
-            pre.prepareShootingUpdate(folder_name, sweep_name, k, i)
+            pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
             interval_name=myinterval.format(m)
             sol.computeShootingUpdate(folder_name, sweep_name, interval_name)
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
