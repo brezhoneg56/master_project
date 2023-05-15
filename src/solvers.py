@@ -133,7 +133,7 @@ def computeSteffensenMethod(basepath, folder_name):
             interval_name=myinterval.format(i)
             pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
             interval_name=myinterval.format(m)
-            sol.computeShootingUpdate(, steffensen_path, folder_name, sweep_name, interval_name)
+            sol.computeShootingUpdate(steffensen_path, folder_name, sweep_name, interval_name)
             post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
             m=m + 1
             if k==n-1:
