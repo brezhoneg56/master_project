@@ -20,9 +20,6 @@ basepath=primitive_path
 os.chdir(basepath)
 #sol.primal_nofastpropagator_seq(basepath)
 
-
-basepath=steffensen_path
-os.chdir(basepath)
 sol.computeSteffensenMethod(steffensen_path, folder_name)
 ################################################################
 #for k in range (1, n):
