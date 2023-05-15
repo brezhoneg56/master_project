@@ -112,19 +112,19 @@ def computeSteffensenMethod(basepath, folder_name):
     sweep_name="sweep1"
     pre.initializeLinearisation(folder_name, sweep_name)
     #Linearisation preparation and cmputation from Sweep 2 to n
-    for k in range (1, n + 1):
+    for k in range (1, n+1):
         sweep_name=mysweep.format(k)
         with concurrent.futures.ProcessPoolExecutor() as executor:
             futures = []
-            for i in range (1, n + 1):
+            for i in range (1, n+1):
                 futures.append(executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i))
                 #interval_name=myinterval.format(i)  
                 #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
-                concurrent.futures.wait(futures)
+                #concurrent.futures.wait(futures)
                 pre.prepareNextLinearization(folder_name, k, i)
     # Preparation and Computation of shootingUpdate
-    for k in range (1, n + 1):
-        for i in range (2, n + 1):
+    for k in range (1, n):
+        for i in range (2, n+1):
             sweep_name=mysweep.format(k)
             #if not k==n:
             m=1
