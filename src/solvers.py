@@ -146,7 +146,51 @@ def computeSteffensenMethod(basepath, folder_name):
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
 
 
+
 #### OLD FUNCTIONS:
+
+
+def OLD_computeSteffensenMethod(basepath, folder_name): #Works in Steffensens path. Now we want everything in the same folder
+    start_time=time.time()
+    print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
+    #Initialisation of Sweep 1  
+    sweep_name="sweep1"
+    pre.initializeLinearisation(folder_name, sweep_name)
+    #Linearisation preparation and cmputation from Sweep 2 to n
+    for k in range (1, n + 1):
+        sweep_name=mysweep.format(k)
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            futures = []
+            for i in range (1, n + 1):
+                futures.append(executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i))
+                #interval_name=myinterval.format(i)  
+                #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
+                concurrent.futures.wait(futures)
+                pre.prepareNextLinearization(folder_name, k, i)
+    # Preparation and Computation of shootingUpdate
+    for k in range (1, n + 1):
+        for i in range (2, n + 1):
+            sweep_name=mysweep.format(k)
+            #if not k==n:
+            m=1
+            print("Starting shooting update process for " + sweep_name + ".\n")
+            #for i in range(2, n + 1):
+            interval_name=myinterval.format(i)
+            pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
+            interval_name=myinterval.format(m)
+            sol.computeShootingUpdate(steffensen_path, folder_name, sweep_name, interval_name)
+            post.shootingUpdateP(folder_name, sweep_name, interval_name, k, m)
+            m=m + 1
+            if k==n-1:
+                print("Steffensen's Method terminated. Sweep " + str(k) + "updated.")
+                return(0)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    num_minutes=int(elapsed_time/60)
+    num_seconds=elapsed_time%60
+    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+
+
 def VERY_OLDloop_pimpleDyMFoam(folder_name): #sequential Version
     for k in range(1, n + 1):
         sweep_name=mysweep.format(k)
