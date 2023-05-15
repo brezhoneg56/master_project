@@ -26,7 +26,8 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     
     #Open a log file and pipe the output of PimpleDyMFoam into the log        
     with open("logfile.txt","w") as logfile:
-        result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)            
+        #result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
+        result=subprocess.run(['pimpleDyMFoam'])                 
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
     os.chdir(basepath) #back to main path
     return(result)
