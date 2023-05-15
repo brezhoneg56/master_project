@@ -70,7 +70,7 @@ def loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call for a
             post.preparePostProcessing(basepath, folder_name, sweep_name)
             post.computePressureDropFoam(basepath, folder_name, sweep_name)
             if (k<n): #instead of while
-                pre.prepareMyNextSweep(k, folder_name)
+                pre.prepareMyNextSweep(basepath, k, folder_name)
                 #break
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
