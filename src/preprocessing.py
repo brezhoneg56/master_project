@@ -41,21 +41,21 @@ def preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sw
 
 def prepareMyNextSweep(basepath, k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
-    sweep_name=mysweep.format(k + 1)
-    previous_sweep_name=mysweep.format(k)
+    sweep_name=mysweep.format(k+1)#k+1
+    previous_sweep_name=mysweep.format(k)#k
     os.path.join(folder_name,sweep_name)
     print("\nStarting shooting of " + sweep_name + "\n") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
-    for x in range(1,k + 1):
+    for x in range(1,k+1):#k+1
         copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name)
     #Preparing shooting directories from sweep1 data 
-    #for i in range(k + 1,n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
-    #    preparenextSweepStartingFiles(folder_name, previous_sweep_name, sweep_name, i)
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(preparenextSweepStartingFiles, basepath,  folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
-        for future in futures:
-            _ = future.result()
+    for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
+        preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i)
+    #with ThreadPoolExecutor() as executor:
+    #    futures = [executor.submit(preparenextSweepStartingFiles, basepath,  folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
+    #    for future in futures:
+    #        future.result()
 
 def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
     myinterval="interval{}"
@@ -181,8 +181,8 @@ def initializeLinearisation(basepath, folder_name, sweep_name):
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
 
 def prepareNextLinearization(basepath, folder_name, k, i):
-    if k + 1<=n:
-        sweep_name=mysweep.format(k + 1) 
+    if k+1<=n:
+        sweep_name=mysweep.format(k+1) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k + 1
         #if not os.path.exists(basepath + folder_name + "/" + sweep_name):
         #    os.mkdir(basepath + folder_name + "/" + sweep_name)

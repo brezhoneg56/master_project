@@ -21,6 +21,7 @@ def preparePostProcessing(basepath, folder_name, sweep_name):
         list_dir=list_dir + ["interval" + str(x)]
     for list_dir in list_dir:
         os.path.join(postPro_destination,list_dir)
+        print("Copying " + list_dir + " in " + folder_name + '/' + sweep_name + '/postProcessing')
         bc.copytree(list_dir,postPro_destination)
     print("ready for postProcessing of " + sweep_name + "...\n")
 
@@ -41,7 +42,7 @@ def computePressureDropFoam(basepath, folder_name, sweep_name):
                     print(line)
         mapression.close()
     f.close()
-    os.chdir(basepath) #back to main path
+    os.chdir(basepath) #back to main pa60th
     print("Done.\n")
     return(result)
 

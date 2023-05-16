@@ -19,9 +19,10 @@ def decimal_analysis(number):  ##analysis of how many decimals my number has : 1
 ################  PRIMAL PRIMITIVE INITIALIZATIONS  #######################      
 def sweep_1_initialization(basepath, folder_name):
 #Fetch all the files from src directories and modify them for the specific case : constant, system, start_time_dir, polyMesh, controlDict
-    k=1
-    os.chdir(basepath)    
-    sweep_name=mysweep.format(k)
+    #k=1
+    os.chdir(basepath) 
+    os.mkdir(folder_name)
+    sweep_name=mysweep.format(1)
     sweep_path=os.path.join(folder_name,sweep_name)
     os.mkdir(sweep_path)
     print("\nThe directory " + folder_name + " has been created at this place: \n" + basepath + "\n\n")
