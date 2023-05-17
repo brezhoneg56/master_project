@@ -23,7 +23,7 @@ basepath=primitive_path
 os.chdir(basepath)
 
 def primal_shooting_stef_update(basepath):
-    g=0
+    g=1
 #Function:
     if os.path.exists(folder_name):
             ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
@@ -51,20 +51,19 @@ def primal_shooting_stef_update(basepath):
 
         g=g+1
         print("g="+str(g))
-        for i in range (2, n+1):
+        for i, j in range ((2, n+1),(g, n+1)):
             sweep_name=mysweep.format(k)
             #if not k==n:
-            m=1
+            m=1 #Counter for Shooting update is always i-1
             print("Starting shooting update process for " + sweep_name + ".\n")
             #for i in range(2, n + 1):
             interval_name=myinterval.format(i)
-            pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, i)
+            pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
             interval_name=myinterval.format(m)
             #if k>1:
             sol.computeShootingUpdate(basepath, folder_name, k, interval_name)
             post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
-            m=m + 1
-
+            m=m+1 #Counter for Shooting Update
 
 
 
@@ -76,11 +75,11 @@ def primal_shooting_stef_update(basepath):
         elapsed_time = end_time - start_time
         num_minutes=int(elapsed_time/3600)
         num_seconds=elapsed_time%3600
-        print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+        print("Elapsed time:", elapsed_time, "seconds")
     end_time = time.time()
     total_time=end_time-start_time_ALL
     num_minutes=int(total_time/60)
     num_seconds=total_time%60
-    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+    print("Elapsed time:", elapsed_time, "seconds")
 
 primal_shooting_stef_update(basepath)

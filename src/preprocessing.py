@@ -44,7 +44,7 @@ def prepareMyNextSweep(basepath, k, folder_name):
     sweep_name=mysweep.format(k+1)#k+1
     previous_sweep_name=mysweep.format(k)#k
     os.path.join(folder_name,sweep_name)
-    print("\nStarting shooting of " + sweep_name + "\n") 
+    print("\nStarting shooting of " + sweep_name + ". ") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
     for x in range(1,k+1):#k+1
@@ -204,7 +204,7 @@ def prepareNextLinearization(basepath, folder_name, k, i):
         #copy fv file
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        print("Files successfully copied for " + interval_name + ". Ready for next linearisation\n")
+        print("Files successfully copied for " + interval_name + ". Ready for next linearisation.")
 
 
         

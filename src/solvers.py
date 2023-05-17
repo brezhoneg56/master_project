@@ -20,14 +20,8 @@ from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
 #########################   PRIMITIVE SHOOTING    #########################
 def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
-    pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name
-    print("Executing pimpleDyMFoam in " + folder_name + '/' + sweep_name + '/' + interval_name + '.')
-    #print(basepath)
-    #print(folder_name)
-    #print(sweep_name)
-    #print(str(i))    
+    pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name   
     os.chdir(pimple_path) #Entering logfile path
-    
     #Open a log file and pipe the output of PimpleDyMFoam into the log        
 #    with open("PDFlogfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
 #        #result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
@@ -60,11 +54,6 @@ def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
     interval_name=myinterval.format(i)
     lin_pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name
-    #if not os.path.exists(basepath + folder_name + "/" + sweep_name):    
-    #    os.mkdir(basepath + folder_name + "/" + sweep_name)
-    print("Executing linearisedPimpleDyMFoam in " + folder_name + '/' + sweep_name + '/' + interval_name + ".")
-    #if not os.path.exists(lin_pimple_path):    
-    #    os.mkdir(lin_pimple_path)
     os.chdir(lin_pimple_path)
     with open("lin_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['linearisedPimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
@@ -119,7 +108,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
     elapsed_time = end_time - start_time
     num_minutes=int(elapsed_time/60)
     num_seconds=elapsed_time%60
-    print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+    print("Elapsed time:", elapsed_time, "seconds")
     bc.time(start_time)
     return(folder_name)
 
