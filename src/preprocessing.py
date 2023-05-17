@@ -52,6 +52,7 @@ def prepareMyNextSweep(basepath, k, folder_name):
     #Preparing shooting directories from sweep1 data 
     for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
         preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i)
+    sweep_name=mysweep.format(k)
     #with ThreadPoolExecutor() as executor:
     #    futures = [executor.submit(preparenextSweepStartingFiles, basepath,  folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
     #    for future in futures:
@@ -75,7 +76,7 @@ def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
     #computePressureDropFoam(folder_name, sweep_name)    
     
     #Preparing shooting directories from sweep1 data 
-    for i in range(k + 1,n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
+    for i in range(k+1,n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
         interval_name=myinterval.format(i)
         destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
@@ -92,7 +93,7 @@ def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
         shutil.copytree(source_system, os.path.join(destination_system, os.path.basename(source_system)))
         shutil.copytree(source_endTime, os.path.join(destination_endTime, os.path.basename(source_endTime)))
         
-        print("Computing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is current start time: " + str(endTime))
+    print("The " + sweep_name + " is ready to be shoot. Waiting for " + previous_sweep_name + " to terminate...")
 ###########################################################################
 
 #################  PRIMAL STEFFENSEN PREPROCESSING  #######################
@@ -100,7 +101,6 @@ def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start
     #Copy Violet, Red, Blue, Green and Orange to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
     next_interval=myinterval.format(i)
-    print('Preparing Shooting Update for ' + sweep_name + ".\n")
     next_sweep=mysweep.format(k + 1)
     if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/"):
         #shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
@@ -153,10 +153,7 @@ def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start
 def initializeLinearisation(basepath, folder_name, sweep_name):
     #### IS ONLY THOUGHT FOR SWEEP1
     #Copy files to prepare linearisedPimpleDyMFoam
-    print("\n")
-    if os.path.exists(folder_name):
-        print("Preparing linearisation...\n")
-    else:
+    if not os.path.exists(folder_name):
         print("ERROR: No such file or directory. Exiting Shooting Manager")
         sys.exit()
     
@@ -172,17 +169,21 @@ def initializeLinearisation(basepath, folder_name, sweep_name):
     for i in range(1, n + 1):
         interval_name=myinterval.format(i)
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
-        print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
+        #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
     
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
         #copy fv file
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-
+        bc.check_existence(ref_cases + "/boundaryConditions/", "linU")
 def prepareNextLinearization(basepath, folder_name, k, i):
-    if k+1<=n:
-        sweep_name=mysweep.format(k+1) 
+    if not os.path.exists(folder_name):
+        print("ERROR: No such file or directory. Exiting Shooting Manager")
+        sys.exit()    
+    
+    if k<=n:
+        sweep_name=mysweep.format(k) 
         #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k + 1
         #if not os.path.exists(basepath + folder_name + "/" + sweep_name):
         #    os.mkdir(basepath + folder_name + "/" + sweep_name)
@@ -204,8 +205,8 @@ def prepareNextLinearization(basepath, folder_name, k, i):
         #copy fv file
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        print("Files successfully copied for " + interval_name + ". Ready for next linearisation.")
-
+        print("Files successfully copied for " + interval_name + ". Ready for linearisation.")
+        
 
         
  

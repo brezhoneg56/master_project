@@ -138,3 +138,20 @@ def time(start_time):
     num_minutes=int(elapsed_time/60)
     num_seconds=elapsed_time%60
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
+
+
+def check_existence(parent_directory, parameter):
+    # Get a list of all directories within the parent directory
+    subdirectories = [folder for folder in os.listdir(parent_directory) if os.path.isdir(os.path.join(parent_directory, folder))]
+    
+    # Iterate over each subdirectory that starts with "0."
+    for subdirectory in subdirectories:
+        if subdirectory.startswith("0."):
+            # Construct the file path within the subdirectory
+            file_path = os.path.join(parent_directory, subdirectory, parameter)
+
+            # Check if the file exists
+            if os.path.isfile(file_path):
+                print("The file '" + parameter + "' exists in the folder " + subdirectory + ".")
+            else: 
+                print("The file '" + parameter + "' does not exist in the folder " + subdirectory + ".")
