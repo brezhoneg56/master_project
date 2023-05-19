@@ -7,6 +7,8 @@ Created on Mon Apr 17 17:05:09 2023
 import os
 import shutil
 import fileinput
+from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
+import sys
 from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
@@ -141,18 +143,38 @@ def time(start_time):
 
 
 def check_existence(parent_directory, parameter):
-    # Get a list of all directories within the parent directory
-    subdirectories = [folder for folder in os.listdir(parent_directory) if os.path.isdir(os.path.join(parent_directory, folder))]
+        # Get a list of all directories within the parent directory
+        subdirectories = [folder for folder in os.listdir(parent_directory) if os.path.isdir(os.path.join(parent_directory, folder))]
     
-    # Iterate over each subdirectory that starts with "0."
-    for subdirectory in subdirectories:
-        if subdirectory.startswith("0."):
-            # Construct the file path within the subdirectory
-            file_path = os.path.join(parent_directory, subdirectory, parameter)
+        # Iterate over each subdirectory that starts with "0."
+        for subdirectory in subdirectories:
+            if subdirectory.startswith("0."):
+                # Construct the file path within the subdirectory
+                file_path = os.path.join(parent_directory, subdirectory, parameter)
 
             # Check if the file exists
-            if os.path.isfile(file_path):
-                print("The file '" + parameter + "' exists in the folder " + subdirectory + ".")
-            else: 
-                print("The file '" + parameter + "' does not exist in the folder " + subdirectory + ".")
-                
+                if os.path.isfile(file_path):
+                    print("The file '" + parameter + "' exists in the folder " + subdirectory + ".")
+                else: 
+                    print("The file '" + parameter + "' does not exist in the folder " + subdirectory + ".")
+
+def check_existence_linU(basepath, folder_name, sweep_name):
+    print("Success checking for linearisation...")
+    for i in range(1, n+1):      
+        interval_name=myinterval.format(i)
+        # Get a list of all directories within the parent directory
+        subdirectories = [folder for folder in os.listdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name) if os.path.isdir(os.path.join(basepath + folder_name + "/" + sweep_name + "/" + interval_name, folder))]    
+        # Iterate over each subdirectory that starts with "0."
+        for subdirectory in subdirectories:
+            if subdirectory.startswith("0."):
+                # Construct the file path within the subdirectory
+                file_path = os.path.join(basepath + folder_name + "/" + sweep_name + "/" + interval_name, subdirectory, "linU")
+
+                # Check if the file exists
+                if not os.path.isfile(file_path):
+                    if i==1:
+                        return(0)
+                    else:
+                        print("linearisedPimpleDyMFoam failed for " + interval_name + ". Executing again... ")
+                        #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
+                        sys.exit

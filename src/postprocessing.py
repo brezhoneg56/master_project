@@ -55,25 +55,40 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
 def erase_system(path_files):
     for filename in os.listdir(path_files):
         the_path = os.path.join(path_files, filename)
-        shutil.rmtree(the_path)
+        os.remove(the_path)
 def erase_0(path_files):  
-    for filename in os.listdir(path_files+"/0"):
-        the_path = os.path.join(path_files+"/0", filename)                    
-        shutil.rmtree(path_files+"/0")                
+    for filename in os.listdir(path_files):
+        the_path = os.path.join(path_files, filename)                    
+        shutil.rmtree(path_files)                
     try:
         os.remove(the_path)
     except Exception as e2:
         print("Error while deleting file: " + str(e2))
 def erase_constant(path_files):
-    for filename in os.listdir(path_files):
-        for filename in os.listdir(path_files+"/polyMesh/sets"):
-            the_path = os.path.join(path_files+"/polyMesh/sets", filename)
+    for filename in os.listdir(path_files+"/polyMesh/sets"):
+        the_path = os.path.join(path_files+"/polyMesh/sets", filename)
+        try:
             shutil.rmtree(path_files+"/polyMesh/sets")
+        except Exception as sets:
+            print("sets deleting problem: " + str(sets))
         for filename in os.listdir(path_files+"/polyMesh"):
-            the_path = os.path.join(path_files+"/polyMesh", filename)           
-            shutil.rmtree(path_files+"/polyMesh")  
-        the_path = os.path.join(path_files, filename)
-        shutil.rmtree(the_path)
+            the_path = os.path.join(path_files+"/polyMesh", filename)
+            try:
+                shutil.rmtree(path_files+"/polyMesh")
+            except Exception as polymesh:
+                print("rmtree polymesh:" + str(polymesh))
+            try:  
+                os.remove(path_files+"/polyMesh")
+            except Exception as polymesh:
+                print("Error:"+ str(polymesh))
+            for filename in os.listdir(path_files):
+                the_path = os.path.join(path_files, filename)
+                os.remove(the_path)
+                try:
+                    shutil.rmtree(the_path)
+                except:
+                    return(0)
+
 def erase_time_files(path_files):
     for filename in os.listdir(path_files):
         if filename.startswith('0.'):
@@ -81,13 +96,22 @@ def erase_time_files(path_files):
             try:
                 shutil.rmtree(the_path)
             except Exception as e1:
-                print("Error while deleting directory: " + str(e1))
+                try:
+                    os.remove(the_path)
+                except Exception as e1:
+                    print("Error while deleting directory: " + str(e1))
 
 def erase_files(path_files):
     for filename in os.listdir(path_files):
         for filename in os.listdir(path_files):
             the_path = os.path.join(path_files, filename)
-            shutil.rmtree(the_path)
+            try:
+                os.remove(the_path)
+            except:
+                try:
+                    shutil.rmtree(the_path)
+                except:
+                    print("Failed to erase")
 
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
@@ -104,7 +128,7 @@ def erase_all_files(basepath, folder_name, k):
                 shutil.move(src_log, dest_log)
             except Exception as e4:
                 print("Error while moving directory: " + str(e4))
-            src_log=basepath+folder_name+"/"+sweep_name+"/pimple.log"
+            src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/pimple.log"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/pimple_"+interval_name+".log"
             try:
                 shutil.move(src_log, dest_log)
@@ -112,16 +136,22 @@ def erase_all_files(basepath, folder_name, k):
                 print("Error while moving file: " + str(error))            
             try:
                 erase_constant(path_files+"/constant")
-                erase_system(basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/system")
-                erase_0(basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/0")
-            except:
-                print("Problem with constant, system , 0 : ")    
+            except Exception as cte:
+                print("Problem with constant: " + str(cte))  
+            try:
+                erase_system(path_files+"/system")
+            except Exception as sys:
+                print("Problem with system: " + str(sys))
+            try:
+                erase_0(path_files+"/preProcessing/0")
+            except Exception as e0:
+                print("Problem with 0:" + str(e0))
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
     try:
-        shutil.move(src_log+"pimple.log", dest_log+"postPro_log.log")
-        shutil.move(src_log+"pressureDrop.txt", dest_log+"pressureDrop.txt")
+        shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
+        shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop.txt")
     except Exception as e4:
         print("Error while moving directory: " + str(e4))
     erase_files(src_log)
@@ -132,7 +162,7 @@ def erase_all_files(basepath, folder_name, k):
     
     #Preprocessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/preProcessing/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
-    dest_log=basepath+folder_name+"/"+sweep_name+"/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
+    dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
     try:
         shutil.move(src_log, dest_log)
     except Exception as e4:

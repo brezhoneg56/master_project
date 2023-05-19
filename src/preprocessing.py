@@ -37,14 +37,14 @@ def preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sw
     shutil.copytree(source_constant,os.path.join(destination_constant, os.path.basename(source_constant)))
     shutil.copytree(source_system,os.path.join(destination_system, os.path.basename(source_system)))
     shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
-    print("Computing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is current start time: " + str(endTime))
+    print("Preparing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is new start time: " + str(endTime))
 
 def prepareMyNextSweep(basepath, k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
     sweep_name=mysweep.format(k+1)#k+1
     previous_sweep_name=mysweep.format(k)#k
     os.path.join(folder_name,sweep_name)
-    print("\nStarting shooting of " + sweep_name + ". ") 
+    print("\nPreparing shooting of " + sweep_name + ". ") 
     # Copy Directories that were already shoot. Warning : put that after the computations
     #Copy already shoot Directories in the next Sweep 
     for x in range(1,k+1):#k+1

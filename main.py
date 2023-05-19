@@ -52,14 +52,11 @@ def the_shooting_update_for_all(sweep_name, k, i, j):
         pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
     interval_name=myinterval.format(m)
     #if k>1:
+    
     sol.computeShootingUpdate(basepath, folder_name, k, i)
     post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
     m=m+1 #Counter for Shooting Update
     
-
-
-
-
 
 def primal_shooting_stef_update(basepath):
     g=1
@@ -89,18 +86,20 @@ def primal_shooting_stef_update(basepath):
         post.computePressureDropFoam(basepath, folder_name, sweep_name)
         if k<n: #instead of while
             pre.prepareMyNextSweep(basepath, k, folder_name)
-        
-        
-        
         ###########
         elapsed_time = time.time() - start_time
         num_minutes=int(elapsed_time / 60)
         num_seconds=elapsed_time % 60
         print("Elapsed time for primitive Shooting: " + str(round((num_minutes),2)) + " minutes and " + str(num_seconds) + " seconds.")
-
+        ## Function write_time        
+        os.chdir(basepath + folder_name)
+        with open("pressureDropvalues.txt","a") as mytime:
+            time_pimple="Elapsed time for pimpleDyMFoam in " + sweep_name + ": " + str(round((num_minutes),2)) + " minutes and " + str(num_seconds) + " seconds." 
+            mytime.write(time_pimple)
+            print(time_pimple)
+        mytime.close()
+        os.chdir(basepath) #back to main pa60th
         lin_time=time.time()
-        #if k==1:
-        #    pre.initializeLinearisation(basepath, folder_name, sweep_name)
 
         sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k)
         
@@ -108,7 +107,14 @@ def primal_shooting_stef_update(basepath):
         num_minutes=int(elapsed_time / 60)
         num_seconds=elapsed_time % 60
         print("Elapsed time for linearisation: " + str(num_minutes) + " minutes and " + str(num_seconds) + " seconds.")
-        
+        os.chdir(basepath + folder_name)
+        with open("pressureDropvalues.txt","a") as mytime:
+       # lines=f.readlines()
+            time_pimple="Elapsed time for linearisedPimpleDyMFoam in " + sweep_name + ": " + str(round((num_minutes),2)) + " minutes and " + str(num_seconds) + " seconds." 
+            mytime.write(time_pimple)
+            print(time_pimple)
+        mytime.close()
+        os.chdir(basepath) #back to main pa60th
         countershooting=countershooting+1
         print("g="+str(g))
         print("countershooting="+str(countershooting))
@@ -116,7 +122,6 @@ def primal_shooting_stef_update(basepath):
              the_shooting_update_for_all(sweep_name, k, i, j)
         if k==n-1:
             print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
-            return(0)
         
         # Deleting Files after Sweep k Done        
         #ans=input("Do you want to delete useless files? (Y/N)     \n   \n")
@@ -127,6 +132,13 @@ def primal_shooting_stef_update(basepath):
         num_minutes=int(elapsed_time / 60)
         num_seconds=elapsed_time % 60
         print("Elapsed time for " + sweep_name + ": " + str(num_minutes) + " minutes and " + str(num_seconds) + " seconds.")
+        os.chdir(basepath + folder_name)
+        with open("pressureDropvalues.txt","a") as mytime:
+            time_pimple="Elapsed time for " + sweep_name + ": " + str(round((num_minutes),2)) + " minutes and " + str(num_seconds) + " seconds." 
+            mytime.write(time_pimple)
+            print(time_pimple)
+        mytime.close()
+        os.chdir(basepath) #back to main path
     #Delete 2 last dirs:
     if k==n:
         try:
@@ -142,11 +154,13 @@ def primal_shooting_stef_update(basepath):
     num_minutes=int(total_time / 60)
     num_seconds=total_time % 60
     print("Elapsed time: " + str(num_minutes) + " minutes and " + str(num_seconds) + " seconds.")
+    os.chdir(basepath + folder_name)
+    with open("pressureDropvalues.txt","a") as mytime:
+        time_pimple="Elapsed time for " + sweep_name + ": " + str(round((num_minutes),2)) + " minutes and " + str(num_seconds) + " seconds." 
+        mytime.write(time_pimple)
+        print(time_pimple)
+    mytime.close()
+    os.chdir(basepath) #back to main pa60th
+####################
 
-#primal_shooting_stef_update(basepath)
-#for k in range(1, n+1):
-#    sweep_name = mysweep.format(k)
-#    post.erase_all_files(basepath, folder_name, k)
-for i in range(1, n+1):
-    interval_name=myinterval.format(i)    
-    bc.check_existence(basepath+folder_name+"/sweep1/"+interval_name, "linU")
+primal_shooting_stef_update(basepath)

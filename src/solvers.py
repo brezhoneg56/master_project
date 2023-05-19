@@ -70,13 +70,15 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
         pre.initializeLinearisation(basepath, folder_name, sweep_name)
     for i in range(k, n+1):
         pre.prepareNextLinearization(basepath, folder_name, k, i)
-    with futures.ThreadPoolExecutor(max_workers=13) as executor:        
+    #with futures.ThreadPoolExecutor(max_workers=13) as executor: 
+    with futures.ProcessPoolExecutor(max_workers=13) as executor:        
         for i in range(k, n+1):
             executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
             print("Starting linearisedPimpleDyMFoam for interval " + str(i))
         
         print("\n\nAll Linearisations started, Waiting... \n")
     print("LIN EXECUTOR terminated \n\n") 
+    
 
 def OLD_loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
@@ -98,7 +100,9 @@ def computeShootingUpdate(basepath, folder_name, g, i):
     interval_name=myinterval.format(i)
     # Calls compute shootingupdate from openfoam
     #print("Computing Shooting Update for " + interval_name + " in " + sweep_name + ".\n")
-    
+    if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/"):
+        #shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
+        os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
     os.chdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
     with open("shooting_update_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
