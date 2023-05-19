@@ -4,8 +4,7 @@ Created on Tue May  2 12:10:07 2023
 
 @author: Julien
 """
-#import colorama
-#from colorama import Fore, Style
+
 ####### CONFIG FILE ########
 # Here, you can adapt the different paths to your structure.
 
@@ -27,7 +26,7 @@ basepath=primitive_path
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=6; #Amount of sweeps / shooting intervals
+n=100; #Amount of sweeps / shooting intervals
 folder_name=str(n)+"_intervals"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
@@ -37,7 +36,6 @@ t=0.001 #Sampling size for OpenFoam Computations
 myinterval="interval{}"
 mysweep="sweep{}"
 
-##
 
 
 #### HEADINGS #########

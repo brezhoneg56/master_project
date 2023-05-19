@@ -22,11 +22,6 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
     pimple_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name   
     os.chdir(pimple_path) #Entering logfile path
-    #Open a log file and pipe the output of PimpleDyMFoam into the log        
-#    with open("PDFlogfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
-#        #result=subprocess.run(['pimpleDyMFoam'], stdout=logfile, stderr=subprocess.STDOUT)
-#        result=subprocess.run(['pimpleDyMFoam'], stdout=logfile)
-#        #result=subprocess.run(['pimpleDyMFoam']) 
     os.system('pimpleDyMFoam >pimple.log 2>&1')                
     print("Computation of " + interval_name + " is done. Writing into pimple.log ...")
     os.chdir(basepath) #back to main path
@@ -35,17 +30,15 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
 def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
     print("\nStarting shooting of " + sweep_name + "\n")
     print("Starting EXECUTOR ... \n")
-    
     with futures.ProcessPoolExecutor(max_workers=13) as executor:
         for i in range(k, n+1):
-            executor.submit(pimpleDyMFoam, basepath, folder_name, sweep_name, i)
+            executor.submit(sol.pimpleDyMFoam, basepath, folder_name, sweep_name, i)
             print("Starting pimpleDyMFoam for interval " + str(i))
-        
         print("\n\nAll simulations started. Waiting... \n")
     print("EXECUTOR pimpleDyMFoam terminated.\n\n")
     post.preparePostProcessing(basepath, folder_name, sweep_name)
     post.computePressureDropFoam(basepath, folder_name, sweep_name)
-    if k<n: #instead of while
+    if k<n:
         pre.prepareMyNextSweep(basepath, k, folder_name)
 
 
@@ -70,7 +63,6 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
         pre.initializeLinearisation(basepath, folder_name, sweep_name)
     for i in range(k, n+1):
         pre.prepareNextLinearization(basepath, folder_name, k, i)
-    #with futures.ThreadPoolExecutor(max_workers=13) as executor: 
     with futures.ProcessPoolExecutor(max_workers=13) as executor:        
         for i in range(k, n+1):
             executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
@@ -78,38 +70,92 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
         
         print("\n\nAll Linearisations started, Waiting... \n")
     print("LIN EXECUTOR terminated \n\n") 
-    
-
-def OLD_loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
-    #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
-    print("\nStarting linearisation of " + sweep_name + "\n")
-    print("Starting LIN EXECUTOR ... \n")
-    
-    with futures.ThreadPoolExecutor(max_workers=13) as executor:        
-        for i in range(k, n+1):
-            executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
-            print("Starting linearisedPimpleDyMFoam for interval " + str(i))
-            pre.prepareNextLinearization(basepath, folder_name, k, i)
-        
-        print("\n\nAll Linearisations started, Waiting... \n")
-    print("LIN EXECUTOR terminated \n\n")  
-
 
 def computeShootingUpdate(basepath, folder_name, g, i):
     sweep_name=mysweep.format(g)
     interval_name=myinterval.format(i)
     # Calls compute shootingupdate from openfoam
-    #print("Computing Shooting Update for " + interval_name + " in " + sweep_name + ".\n")
     if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/"):
-        #shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
         os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
     os.chdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
     with open("shooting_update_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
-    #subprocess.run(['computeShootingUpdate'])    
         
+def primal_shooting_stef_update(basepath):
+    
+    #Implementing counters    
+    #g=1
+    countershooting=1
+    
+    #Verify if folder_name exists, and offers to delete it if so
+    bc.checking_existence(folder_name)
+    
+    #Starting Timer for entire Process
+    start_time_ALL=time.time()
+    
+    #Initilisation for Sweep1
+    bc.sweep_1_initialization(basepath, folder_name)
+
+    # STARTING MAIN LOOP
+    for k in range(1, n+1):
+    ######################    
+
+        #Intermediate counter start
+        start_time=time.time()
+        #Naming current sweep
+        sweep_name = mysweep.format(k)
+
+        #Starting primitive Shooting in Sweep k over all subintervals
+        sol.loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k)
+
+        #Stopping intermediate timer and writing into logfile
+        elapsed_time = time.time() - start_time
+        bc.timer_and_write(elapsed_time, "pimpleDyMFoam", sweep_name)
+
+        #Starting intermediate timer
+        lin_time=time.time()
+
+        #Starting linearisation for Sweep k over all subintervals
+        sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k)
+
+        #Stopping intermediate timer and writing into logfile
+        elapsed_time = time.time() - lin_time
+        bc.timer_and_write(elapsed_time, "linearisedPimpleDyMFoam", sweep_name)
+
+        #Implementing counter for shooting update
+        countershooting=countershooting+1
+
+        #Intricated for-loop for shooting update, over all subintervals (i), but depending on sweep
+        if not k==n-1:        
+            for i, j in zip(range(2, n+1),range(countershooting, n+n)):
+             post.the_shooting_update_for_all(sweep_name, k, i, j)
+
+        # Deleting Files after Sweep k Done        
+        #ans=input("Do you want to delete useless files? (Y/N)     \n   \n")
+        #if ans=="Y" or ans=="y":
+        print("Deleting files...\n")
+        post.erase_all_files(basepath, folder_name, k)
+                
+        #Stopping intermediate timer and writing into logfile
+        elapsed_time = time.time() - start_time        
+        bc.timer_and_write(elapsed_time, sweep_name, sweep_name)
         
-        
+    print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
+    #Delete 2 last dirs:
+#    if k==n:
+#        try:
+#            for k in range(n-1, n+1):
+#                sweep_name=mysweep.format(k)
+#                for i in range(1, n+1):
+#                    interval_name=myinterval.format(i)
+#                    path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+#                    post.erasefiles(path_files)
+#        except:
+#            print("Problem deleting last files.")
+    
+    #Stopping timer and writing into logfile
+    total_time=time.time()-start_time_ALL
+    bc.timer_and_write(total_time, folder_name, sweep_name)
         
 ###########################################################################
 
@@ -136,7 +182,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
     elapsed_time = end_time - start_time
     num_minutes=int(elapsed_time/60)
     num_seconds=elapsed_time%60
-    print("Elapsed time:", elapsed_time, "seconds")
+    print("Elapsed time:", num_minutes, " minutes, ", num_seconds, "seconds")
     bc.time(start_time)
     return(folder_name)
 
@@ -227,8 +273,6 @@ def OLD_computeSteffensenMethod(basepath, folder_name): #Works in Steffensens pa
             futures = []
             for i in range (1, n + 1):
                 futures.append(executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i))
-                #interval_name=myinterval.format(i)  
-                #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
                 concurrent.futures.wait(futures)
                 pre.prepareNextLinearization(folder_name, k, i)
     # Preparation and Computation of shootingUpdate
@@ -286,7 +330,7 @@ def OLD_loop_pimpleDyMFoam(basepath, folder_name): #Version V1 : Parallel call f
                 pre.prepareMyNextSweep(basepath, k, folder_name)
                 #break
         for future in concurrent.futures.as_completed(futures):
-            result = future.result()
+            future.result()
     bc.time(start_time)
     #return(myinterval, mysweep)
     
@@ -316,3 +360,17 @@ def BASH_loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 :
     post.computePressureDropFoam(basepath, folder_name, sweep_name)
     if (k<n): #instead of while
         pre.prepareMyNextSweep(basepath, k, folder_name)
+
+def OLD_loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
+    #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
+    print("\nStarting linearisation of " + sweep_name + "\n")
+    print("Starting LIN EXECUTOR ... \n")
+    
+    with futures.ThreadPoolExecutor(max_workers=13) as executor:        
+        for i in range(k, n+1):
+            executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
+            print("Starting linearisedPimpleDyMFoam for interval " + str(i))
+            pre.prepareNextLinearization(basepath, folder_name, k, i)
+        
+        print("\n\nAll Linearisations started, Waiting... \n")
+    print("LIN EXECUTOR terminated \n\n")  

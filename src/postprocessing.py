@@ -5,10 +5,10 @@ Created on Tue Apr 18 10:30:18 2023
 @author: jcosson
 """
 import os
-from src import boundary_conditions as bc
+from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import shutil
-from config import primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep
+from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
 #################  PRIMAL PRIMITIVE POSTPROCESSING ########################
@@ -27,15 +27,15 @@ def preparePostProcessing(basepath, folder_name, sweep_name):
 
 def computePressureDropFoam(basepath, folder_name, sweep_name):
     os.chdir(basepath + folder_name + '/' + sweep_name + "/postProcessing")
-    #Open a log file        
-    with open("pressureDrop.txt","w") as logfile:
+    #Open a log file for pressureDrop and timers       
+    with open("pressureDrop.txt","w"):
         result=os.system('computePressureDropFoam start end > pressureDrop.txt')            
         print("\nComputation of Pressure Drop for " + sweep_name + " is done.\nWriting into pressureDrop.txt ...")
     #Writing the pressureDrop line into txt file
     with open("pressureDrop.txt","r") as f:
         os.chdir(basepath + folder_name)
         with open("pressureDropvalues.txt","a") as mapression:
-       # lines=f.readlines()
+            mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
             for line in f:
                 if "pressureDrop" in line:
                     mapression.write(line)
@@ -50,12 +50,33 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     startingTime=str(bc.decimal_analysis(theta + (i-2)*deltaT))
     src_shootP=basepath + folder_name + "/" + sweep_name + "/preProcessing/0/shootingUpdateP"
     dest_shootP=basepath + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime
-    shutil.copy(src_shootP, dest_shootP)
+    if os.path.exists(src_shootP):
+        shutil.copy(src_shootP, dest_shootP)
+    #except Exception as shootP:
+    #    print("Error : " + str(shootP))
 
+def the_shooting_update_for_all(sweep_name, k, i, j):
+    m=1 #Counter for Shooting update is always i-1
+    print("Starting shooting update process for " + sweep_name + ".\n")
+    interval_name=myinterval.format(i)
+    print("j="+str(j))
+    print("n="+str(n))
+    if j<=n:
+        print("Shooting Update process started from " + interval_name + " for " + sweep_name)
+        pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
+    interval_name=myinterval.format(m)    
+    sol.computeShootingUpdate(basepath, folder_name, k, i)
+    post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
+    m=m+1 #Counter for Shooting Update
+
+
+### ERASING FUNCTIONS #################
 def erase_system(path_files):
     for filename in os.listdir(path_files):
         the_path = os.path.join(path_files, filename)
-        os.remove(the_path)
+        os.remove(the_path)        
+    os.rmdir(path_files)
+
 def erase_0(path_files):  
     for filename in os.listdir(path_files):
         the_path = os.path.join(path_files, filename)                    
@@ -64,30 +85,24 @@ def erase_0(path_files):
         os.remove(the_path)
     except Exception as e2:
         print("Error while deleting file: " + str(e2))
+
 def erase_constant(path_files):
     for filename in os.listdir(path_files+"/polyMesh/sets"):
         the_path = os.path.join(path_files+"/polyMesh/sets", filename)
+    try:
+        shutil.rmtree(path_files+"/polyMesh/sets")
+    except Exception as sets:
+        print("sets deleting problem: " + str(sets))
+    for filename in os.listdir(path_files+"/polyMesh"):
+        the_path = os.path.join(path_files+"/polyMesh", filename)
+
+    shutil.rmtree(path_files+"/polyMesh")
+    for filename in os.listdir(path_files):
+        the_path = os.path.join(path_files, filename)
         try:
-            shutil.rmtree(path_files+"/polyMesh/sets")
-        except Exception as sets:
-            print("sets deleting problem: " + str(sets))
-        for filename in os.listdir(path_files+"/polyMesh"):
-            the_path = os.path.join(path_files+"/polyMesh", filename)
-            try:
-                shutil.rmtree(path_files+"/polyMesh")
-            except Exception as polymesh:
-                print("rmtree polymesh:" + str(polymesh))
-            try:  
-                os.remove(path_files+"/polyMesh")
-            except Exception as polymesh:
-                print("Error:"+ str(polymesh))
-            for filename in os.listdir(path_files):
-                the_path = os.path.join(path_files, filename)
-                os.remove(the_path)
-                try:
-                    shutil.rmtree(the_path)
-                except:
-                    return(0)
+            os.remove(the_path)
+        except:
+            print("error in erase_constant line 89: os.remove(the_path)")
 
 def erase_time_files(path_files):
     for filename in os.listdir(path_files):
@@ -124,28 +139,21 @@ def erase_all_files(basepath, folder_name, k):
             
             src_log=basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/lin_logfilesweep"+str(k)+"_"+interval_name+".txt"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/lin_logfile_"+interval_name+".txt"
-            try:
+            if os.path.exists(src_log):
                 shutil.move(src_log, dest_log)
-            except Exception as e4:
-                print("Error while moving directory: " + str(e4))
+            #except Exception as e4:
+            #    print("Error while moving directory: " + str(e4))
             src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/pimple.log"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/pimple_"+interval_name+".log"
             try:
                 shutil.move(src_log, dest_log)
             except Exception as error:
                 print("Error while moving file: " + str(error))            
-            try:
-                erase_constant(path_files+"/constant")
-            except Exception as cte:
-                print("Problem with constant: " + str(cte))  
-            try:
-                erase_system(path_files+"/system")
-            except Exception as sys:
-                print("Problem with system: " + str(sys))
-            try:
-                erase_0(path_files+"/preProcessing/0")
-            except Exception as e0:
-                print("Problem with 0:" + str(e0))
+            
+            erase_constant(path_files+"/constant")
+            erase_system(path_files+"/system")
+            shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
+            
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
@@ -153,7 +161,7 @@ def erase_all_files(basepath, folder_name, k):
         shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop.txt")
     except Exception as e4:
-        print("Error while moving directory: " + str(e4))
+        print("Error while moving directory: ")
     erase_files(src_log)
     try:
         shutil.rmtree(src_log)
@@ -167,7 +175,8 @@ def erase_all_files(basepath, folder_name, k):
         shutil.move(src_log, dest_log)
     except Exception as e4:
                 print("Error while moving directory: " + str(e4))
-    erase_files(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
+    
+    #erase_files(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
     try:
         shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
     except Exception as error:

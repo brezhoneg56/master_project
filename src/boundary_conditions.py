@@ -9,8 +9,8 @@ import shutil
 import fileinput
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import sys
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep
+from config import basepath, primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)
@@ -70,6 +70,10 @@ def sweep_1_initialization(basepath, folder_name):
                 line = 'endTime         {};\n'.format(endTime)
             print(line)
     print("Sweep 1 initialization is done.")
+    os.chdir(basepath + folder_name)
+    with open("pressureDropvalues.txt","w") as mytime:
+        mytime.write("\n\n=============================================================================\n\n" + "                         LOGFILE " + folder_name + "\n\n=============================================================================\n\n")
+    mytime.close()
     return(folder_name)
 
 ###########################################################################
@@ -141,7 +145,6 @@ def time(start_time):
     num_seconds=elapsed_time%60
     print("Elapsed time:",num_minutes, "minutes and" , num_seconds, "seconds")
 
-
 def check_existence(parent_directory, parameter):
         # Get a list of all directories within the parent directory
         subdirectories = [folder for folder in os.listdir(parent_directory) if os.path.isdir(os.path.join(parent_directory, folder))]
@@ -152,7 +155,7 @@ def check_existence(parent_directory, parameter):
                 # Construct the file path within the subdirectory
                 file_path = os.path.join(parent_directory, subdirectory, parameter)
 
-            # Check if the file exists
+                # Check if the file exists
                 if os.path.isfile(file_path):
                     print("The file '" + parameter + "' exists in the folder " + subdirectory + ".")
                 else: 
@@ -178,3 +181,29 @@ def check_existence_linU(basepath, folder_name, sweep_name):
                         print("linearisedPimpleDyMFoam failed for " + interval_name + ". Executing again... ")
                         #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
                         sys.exit
+
+def checking_existence(folder_name):
+    if os.path.exists(folder_name):
+            ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
+            if ans=="Y" or ans=="y":
+                print("Deleting files...\n")
+                for g in range(1, n + 1):
+                    if os.path.exists("sweep" + str(g)):
+                        shutil.rmtree("sweep" + str(g))
+                shutil.rmtree(folder_name)
+                
+            else:
+                sys.exit()
+    return(folder_name)
+
+def timer_and_write(elapsed_time, function, sweep_name):
+    num_minutes=int(elapsed_time / 60)
+    num_seconds=elapsed_time % 60
+    # Function write_time        
+    os.chdir(basepath + folder_name)
+    with open("pressureDropvalues.txt","a") as mytime:
+        time_pimple="\nElapsed time for " + function + " in " + sweep_name + ": " + str(round((num_minutes),2)) + " minutes and " + str(round((num_seconds),3)) + " seconds.\n" 
+        mytime.write(time_pimple)
+        print(time_pimple)
+    mytime.close()
+    os.chdir(basepath) #back to main pa60th

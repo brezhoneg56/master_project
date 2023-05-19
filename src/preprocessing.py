@@ -53,10 +53,6 @@ def prepareMyNextSweep(basepath, k, folder_name):
     for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
         preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i)
     sweep_name=mysweep.format(k)
-    #with ThreadPoolExecutor() as executor:
-    #    futures = [executor.submit(preparenextSweepStartingFiles, basepath,  folder_name, previous_sweep_name, sweep_name, i) for i in range(k + 1, n + 1)]
-    #    for future in futures:
-    #        future.result()
 
 def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
     myinterval="interval{}"
@@ -70,18 +66,14 @@ def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
         interval_name=myinterval.format(x)
         source_interval=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name
         destination_interval=basepath + folder_name + "/" + sweep_name
-        shutil.copytree(source_interval, os.path.join(destination_interval, os.path.basename(source_interval)))
-    #pimpleDyMFoam(folder_name, sweep_name, interval_name)
-    #preparePostProcessing(folder_name, sweep_name)
-    #computePressureDropFoam(folder_name, sweep_name)    
+        shutil.copytree(source_interval, os.path.join(destination_interval, os.path.basename(source_interval)))    
     
     #Preparing shooting directories from sweep1 data 
-    for i in range(k+1,n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
+    for i in range(k+1,n+1):
         interval_name=myinterval.format(i)
         destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
         previous_interval_name=myinterval.format(i-1)
-        #startTime=decimal_analysis(theta + deltaT*(i-2))
         endTime=bc.decimal_analysis(theta + deltaT*(i-1))
         
         source_constant=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name + '/constant'
@@ -98,48 +90,51 @@ def seq_prepareMyNextSweep(basepath, k, folder_name): #Sequential
 
 #################  PRIMAL STEFFENSEN PREPROCESSING  #######################
 def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start from sweep2, after interval2 is done
+    
     #Copy Violet, Red, Blue, Green and Orange to prepare yellow (cf model)
     interval_name=myinterval.format(i-1)
     next_interval=myinterval.format(i)
     next_sweep=mysweep.format(k + 1)
     if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/"):
-        #shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
         os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/")
         os.mkdir(basepath + folder_name + "/" + sweep_name + "/preProcessing/0/")
     zero_shootingUpdate=basepath + folder_name + "/" + sweep_name + "/preProcessing/0/"
-    #print("Copy code VIOLET for " + sweep_name + " and " + interval_name + "\n")
+    
+    #Copy codes, see master_script
     src_violet_folder=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
     shutil.copy(src_violet_folder + "p", zero_shootingUpdate + "pStart_left")
     shutil.copy(src_violet_folder + "U", zero_shootingUpdate + "UStart_left")
     shutil.copy(src_violet_folder + "Uf", zero_shootingUpdate + "UfStart_left")
     shutil.copy(src_violet_folder + "phi", zero_shootingUpdate + "phiStart_left")
     print("Copy code VIOLET done.")
-    #print("Copy code RED for " + sweep_name + " and " + interval_name + ".\n")
+
     src_red_folder=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     shutil.copy(src_red_folder + "p", zero_shootingUpdate + "pEnd_left")
     shutil.copy(src_red_folder + "U", zero_shootingUpdate + "UEnd_left")
     shutil.copy(src_red_folder + "Uf", zero_shootingUpdate + "UfEnd_left")
     shutil.copy(src_red_folder + "phi", zero_shootingUpdate + "phiEnd_left")
     print("Copy code RED done.")
-    #print("Copy code BLUE.\n")
+
     shutil.copy(src_red_folder + "linU", zero_shootingUpdate + "dUdu")
     shutil.copy(src_red_folder + "linP", zero_shootingUpdate + "dPdp")
     shutil.copy(src_red_folder + "linUf", zero_shootingUpdate + "dUduf")
     print("Copy code BLUE done.")
-    #print("Copy code GREEN.\n")
+
     src_green_folder=basepath + folder_name + "/" + next_sweep + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-2)*deltaT)) + "/"
     shutil.copy(src_green_folder + "p", zero_shootingUpdate + "shootingUpdateP_left") #instead of shootingUpdateP_left
     shutil.copy(src_green_folder + "U", zero_shootingUpdate + "shootingUpdateU_left")
     shutil.copy(src_green_folder + "Uf", zero_shootingUpdate + "shootingUpdateUf_left")
     shutil.copy(src_green_folder + "phi", zero_shootingUpdate + "shootingUpdatePhi_left")
     print("Copy code GREEN done.")
-    #print("Copy code ORANGE.\n")
+
     src_orange_folder=basepath + folder_name + "/" + sweep_name + "/" + next_interval + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     shutil.copy(src_orange_folder + "p", zero_shootingUpdate + "pStart_right")
     shutil.copy(src_orange_folder + "U", zero_shootingUpdate + "UStart_right")
     shutil.copy(src_orange_folder + "Uf", zero_shootingUpdate + "UfStart_right")
     shutil.copy(src_orange_folder + "phi", zero_shootingUpdate + "phiStart_right")
     print("Copy code ORANGE done.")
+    
+    #Copy of constant and system files
     if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/preProcessing/constant/"):
         src_constant=basepath + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/constant/"
         src_system=basepath + folder_name + "/" + sweep_name + "/" + myinterval.format(i) + "/system/"
@@ -157,57 +152,46 @@ def initializeLinearisation(basepath, folder_name, sweep_name):
         print("ERROR: No such file or directory. Exiting Shooting Manager")
         sys.exit()
     
-    #Paths for variables
+    #Paths for lin and fv files
     linP_path=ref_cases + "/boundaryConditions/linP"
     linU_path=ref_cases + "/boundaryConditions/linU"
     fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
-    
-    #Copy Sweep k, interval i : preparing sweep1
-    #shutil.copytree(primitive_path + folder_name + "/sweep1/" , basepath + folder_name + "/sweep1/")
-    
+
+    #Copy lin and fv files in every subinterval
     for i in range(1, n + 1):
         interval_name=myinterval.format(i)
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
-        #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
-    
+        
+        #Copy lin files
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
-        #copy fv file
+        
+        #Copy fv files
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         bc.check_existence(ref_cases + "/boundaryConditions/", "linU")
+
 def prepareNextLinearization(basepath, folder_name, k, i):
     if not os.path.exists(folder_name):
         print("ERROR: No such file or directory. Exiting Shooting Manager")
         sys.exit()    
-    
     if k<=n:
         sweep_name=mysweep.format(k) 
-        #MAINTENANT LE PROCHAIN "ACTUEL SWEEP", donc k + 1
-        #if not os.path.exists(basepath + folder_name + "/" + sweep_name):
-        #    os.mkdir(basepath + folder_name + "/" + sweep_name)
-        #    shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/interval1/" , basepath + folder_name + "/" + sweep_name + "/interval1/")
-    
-        #for i in range(1, n + 1):
         interval_name=myinterval.format(i)
-        #if not os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name):
-        #    shutil.copytree(primitive_path + folder_name + "/" + sweep_name + "/" + interval_name , basepath + folder_name + "/" + sweep_name + "/" + interval_name)
+        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        
+        #Paths for lin and fv files
         linP_path=ref_cases + "/boundaryConditions/linP"
         linU_path=ref_cases + "/boundaryConditions/linU"
         fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
         fvSolution_path=ref_cases + "/controlBib/fvSolution"
         
-        #copy theta dir
-        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        #Copy lin files
         shutil.copy2(linP_path, starttime_dest)
         shutil.copy2(linU_path, starttime_dest)
-        #copy fv file
+        
+        #Copy fv files
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         print("Files successfully copied for " + interval_name + ". Ready for linearisation.")
-        
-
-        
- 
-
