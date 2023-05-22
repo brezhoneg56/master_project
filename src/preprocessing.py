@@ -10,8 +10,9 @@ import sys
 from src import boundary_conditions as bc
 import subprocess
 import multiprocessing
+from concurrent import futures
 import glob
-from config import primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
@@ -39,7 +40,24 @@ def preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sw
     shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
     print("Preparing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is new start time: " + str(endTime))
 
+
 def prepareMyNextSweep(basepath, k, folder_name):
+    #Prepare all shooting intervals of next sweep for computation 
+    sweep_name=mysweep.format(k+1)#k+1
+    previous_sweep_name=mysweep.format(k)#k
+    os.path.join(folder_name,sweep_name)
+    print("\nPreparing shooting of " + sweep_name + ". ") 
+    # Copy Directories that were already shoot. Warning : put that after the computations
+    #Copy already shoot Directories in the next Sweep 
+    for x in range(1,k+1):#k+1
+        copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name)
+    #Preparing shooting directories from sweep1 data 
+    with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+        for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
+            executor.submit(preparenextSweepStartingFiles, basepath, folder_name, previous_sweep_name, sweep_name, i)
+        sweep_name=mysweep.format(k)
+
+def seq2_prepareMyNextSweep(basepath, k, folder_name):
     #Prepare all shooting intervals of next sweep for computation 
     sweep_name=mysweep.format(k+1)#k+1
     previous_sweep_name=mysweep.format(k)#k
@@ -157,6 +175,35 @@ def initializeLinearisation(basepath, folder_name, sweep_name):
     linU_path=ref_cases + "/boundaryConditions/linU"
     fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
+    with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+        for i in range(1, n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
+            executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
+
+def copy_linearization(folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path):    
+        interval_name=myinterval.format(i)
+        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        
+        #Copy lin files
+        shutil.copy2(linP_path, starttime_dest)
+        shutil.copy2(linU_path, starttime_dest)
+        
+        #Copy fv files
+        shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        bc.check_existence(ref_cases + "/boundaryConditions/", "linU")
+
+def seq_initializeLinearisation(basepath, folder_name, sweep_name):
+    #### IS ONLY THOUGHT FOR SWEEP1
+    #Copy files to prepare linearisedPimpleDyMFoam
+    if not os.path.exists(folder_name):
+        print("ERROR: No such file or directory. Exiting Shooting Manager")
+        sys.exit()
+    
+    #Paths for lin and fv files
+    linP_path=ref_cases + "/boundaryConditions/linP"
+    linU_path=ref_cases + "/boundaryConditions/linU"
+    fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
+    fvSolution_path=ref_cases + "/controlBib/fvSolution"
 
     #Copy lin and fv files in every subinterval
     for i in range(1, n + 1):
@@ -178,20 +225,24 @@ def prepareNextLinearization(basepath, folder_name, k, i):
         sys.exit()    
     if k<=n:
         sweep_name=mysweep.format(k) 
-        interval_name=myinterval.format(i)
-        starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+        #interval_name=myinterval.format(i)
+        #starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
         
         #Paths for lin and fv files
         linP_path=ref_cases + "/boundaryConditions/linP"
         linU_path=ref_cases + "/boundaryConditions/linU"
         fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
         fvSolution_path=ref_cases + "/controlBib/fvSolution"
+
+        with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+            for i in range(1, n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
+                executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
         
-        #Copy lin files
-        shutil.copy2(linP_path, starttime_dest)
-        shutil.copy2(linU_path, starttime_dest)
-        
-        #Copy fv files
-        shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
-        print("Files successfully copied for " + interval_name + ". Ready for linearisation.")
+#        #Copy lin files
+#        shutil.copy2(linP_path, starttime_dest)
+#        shutil.copy2(linU_path, starttime_dest)
+#        
+#        #Copy fv files
+#        shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+#        shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+#        print("Files successfully copied for " + interval_name + ". Ready for linearisation.")

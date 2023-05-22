@@ -94,7 +94,7 @@ def primal_shooting_stef_update(basepath):
     start_time_ALL=time.time()
     
     #Initilisation for Sweep1
-    bc.sweep_1_initialization(basepath, folder_name)
+    bc.sweep_1_initialization(basepath, folder_name) #One sync version
 
     # STARTING MAIN LOOP
     for k in range(1, n+1):
@@ -106,7 +106,7 @@ def primal_shooting_stef_update(basepath):
         sweep_name = mysweep.format(k)
 
         #Starting primitive Shooting in Sweep k over all subintervals
-        sol.loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k)
+        sol.loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
 
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
@@ -116,7 +116,7 @@ def primal_shooting_stef_update(basepath):
         lin_time=time.time()
 
         #Starting linearisation for Sweep k over all subintervals
-        sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k)
+        sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
 
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - lin_time
@@ -125,10 +125,17 @@ def primal_shooting_stef_update(basepath):
         #Implementing counter for shooting update
         countershooting=countershooting+1
 
+
         #Intricated for-loop for shooting update, over all subintervals (i), but depending on sweep
-        if not k==n-1:        
-            for i, j in zip(range(2, n+1),range(countershooting, n+n)):
-             post.the_shooting_update_for_all(sweep_name, k, i, j)
+        if not k==n-1:
+            with futures.ProcessPoolExecutor(max_workers=13) as executor:        
+                for i, j in zip(range(2, n+1),range(countershooting, n+n)):
+                    executor.submit(post.the_shooting_update_for_all, sweep_name, k, i, j)
+
+#        #Intricated for-loop for shooting update, over all subintervals (i), but depending on sweep
+#        if not k==n-1:        
+#            for i, j in zip(range(2, n+1),range(countershooting, n+n)):
+#             post.the_shooting_update_for_all(sweep_name, k, i, j)
 
         # Deleting Files after Sweep k Done        
         #ans=input("Do you want to delete useless files? (Y/N)     \n   \n")
