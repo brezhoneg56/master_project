@@ -27,10 +27,12 @@ def preparePostProcessing(basepath, folder_name, sweep_name):
 
 def computePressureDropFoam(basepath, folder_name, sweep_name):
     os.chdir(basepath + folder_name + '/' + sweep_name + "/postProcessing")
+    
     #Open a log file for pressureDrop and timers       
     with open("pressureDrop.txt","w"):
         result=os.system('computePressureDropFoam start end > pressureDrop.txt')            
         print("\nComputation of Pressure Drop for " + sweep_name + " is done.\nWriting into pressureDrop.txt ...")
+    
     #Writing the pressureDrop line into txt file
     with open("pressureDrop.txt","r") as f:
         os.chdir(basepath + folder_name)
@@ -42,7 +44,7 @@ def computePressureDropFoam(basepath, folder_name, sweep_name):
                     print(line)
         mapression.close()
     f.close()
-    os.chdir(basepath) #back to main pa60th
+    os.chdir(basepath) #back to main path
     print("Done.\n")
     return(result)
 
@@ -52,15 +54,13 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     dest_shootP=basepath + folder_name + "/" + mysweep.format(k + 1) + "/" + interval_name + "/" + startingTime
     if os.path.exists(src_shootP):
         shutil.copy(src_shootP, dest_shootP)
-    #except Exception as shootP:
-    #    print("Error : " + str(shootP))
 
 def the_shooting_update_for_all(sweep_name, k, i, j):
     m=1 #Counter for Shooting update is always i-1
     print("Starting shooting update process for " + sweep_name + ".\n")
     interval_name=myinterval.format(i)
-    print("j="+str(j))
-    print("n="+str(n))
+    #print("j="+str(j))
+    #print("n="+str(n))
     if j<=n:
         print("Shooting Update process started from " + interval_name + " for " + sweep_name)
         pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
