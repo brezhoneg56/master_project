@@ -5,6 +5,7 @@ Created on Tue Apr 18 10:30:18 2023
 @author: jcosson
 """
 import os
+import sys
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import shutil
 from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
@@ -57,19 +58,31 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
 
 def the_shooting_update_for_all(sweep_name, k, i, j):
     m=1 #Counter for Shooting update is always i-1
-    print("Starting shooting update process for " + sweep_name + ".\n")
+    #print("Starting shooting update process for " + sweep_name + ".\n")
     interval_name=myinterval.format(i)
     #print("j="+str(j))
     #print("n="+str(n))
     if j<=n:
-        print("Shooting Update process started from " + interval_name + " for " + sweep_name)
+        #print("Shooting Update process started from " + interval_name + " for " + sweep_name)
         pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
     interval_name=myinterval.format(m)    
     sol.computeShootingUpdate(basepath, folder_name, k, i)
     post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
     m=m+1 #Counter for Shooting Update
 
-
+def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
+    next_sweep=mysweep.format(k+1)
+    next_interval=myinterval.format(i+1)
+    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/p"
+    dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(bc.decimal_analysis(theta + (i)*deltaT))
+    #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
+    shutil.copy(src_upfiles + "shootingUpdateU", dest_upfiles + "/U")
+    shutil.copy(src_upfiles + "shootingUpdatePhi", dest_upfiles + "/phi")
+    shutil.copy(src_upfiles + "shootingUpdateUf", dest_upfiles + "/Uf")
+    shutil.copy(src_p, dest_upfiles)
+    
+    
 ### ERASING FUNCTIONS #################
 def erase_system(path_files):
     for filename in os.listdir(path_files):
@@ -127,7 +140,19 @@ def erase_files(path_files):
                     shutil.rmtree(the_path)
                 except:
                     print("Failed to erase")
+    if os.path.exists(path_files):
+        os.removedirs(the_path)
 
+def erase_shootingdefect(path_files, sweep_name, interval_name, i):
+    if i!=1:
+        src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+        dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
+        shutil.move(src_shootfile, dest_shootfile)
+        #post.erase_0(path_files)
+        #post.erase_constant(path_files)
+        #post.erase_system(path_files)
+        
+    
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
     #Interval time files   
@@ -152,17 +177,21 @@ def erase_all_files(basepath, folder_name, k):
             
             erase_constant(path_files+"/constant")
             erase_system(path_files+"/system")
+            erase_shootingdefect(path_files, sweep_name, interval_name, i)            
+            
             shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
             
+            
+    
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
     try:
         shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop.txt")
-    except Exception as e4:
+    except Exception:
         print("Error while moving directory: ")
-    erase_files(src_log)
+    #erase_files(src_log)
     try:
         shutil.rmtree(src_log)
     except Exception as error:
@@ -171,16 +200,17 @@ def erase_all_files(basepath, folder_name, k):
     #Preprocessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/preProcessing/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
     dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
-    try:
+    if os.path.exists(src_log):    
         shutil.move(src_log, dest_log)
-    except Exception as e4:
-                print("Error while moving directory: " + str(e4))
+    #except Exception as e4:
+     #           print("Error while moving directory: " + str(e4))
     
     #erase_files(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
-    try:
+    if os.path.exists(basepath+folder_name+"/"+sweep_name+"/preProcessing/"):     
+    #try:
         shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
-    except Exception as error:
-        print("Error while deleting file: " + str(error))
-    print("The files were succefully deleted. See exceptions above.")
+    #except Exception as error:
+    #    print("Error while deleting file: " + str(error))
 
+    
     

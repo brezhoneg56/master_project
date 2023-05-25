@@ -7,12 +7,12 @@ Created on Mon Apr 17 17:40:10 2023
 import os
 import shutil
 import sys
-from src import boundary_conditions as bc
+from src import boundary_conditions as bc, postprocessing as post
 import subprocess
 import multiprocessing
 from concurrent import futures
 import glob
-from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, postPro_cases
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
@@ -169,3 +169,31 @@ def prepareNextLinearization(basepath, folder_name, k, i):
         with futures.ProcessPoolExecutor(max_workers=13) as executor:    
             for i in range(1, n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
                 executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
+
+def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
+    #Fetch shooting Update folder from postPro cases
+    src_shootUpdate=ref_cases+"shootingDefect/"
+    dest_shootUpdate=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/" 
+    if os.path.exists(dest_shootUpdate):
+        print("Replacing file")
+        post.erase_files(dest_shootUpdate)   
+    shutil.copytree(src_shootUpdate, dest_shootUpdate)
+    
+    #Fetch data from EndTime folder
+    src_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i)*deltaT))
+    #print(str(bc.decimal_analysis(theta + (i)*deltaT)))
+    dest_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+    shutil.copy(src_data+"/linU", dest_data+"dUdu")
+    shutil.copy(src_data+"/linUf", dest_data+"dUduf")
+    shutil.copy(src_data+"/linP", dest_data+"dPdp")
+    shutil.copy(src_data+"/U", dest_data+"UEnd_left")
+    shutil.copy(src_data+"/p", dest_data+"pEnd_left")
+    shutil.copy(src_data+"/phi", dest_data+"phiEnd_left")
+    shutil.copy(src_data+"/Uf", dest_data+"UfEnd_left")
+    shutil.copy(src_data+"/U", dest_data+"shootingUpdateU")
+    shutil.copy(src_data+"/p", dest_data+"shootingUpdateP")
+    shutil.copy(src_data+"/phi", dest_data+"shootingUpdatePhi")
+    shutil.copy(src_data+"/Uf", dest_data+"shootingUpdateUf")
+
+
+    

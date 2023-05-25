@@ -60,10 +60,10 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
     print("Starting LIN EXECUTOR ... \n")
     if k==1:
         pre.initializeLinearisation(basepath, folder_name, sweep_name)
-    for i in range(k, n+1):
+    for i in range(1, n+1):#k, essayer 2
         pre.prepareNextLinearization(basepath, folder_name, k, i)
     with futures.ProcessPoolExecutor(max_workers=13) as executor:        
-        for i in range(k, n+1):
+        for i in range(1, n+1):#k.essayer 2, on ne lin pas dans 1
             executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
             print("Starting linearisedPimpleDyMFoam for interval " + str(i))
         
@@ -89,7 +89,7 @@ def prepareDefectComputation(basepath, sweep_name, interval_name, previous_inter
     
     startingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
     endingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
-    print(startingTime)
+    #print(startingTime)
     #Fetch U, p, phi from current interval
     src_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/U"
     src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/p"
@@ -127,7 +127,7 @@ def prepareDefectComputation(basepath, sweep_name, interval_name, previous_inter
     shutil.copyfile(src_linPDefect, dest_linPDefect)
     
 
-def int1_Defect(basepath, sweep_name):
+def int1_Defect(basepath, sweep_name): #for computeDefect
     i=1
     interval_name="interval1"
     endingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
@@ -146,15 +146,34 @@ def int1_Defect(basepath, sweep_name):
 
 def computeDefect(basepath, sweep_name, k):
     int1_Defect(basepath, sweep_name)
-    for i in range(k, n+1): #2, n+1
-        if i!=1:
-            interval_name=myinterval.format(i)
-            previous_interval=myinterval.format(i-1)
-            prepareDefectComputation(basepath, sweep_name, interval_name, previous_interval, i)
-            os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect")
-            os.system("computeShootingDefect")   
-            print("Starting computeShootingDefect for interval " + str(i))
+    print("\nComputing Defect ...")
+    for i in range(2, n+1): #2, n+1
+        interval_name=myinterval.format(i)
+        previous_interval=myinterval.format(i-1)
+        prepareDefectComputation(basepath, sweep_name, interval_name, previous_interval, i)
+        os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect")
+        with open("shooting_defect_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
+            subprocess.run(['computeShootingDefect'], stdout=logfile, stderr=subprocess.STDOUT)        
+            #os.system("computeShootingDefect")   
+            #print("Starting computeShootingDefect for interval " + str(i))
     os.chdir(basepath)
+
+def computeNewtonUpdate(basepath, folder_name, sweep_name, k):
+    print("\nComputing Newton Update...")
+    if k+1==n:
+        sys.exit
+    for i in range(2, n+1):
+        interval_name=myinterval.format(i)
+        pre.prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i)
+        os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name)     
+        with open("newton_update_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
+            os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate")
+            subprocess.run(['computeNewtonUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
+        os.chdir(basepath)
+        #if k==n-1:
+            #return(0)
+        if i<n and k<n:
+            post.prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i)
 
 # THE BIG SOLVER
 def primal_shooting_stef_update(basepath):
@@ -184,12 +203,12 @@ def primal_shooting_stef_update(basepath):
         #Starting primitive Shooting in Sweep k over all subintervals
         sol.loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
 
-        #Newline for defect
-        computeDefect(basepath, sweep_name, k)
-
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
         bc.timer_and_write(elapsed_time, "pimpleDyMFoam", sweep_name)
+
+        #Newline for defect
+        computeDefect(basepath, sweep_name, k)
 
         #Starting intermediate timer
         lin_time=time.time()
@@ -201,19 +220,24 @@ def primal_shooting_stef_update(basepath):
         elapsed_time = time.time() - lin_time
         bc.timer_and_write(elapsed_time, "linearisedPimpleDyMFoam", sweep_name)
 
+        #Starting Newton Update
+        computeNewtonUpdate(basepath, folder_name, sweep_name, k)
+
         #Implementing counter for shooting update
         countershooting=countershooting+1
 
         #Intricated for-loop for shooting update, over all subintervals (i), but depending on sweep
-        if not k==n-1:
-            with futures.ProcessPoolExecutor(max_workers=13) as executor:        
-                for i, j in zip(range(2, n+1),range(countershooting, n+n)):
-                    executor.submit(post.the_shooting_update_for_all, sweep_name, k, i, j)
+#        if not k==n-1:
+#            print("\nStarting Shooting Update...")
+#            with futures.ProcessPoolExecutor(max_workers=13) as executor:        
+#                for i, j in zip(range(2, n+1),range(countershooting, n+n)):
+#                    executor.submit(post.the_shooting_update_for_all, sweep_name, k, i, j)
 
         # Deleting Files after Sweep k Done        
         print("Deleting files...\n")
         post.erase_all_files(basepath, folder_name, k)
-                
+        print("The files were succefully deleted. See exceptions above.")
+        
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time        
         bc.timer_and_write(elapsed_time, "all subintervals", sweep_name)
@@ -243,9 +267,8 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
         sweep_name=mysweep.format(s)
         loop_pimpleDyMFoam(basepath, folder_name, sweep_name, s)
         
-        #Newline for defect
+        #Sarting Defect Computation
         computeDefect(basepath, sweep_name, s)
-        ##
     
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -265,7 +288,7 @@ def computeSteffensenMethod(basepath, folder_name):
     #Linearisation preparation and cmputation from Sweep 2 to n
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with futures.ProcessPoolExecutor(max_workers=13) as executor:
             for i in range (1, n+1):
                 executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
                 pre.prepareNextLinearization(basepath, folder_name, k, i)
@@ -288,5 +311,7 @@ def computeSteffensenMethod(basepath, folder_name):
         if k>3:
             g=k-2
             post.erase_all_files(basepath, folder_name, g)
+            print("The files were succefully deleted. See exceptions above.")
+
     print(bc.time(start_time))
         

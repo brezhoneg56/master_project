@@ -36,6 +36,7 @@ def sweep_1_initialization(basepath, folder_name):
     with open("pressureDropvalues.txt","w") as mytime:
         mytime.write("\n\n=============================================================================\n\n" + "                         LOGFILE " + folder_name + "\n\n=============================================================================\n\n")
     mytime.close()
+    print("Sweep 1 initialization is done.")
     os.chdir(basepath)
     #return(folder_name)
 
@@ -61,7 +62,7 @@ def copy_sweep1_initialization(sweep_name, i): #Copy function for sweep1_initial
     
     # Deleting wrong polyMesh/points in the starting time directory
     polyMesh_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh/points'
-    print('The file ' + folder_name + '/' + sweep_name + '/' + interval_name + '/constant/polyMesh/points has been succefully removed.')
+    #print('The file ' + folder_name + '/' + sweep_name + '/' + interval_name + '/constant/polyMesh/points has been succefully removed.')
     os.remove(polyMesh_path)
     file=destination_startTime + '/' + str(startTime) + '/polyMesh/points'
     if os.path.exists(file):
@@ -80,7 +81,6 @@ def copy_sweep1_initialization(sweep_name, i): #Copy function for sweep1_initial
         elif line.startswith('endTime'):
             line = 'endTime         {};\n'.format(endTime)
         print(line)
-    print("Sweep 1 initialization is done.")
 
 ###########################################################################
 

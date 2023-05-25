@@ -16,6 +16,7 @@ steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs
 calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
 #REFERENCE PATHS
 ref_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/"
+postPro_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/postProcessing/"
 ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
 #MY PROJECTS PATHS
 project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
@@ -26,8 +27,8 @@ basepath=primitive_path
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=5; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals"
+n=4; #Amount of sweeps / shooting intervals
+folder_name=str(n)+"_interval_test"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop
