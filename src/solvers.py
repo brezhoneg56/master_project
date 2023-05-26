@@ -58,8 +58,8 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
     print("\nStarting linearisation of " + sweep_name + "\n")
     print("Starting LIN EXECUTOR ... \n")
-    if k==1:
-        pre.initializeLinearisation(basepath, folder_name, sweep_name)
+    #if k==1:
+    #    pre.initializeLinearisation(basepath, folder_name, sweep_name)
     for i in range(1, n+1):#k, essayer 2
         pre.prepareNextLinearization(basepath, folder_name, k, i)
     with futures.ProcessPoolExecutor(max_workers=13) as executor:        
@@ -117,14 +117,14 @@ def prepareDefectComputation(basepath, sweep_name, interval_name, previous_inter
     shutil.copyfile(src_phi, dest_phi)
 
     #U et p defect
-#    src_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/LinUDefect"
-    src_linUDefect=ref_cases + "boundaryConditions/linUDefect"
-    src_linPDefect=ref_cases + "boundaryConditions/linPDefect"
-    dest_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/LinUDefect"
-    dest_linPDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/linPDefect"
-    
-    shutil.copyfile(src_linUDefect, dest_linUDefect)
-    shutil.copyfile(src_linPDefect, dest_linPDefect)
+    #    src_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/LinUDefect"
+#    src_linUDefect=ref_cases + "boundaryConditions/linUDefect"
+#    src_linPDefect=ref_cases + "boundaryConditions/linPDefect"
+#    dest_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/LinUDefect"
+#    dest_linPDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/linPDefect"
+#    
+#    shutil.copyfile(src_linUDefect, dest_linUDefect)
+#    shutil.copyfile(src_linPDefect, dest_linPDefect)
     
 
 def int1_Defect(basepath, sweep_name): #for computeDefect

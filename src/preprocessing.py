@@ -145,27 +145,33 @@ def copy_linearization(folder_name, sweep_name, i, linP_path, linU_path, fvSchem
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
         
         #Copy lin files
-        shutil.copy2(linP_path, starttime_dest)
-        shutil.copy2(linU_path, starttime_dest)
+        shutil.copy2(linP_path, starttime_dest + "/linP")
+        shutil.copy2(linU_path, starttime_dest + "/linU")
         
         #Copy fv files
         shutil.copy(fvSchemes_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        
         bc.check_existence(ref_cases + "/boundaryConditions/", "linU")
 
 def prepareNextLinearization(basepath, folder_name, k, i):
+    interval_name=myinterval.format(i)
     if not os.path.exists(folder_name):
         print("ERROR: No such file or directory. Exiting Shooting Manager")
         sys.exit()    
     if k<=n:
         sweep_name=mysweep.format(k)
         
-        #Paths for lin and fv files
-        linP_path=ref_cases + "/boundaryConditions/linP"
-        linU_path=ref_cases + "/boundaryConditions/linU"
+        #Paths for lin and fv files, OLD paths without Newton Update 
+#        linP_path=ref_cases + "/boundaryConditions/linP"
+#        linU_path=ref_cases + "/boundaryConditions/linU"
         fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
         fvSolution_path=ref_cases + "/controlBib/fvSolution"
-
+        
+        #New Paths for linP and linU, taking the Newton Update into account:
+        linP_path=ref_cases + "/boundaryConditions/linP0"
+        linU_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/linUDefect"
+        
         with futures.ProcessPoolExecutor(max_workers=13) as executor:    
             for i in range(1, n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
                 executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
