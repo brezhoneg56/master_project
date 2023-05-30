@@ -12,7 +12,7 @@ import subprocess
 import multiprocessing
 from concurrent import futures
 import glob
-from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, postPro_cases
+from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
@@ -201,5 +201,20 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
     shutil.copy(src_data+"/phi", dest_data+"shootingUpdatePhi")
     shutil.copy(src_data+"/Uf", dest_data+"shootingUpdateUf")
 
+####### ADJOINT
+
+
+def prepareTimeFolders(basepath, folder_name):
+    for k in range (1, n+1):
+        sweep_name=mysweep.format(k)
+        for i in range (1, n+1):
+            interval_name=myinterval.format(i)
+            src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
+            dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
+            for filename in os.listdir(src_case):
+                if filename.startswith('0.'):
+                    shutil.copytree(src_case + "/" + filename, dest_case + "/-" + filename)
+                else:
+                    shutil.copytree(src_case + "/" + filename, dest_case + "/" + filename)
 
     

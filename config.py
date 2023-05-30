@@ -11,7 +11,7 @@ Created on Tue May  2 12:10:07 2023
 #PRIMAL PATHS
 primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
 primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
-steffensen_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/steffenssens_method/"
+adjoint_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/adjoint/"
 #CALCS PATHS
 calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
 #REFERENCE PATHS
@@ -21,14 +21,14 @@ ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/ref
 #MY PROJECTS PATHS
 project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
 # CHOOSE YOUR BASE WORKING PATH
-basepath=primitive_path
+basepath=primal_path
 
 ## VARIABLES
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=13; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals_with_update"
+n=5; #Amount of sweeps / shooting intervals
+folder_name=str(n)+"_intervals_with_update_ALL_FILES"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop

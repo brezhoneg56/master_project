@@ -13,7 +13,7 @@ import time
 from concurrent import futures
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
-from config import primal_path, primitive_path, steffensen_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path
+from config import primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
 from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
@@ -82,6 +82,7 @@ def computeShootingUpdate(basepath, folder_name, g, i):
         subprocess.run(['computeShootingUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
 
 def prepareDefectComputation(basepath, sweep_name, interval_name, previous_interval, i): #for computeDefect
+    
     #Fetch shootingDefect from ref_Cases    
     src_shootingDefect = ref_cases + "shootingDefect/"
     dest_shootingDefect = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/"
@@ -89,7 +90,7 @@ def prepareDefectComputation(basepath, sweep_name, interval_name, previous_inter
     
     startingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
     endingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
-    #print(startingTime)
+
     #Fetch U, p, phi from current interval
     src_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/U"
     src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/p"
@@ -154,8 +155,6 @@ def computeDefect(basepath, sweep_name, k):
         os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect")
         with open("shooting_defect_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
             subprocess.run(['computeShootingDefect'], stdout=logfile, stderr=subprocess.STDOUT)        
-            #os.system("computeShootingDefect")   
-            #print("Starting computeShootingDefect for interval " + str(i))
     os.chdir(basepath)
 
 def computeNewtonUpdate(basepath, folder_name, sweep_name, k):
@@ -170,8 +169,6 @@ def computeNewtonUpdate(basepath, folder_name, sweep_name, k):
             os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate")
             subprocess.run(['computeNewtonUpdate'], stdout=logfile, stderr=subprocess.STDOUT)
         os.chdir(basepath)
-        #if k==n-1:
-            #return(0)
         if i<n and k<n:
             post.prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i)
 
@@ -251,6 +248,7 @@ def primal_shooting_stef_update(basepath):
 ###########################################################################
 
 ###################### FUNCTIONS FOR MAIN EXECUTION #######################
+######################      PRIMITIVE SHOOTING      #######################
 
 def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + shooting method) primal_nofastpropagator_steffensen
     #Strating Timer
@@ -315,3 +313,8 @@ def computeSteffensenMethod(basepath, folder_name):
 
     print(bc.time(start_time))
         
+######################      ADJOINT COMPUTATION     #######################
+
+def computeAdjoint(basepath):
+    prepareTimeFolders()
+    

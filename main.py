@@ -27,15 +27,5 @@ os.chdir(basepath)
 ####################
 
 #The big Solver
-sol.primal_shooting_stef_update(basepath)
+sol.primal_shooting_stef_update(primal_path)
 
-#Testing Primitive + Defect
-#sol.primal_nofastpropagator_seq(basepath)
-#for k in range(1, n+1):
-#k=1
-#sweep_name=mysweep.format(k)
-#    sol.computeDefect(basepath, sweep_name, k)
-#    sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
-#    sol.computeSteffensenMethod(basepath, folder_name) 
-#sol.computeNewtonUpdate(basepath, folder_name, sweep_name, k)
-#    post.erase_all_files(basepath, folder_name, k)
