@@ -162,7 +162,7 @@ def computeNewtonUpdate(basepath, folder_name, sweep_name, k):
     print("\nComputing Newton Update...")
     if k+1==n:
         sys.exit
-    for i in range(2, n+1):
+    for i in range(k+2, n+1): #depart à 2
         interval_name=myinterval.format(i)
         pre.prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i)
         os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name)     
@@ -235,7 +235,7 @@ def primal_shooting_stef_update(basepath):
 
         # Deleting Files after Sweep k Done        
         print("Deleting files...\n")
-        post.erase_all_files(basepath, folder_name, k)
+        #post.erase_all_files(basepath, folder_name, k)
         print("The files were succefully deleted. See exceptions above.")
         
         #Stopping intermediate timer and writing into logfile

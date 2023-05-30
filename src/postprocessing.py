@@ -74,7 +74,7 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
     next_interval=myinterval.format(i+1)
     src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
-    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT)) + "/p"
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i)*deltaT)) + "/p" #correction de i-1
     dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(bc.decimal_analysis(theta + (i)*deltaT))
     #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
     shutil.copy(src_upfiles + "shootingUpdateU", dest_upfiles + "/U")
