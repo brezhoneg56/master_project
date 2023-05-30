@@ -9,17 +9,17 @@ Created on Tue May  2 12:10:07 2023
 # Here, you can adapt the different paths to your structure.
 
 #PRIMAL PATHS
-primal_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/"
-primitive_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/primal/primitive_shooting/"
-adjoint_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/moderate_deformed/adjoint/"
+primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/"
+adjoint_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/"
 #CALCS PATHS
-calcs_undeformed="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/calcs/undeformed_turbulent/"
+calcs_undeformed="/home/jcosson/workspace/henersj_shootingdata/calcs/undeformed_turbulent/"
+calcs_path="/home/jcosson/workspace/henersj_shootingdata/calcs/"
 #REFERENCE PATHS
-ref_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/"
-postPro_cases="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/postProcessing/"
-ref_cases_mod_def="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/reference_cases/moderate_deformed_SDuct/"
+ref_cases="/home/jcosson/workspace/henersj_shootingdata/reference_cases/"
+postPro_cases="/home/jcosson/workspace/henersj_shootingdata/postProcessing/"
+ref_cases_mod_def="/home/jcosson/workspace/henersj_shootingdata/reference_cases/moderate_deformed_SDuct/"
 #MY PROJECTS PATHS
-project_path="/home/jcosson/workspace/henersj-shootingdata-3b74bb73f55e/scripts/master_project/"
+project_path="/home/jcosson/workspace/henersj_shootingdata/scripts/master_project/"
 # CHOOSE YOUR BASE WORKING PATH
 basepath=primal_path
 

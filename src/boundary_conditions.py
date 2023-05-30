@@ -10,7 +10,7 @@ import fileinput
 from concurrent import futures
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import sys
-from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
+from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
@@ -62,7 +62,6 @@ def copy_sweep1_initialization(sweep_name, i): #Copy function for sweep1_initial
     
     # Deleting wrong polyMesh/points in the starting time directory
     polyMesh_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh/points'
-    #print('The file ' + folder_name + '/' + sweep_name + '/' + interval_name + '/constant/polyMesh/points has been succefully removed.')
     os.remove(polyMesh_path)
     file=destination_startTime + '/' + str(startTime) + '/polyMesh/points'
     if os.path.exists(file):

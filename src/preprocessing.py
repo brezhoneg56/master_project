@@ -9,10 +9,11 @@ import shutil
 import sys
 from src import boundary_conditions as bc, postprocessing as post
 import subprocess
+import fileinput
 import multiprocessing
 from concurrent import futures
 import glob
-from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases
+from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases, calcs_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
@@ -121,6 +122,51 @@ def prepareShootingUpdate(basepath, folder_name, sweep_name, k, i):#should start
         shutil.copytree(src_system, basepath + folder_name+"/"+sweep_name+"/preProcessing/system/")
     print(interval_name + " ready for copy code YELLOW")
 
+def prepareDefectComputation(basepath, sweep_name, interval_name, previous_interval, i): #for computeDefect
+    
+    #Fetch shootingDefect from ref_Cases    
+    src_shootingDefect = ref_cases + "shootingDefect/"
+    dest_shootingDefect = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/"
+    shutil.copytree(src_shootingDefect, dest_shootingDefect)
+    
+    startingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
+    endingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
+
+    #Fetch U, p, phi from current interval
+    src_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/U"
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/p"
+    src_phi=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/phi"
+    
+    dest_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/UInit_right"
+    dest_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/pInit_right"
+    dest_phi=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/phiInit_right"
+
+    shutil.copyfile(src_U, dest_U)
+    shutil.copyfile(src_p, dest_p)
+    shutil.copyfile(src_phi, dest_phi)
+
+    #Fetch U, p, phi from previous interval
+    src_U=basepath + folder_name + "/" + sweep_name + "/" + previous_interval + "/" + endingTime + "/U"
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + previous_interval + "/" + endingTime + "/p"
+    src_phi=basepath + folder_name + "/" + sweep_name + "/" + previous_interval + "/" + endingTime + "/phi"
+    
+    dest_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/UShootEnd"
+    dest_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/pShootEnd"
+    dest_phi=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/phiShootEnd"
+
+    shutil.copyfile(src_U, dest_U)
+    shutil.copyfile(src_p, dest_p)
+    shutil.copyfile(src_phi, dest_phi)
+
+    #U et p defect
+    #    src_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/LinUDefect"
+#    src_linUDefect=ref_cases + "boundaryConditions/linUDefect"
+#    src_linPDefect=ref_cases + "boundaryConditions/linPDefect"
+#    dest_linUDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/LinUDefect"
+#    dest_linPDefect=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + startingTime + "/linPDefect"
+#    
+#    shutil.copyfile(src_linUDefect, dest_linUDefect)
+#    shutil.copyfile(src_linPDefect, dest_linPDefect)
 ###########################################################################
 
 ####################  LINEARIZATION PREPROCESSING #########################
@@ -204,17 +250,48 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
 ####### ADJOINT
 
 
-def prepareTimeFolders(basepath, folder_name):
-    for k in range (1, n+1):
-        sweep_name=mysweep.format(k)
-        for i in range (1, n+1):
-            interval_name=myinterval.format(i)
-            src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
-            dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
-            for filename in os.listdir(src_case):
-                if filename.startswith('0.'):
-                    shutil.copytree(src_case + "/" + filename, dest_case + "/-" + filename)
+def prepareTimeFolders(folder_name, sweep_name):
+    for i in range (1, n+1):
+        interval_name=myinterval.format(i)
+        src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
+        dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
+        for filename in os.listdir(src_case):
+            if filename.startswith('0.'):
+                shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
+        for filename in os.listdir(src_case):                
+            if not filename.startswith('0.'):
+                if os.path.isdir(src_case + "/" + filename):
+                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
                 else:
-                    shutil.copytree(src_case + "/" + filename, dest_case + "/" + filename)
+                    shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
 
-    
+def initializeMyAdjoint(folder_name, sweep_name):
+    adjointStartTime = theta + deltaT
+    adjointEndTime = theta
+
+    for i in range(1, n+1):
+        interval_name=myinterval.format(i)
+        controlDict_path=adjoint_path + folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
+        startTime=bc.decimal_analysis(theta + deltaT*(i-1))
+        endTime=bc.decimal_analysis(theta + deltaT*i)
+        
+        #Copy fv files
+        fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
+        fvSolution_path=ref_cases + "/controlBib/fvSolution"         
+        shutil.copy(fvSchemes_path, adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        shutil.copy(fvSolution_path, adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        
+        for line in fileinput.input(controlDict_path, inplace=True):
+            if line.startswith('startTime'):
+                line = 'startTime       {};\n'.format(-endTime)
+            elif line.startswith('endTime'):
+                line = 'endTime         {};\n'.format(-startTime)
+            print(line)
+        print('startTime       {};\n'.format(-endTime))
+        src_adjoint_undeformed_var= calcs_path + "adjoint_undeformed/" + str(-endTime) + "/"
+        dest_adjoint_undeformed_var=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-endTime) + "/"
+        shutil.copyfile(src_adjoint_undeformed_var + "pa", dest_adjoint_undeformed_var + "pa")
+        shutil.copyfile(src_adjoint_undeformed_var + "Ua", dest_adjoint_undeformed_var + "Ua")
+        
+        shutil.copyfile(src_adjoint_undeformed_var + "Uaf", dest_adjoint_undeformed_var + "Uaf")
+        shutil.copyfile(src_adjoint_undeformed_var + "phia", dest_adjoint_undeformed_var + "phia")

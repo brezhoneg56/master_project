@@ -8,7 +8,7 @@ import os
 import sys
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import shutil
-from config import basepath, primal_path, primitive_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
+from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
