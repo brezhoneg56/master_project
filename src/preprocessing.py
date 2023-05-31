@@ -48,12 +48,12 @@ def prepareMyNextSweep(basepath, k, folder_name):
     previous_sweep_name=mysweep.format(k)#k
     os.path.join(folder_name,sweep_name)
     print("\nPreparing shooting of " + sweep_name + ". ") 
-    
+    with futures.ProcessPoolExecutor(max_workers=14) as executor:
     # Copy Directories that were already shoot. Warning : put that after the computations
-    for x in range(1,k+1):#k+1
-        copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name)
+        for x in range(1,k+1):#k+1
+            executor.submit(copyShootDirs, basepath, x, folder_name, previous_sweep_name, sweep_name)
     #Preparing shooting directories from sweep1 data 
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+    with futures.ProcessPoolExecutor(max_workers=14) as executor:    
         for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
             executor.submit(preparenextSweepStartingFiles, basepath, folder_name, previous_sweep_name, sweep_name, i)
         sweep_name=mysweep.format(k)
@@ -219,7 +219,7 @@ def prepareNextLinearization(basepath, folder_name, k, i):
     linU_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/linUDefect"
         
     with futures.ProcessPoolExecutor(max_workers=13) as executor:    
-        for i in range(2, n + 1): #avant c'était
+        for i in range(k+1, n + 1): #avant c'était
             executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
 
 def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
@@ -288,6 +288,9 @@ def initializeMyAdjoint(folder_name, sweep_name):
                 line = 'endTime         {};\n'.format(-startTime)
             print(line)
         print('startTime       {};\n'.format(-endTime))
+        
+        #Preparing next interval (i-1)
+        #Current Sweep current interval
         src_adjoint_undeformed_var= calcs_path + "adjoint_undeformed/" + str(-endTime) + "/"
         dest_adjoint_undeformed_var=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-endTime) + "/"
         shutil.copyfile(src_adjoint_undeformed_var + "pa", dest_adjoint_undeformed_var + "pa")

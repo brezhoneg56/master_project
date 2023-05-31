@@ -6,29 +6,38 @@ Created on Tue Apr 18 10:30:18 2023
 """
 import os
 import sys
+import re
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import shutil
+import csv
+from concurrent import futures
 from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
 from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 ###########################################################################
 
 #################  PRIMAL PRIMITIVE POSTPROCESSING ########################
+def postProcessingCopyfiles(i, destination_file, postPro_destination):
+    interval_name=myinterval.format(i)
+    for filename in os.listdir(destination_file + interval_name):                
+        if filename.startswith('0.') or filename.startswith(str(theta)) or filename.startswith(str(theta + deltaT*n)):
+            #os.path.join(destination_file + interval_name + "/" + filename, postPro_destination)
+            bc.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
+
 def preparePostProcessing(basepath, folder_name, sweep_name):
     destination_file=basepath + folder_name + '/' + sweep_name + '/'
     postPro_destination=destination_file + "postProcessing"
     os.chdir(destination_file)
-    list_dir=[]
-    for x in range(1,n + 1):
-        list_dir=list_dir + ["interval" + str(x)]
-    for list_dir in list_dir:
-        os.path.join(postPro_destination,list_dir)
-        print("Copying " + list_dir + " in " + folder_name + '/' + sweep_name + '/postProcessing')
-        bc.copytree(list_dir,postPro_destination)
+    shutil.copytree(ref_cases_mod_def + "constant/", postPro_destination + "/constant/" )
+    shutil.copytree(ref_cases_mod_def + "system/", postPro_destination + "/system/" )
+    #with futures.ProcessPoolExecutor(max_workers=14) as executor:
+    for i in range(1, n+1):
+            #print("copyfile in loop" + str(i))
+        #executor.submit(postProcessingCopyfiles, i, destination_file, postPro_destination)
+        postProcessingCopyfiles(i, destination_file, postPro_destination)
     print("ready for postProcessing of " + sweep_name + "...\n")
 
 def computePressureDropFoam(basepath, folder_name, sweep_name):
-    os.chdir(basepath + folder_name + '/' + sweep_name + "/postProcessing")
-    
+    os.chdir(basepath + folder_name + '/' + sweep_name + "/postProcessing/")
     #Open a log file for pressureDrop and timers       
     with open("pressureDrop.txt","w"):
         result=os.system('computePressureDropFoam start end > pressureDrop.txt')            
@@ -38,16 +47,16 @@ def computePressureDropFoam(basepath, folder_name, sweep_name):
     with open("pressureDrop.txt","r") as f:
         os.chdir(basepath + folder_name)
         with open("pressureDropvalues.txt","a") as mapression:
-            mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
+            #mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
             for line in f:
                 if "pressureDrop" in line:
-                    mapression.write(line)
+                    pressure=mapression.write(line)
                     print(line)
         mapression.close()
     f.close()
     os.chdir(basepath) #back to main path
     print("Done.\n")
-    return(result)
+    return(pressure)
 
 def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     startingTime=str(bc.decimal_analysis(theta + (i-2)*deltaT))
@@ -212,5 +221,64 @@ def erase_all_files(basepath, folder_name, k):
     #except Exception as error:
     #    print("Error while deleting file: " + str(error))
 
-    
-    
+def store_for_plot2(filename):
+    table = []
+#    with open(filename, 'r') as file:
+#        reader = csv.reader(file, delimiter='    ')
+#        next(reader)  # Skip header line
+#        
+#        for row in reader:
+#            sweep_number = int(row[0])
+#            timer = float(row[1])
+#            pressure_drop = float(row[2])
+#            
+#            # Store the variables in a table or data structure of your choice
+#            table.append((sweep_number, timer, pressure_drop))
+#    
+#    return table
+# Option 2
+def store_for_plot3(filename):
+    table = []
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        os.chdir(basepath + folder_name)
+        with open("logtable.csv", 'a') as tab:
+            with open("pressureDropvalues.txt","r") as mapression:
+                for line in mapression:
+                    sweep_number = int(match.group(1))
+                    if "pressureDrop" in line:
+                        pressure_drop = float(group(3))
+                    if "Elapsed time for pimpleDyMFoam" in line:
+                        timer = float(match.group(2))
+                    # Store the variables in a table or data structure of your choice
+                    table.append((sweep_number, timer, pressure_drop))
+    return table
+
+
+def store_for_plot(filename):
+    table = []
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+        # Assuming basepath and folder_name are defined somewhere in your code
+        os.chdir(basepath + folder_name)
+
+        with open("logtable.csv", 'a', newline='') as tab:
+            writer = csv.writer(tab)
+
+            with open("pressureDropvalues.txt", "r") as mapression:
+                for line in mapression:
+                    # Use regex to search for the desired information
+                    match = re.search(r'Sweep Number: (\d+), Timer: (\d+\.\d+), Pressure Drop: (\d+\.\d+)', line)
+                    if match:
+                        sweep_number = int(match.group(1))
+                        timer = float(match.group(2))
+                        pressure_drop = float(match.group(3))
+
+                        # Store the variables in a table or data structure of your choice
+                        table.append((sweep_number, timer, pressure_drop))
+
+                        # Write the row to the CSV file
+                        writer.writerow([sweep_number, timer, pressure_drop])
+
+    return table

@@ -188,14 +188,14 @@ def check_existence_linU(basepath, folder_name, sweep_name):
                         sys.exit
 
 def checking_existence(folder_name):
-    if os.path.exists(folder_name):
+    if os.path.exists(basepath + folder_name):
             ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
             if ans=="Y" or ans=="y":
                 print("Deleting files...\n")
                 for g in range(1, n + 1):
                     if os.path.exists("sweep" + str(g)):
                         shutil.rmtree("sweep" + str(g))
-                shutil.rmtree(folder_name)
+                shutil.rmtree(basepath + folder_name)
                 
             else:
                 sys.exit()
