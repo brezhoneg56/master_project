@@ -14,7 +14,7 @@ import multiprocessing
 from concurrent import futures
 import glob
 from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases, calcs_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
 

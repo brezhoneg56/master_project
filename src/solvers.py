@@ -30,7 +30,7 @@ def pimpleDyMFoam(basepath, folder_name, sweep_name, i):
 def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
     print("\nStarting shooting of " + sweep_name + "\n")
     print("Starting EXECUTOR ... \n")
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:
+    with futures.ProcessPoolExecutor(max_workers=14) as executor:
         for i in range(k, n+1):
             executor.submit(sol.pimpleDyMFoam, basepath, folder_name, sweep_name, i)
             print("Starting pimpleDyMFoam for interval " + str(i))
@@ -62,7 +62,7 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version
     #    pre.initializeLinearisation(basepath, folder_name, sweep_name)
     for i in range(1, n+1):#k, essayer 2
         pre.prepareNextLinearization(basepath, folder_name, k, i)
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:        
+    with futures.ProcessPoolExecutor(max_workers=14) as executor:        
         for i in range(1, n+1):#k.essayer 2, on ne lin pas dans 1
             executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
             print("Starting linearisedPimpleDyMFoam for interval " + str(i))
@@ -104,7 +104,7 @@ def computeDefect(basepath, sweep_name, k):
     for i in range(2, n+1): #2, n+1
         interval_name=myinterval.format(i)
         previous_interval=myinterval.format(i-1)
-        print("Previous interval: " + previous_interval)
+        #print("Previous interval: " + previous_interval)
         #Comment out???
         pre.prepareDefectComputation(basepath, sweep_name, interval_name, previous_interval, i)
         os.chdir(basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect")
@@ -166,7 +166,7 @@ def computeSteffensenMethod(basepath, folder_name):
     #Linearisation preparation and cmputation from Sweep 2 to n
     for k in range (1, n+1):
         sweep_name=mysweep.format(k)
-        with futures.ProcessPoolExecutor(max_workers=13) as executor:
+        with futures.ProcessPoolExecutor(max_workers=14) as executor:
             for i in range (1, n+1):
                 executor.submit(linearisedPimpleDyMFoam, basepath, folder_name, sweep_name, i)
                 pre.prepareNextLinearization(basepath, folder_name, k, i)

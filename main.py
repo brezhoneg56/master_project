@@ -28,8 +28,10 @@ os.chdir(adjoint_path)
 
 #The big Solver
 #sol.primal_shooting_stef_update(primal_path, "yes")
-adsol.computeAdjoint()
+#adsol.computeAdjoint()
 #sol.the_shooting_manager()
 #for k in range(1, n+1):
 #    sweep_name=mysweep.format(k)
 #    sol.computeAdjointDefect(basepath, sweep_name, k)
+
+sol.primal_shooting_stef_update(basepath, "yes")
