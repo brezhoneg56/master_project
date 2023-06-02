@@ -34,13 +34,13 @@ basepath=primal_path
 #    sweep_name=mysweep.format(k)
 #    sol.computeAdjointDefect(basepath, sweep_name, k)
 
-#sol.primal_shooting_stef_update(basepath, "no")
+sol.primal_shooting_stef_update(basepath, "no")
 
-os.chdir(basepath + folder_name)
-k=2
-sweep_name="sweep2"
-elapsed_time=3
-os.chdir(basepath + folder_name)
-with open("logtable.csv", 'a', newline='') as tab:
-    writer = csv.writer(tab, delimiter=" ")
-    writer.writerow([str(k), elapsed_time, post.computePressureDropFoam(basepath, folder_name, sweep_name)])
+#os.chdir(basepath + folder_name)
+#k=2
+#sweep_name="sweep2"
+#elapsed_time=3
+#os.chdir(basepath + folder_name)
+#with open("logtable.csv", 'a', newline='') as tab:
+#    writer = csv.writer(tab, delimiter=" ")
+#    writer.writerow([str(k), elapsed_time, post.computePressureDropFoam(basepath, folder_name, sweep_name)])

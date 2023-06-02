@@ -45,11 +45,11 @@ def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Para
     bc.timer_and_write(elapsed_time, "pimpleDyMFoam", sweep_name)
     
     post.preparePostProcessing(basepath, folder_name, sweep_name)
-    #post.computePressureDropFoam(basepath, folder_name, sweep_name)
-    os.chdir(basepath + folder_name)
-    with open("logtable.csv", 'a', newline='') as tab:
-            writer = csv.writer(tab)
-            writer.writerow([str(k), elapsed_time, (re.findall(r"[-+]?\d*\.\d+|\d+", post.computePressureDropFoam(basepath, folder_name, sweep_name)))])
+    post.computePressureDropFoam(basepath, folder_name, sweep_name)
+    #os.chdir(basepath + folder_name)
+    #with open("logtable.csv", 'a', newline='') as tab:
+            #writer = csv.writer(tab)
+            #writer.writerow([str(k), elapsed_time, (re.findall(r"[-+]?\d*\.\d+|\d+", post.computePressureDropFoam(basepath, folder_name, sweep_name)))])
     if k<n:
         pre.prepareMyNextSweep(basepath, k, folder_name)
 

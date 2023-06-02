@@ -27,8 +27,8 @@ basepath=primal_path
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=5; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals_all_files"
+n=10; #Amount of sweeps / shooting intervals
+folder_name=str(n)+"_intervals_test_02-06"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop
