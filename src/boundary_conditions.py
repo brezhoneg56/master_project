@@ -11,7 +11,7 @@ from concurrent import futures
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import sys
 from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU, timer_pimple, timer_sweep
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)
