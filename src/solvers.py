@@ -40,6 +40,11 @@ def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Para
         print("\n\nAll simulations started. Waiting... \n")
     print("EXECUTOR pimpleDyMFoam terminated.\n\n")
     
+    os.chdir(basepath + folder_name + "/")
+    with open("pressureDropvalues.txt","a") as mapression:
+        mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
+    mapression.close()    
+    
     #Stop Timer and write in logfile
     elapsed_time = time.time() - timer_pimpleDyMFoam
     bc.timer_and_write(basepath, elapsed_time, "pimpleDyMFoam", sweep_name)
@@ -79,12 +84,9 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k):
             print("Starting linearisedPimpleDyMFoam for interval " + str(i))
         
         print("\n\nAll Linearisations started, Waiting... \n")
+    os.chdir(basepath + folder_name + "/")
     #Stopping intermediate timer and writing into logfile
     elapsed_time = time.time() - lin_time
-    os.chdir(basepath + folder_name + "/")
-    with open("pressureDropvalues.txt","a") as mapression:
-        mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
-    mapression.close()
     bc.timer_and_write(basepath, elapsed_time, "linearisedPimpleDyMFoam", sweep_name)
     print("LIN EXECUTOR terminated \n\n") 
 

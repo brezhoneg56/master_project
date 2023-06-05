@@ -24,9 +24,9 @@ c.headings()
 
 #sol.the_shooting_manager()
 
-basepath="/home/julien/workspace/master_project/"
+basepath=primal_path
 
-#sol.primal_shooting_stef_update(basepath, "yes")
+sol.primal_shooting_stef_update(basepath, "yes")
 
 #post.store_all_values(basepath, folder_name)
 
@@ -143,6 +143,6 @@ def fetch_values(basepath, path_file, line_to_find):
         return(the_value)
 
 
-store_all_values(basepath, folder_name)
+#store_all_values(basepath, folder_name)
 
 #pressure_path=find_logfile(basepath, "pimple_interval4.log")
