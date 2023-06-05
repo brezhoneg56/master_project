@@ -214,8 +214,6 @@ def store_for_plot_defect(basepath, sweep_name, interval_name, file):
     writer.writerow([velocity_value, flux_value])
     return table_defect
 
-def store_for_plot(basepath, folder_name, file):
-    
 
 
 def store_all_values(basepath, folder_name):

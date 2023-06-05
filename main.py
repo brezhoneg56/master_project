@@ -25,7 +25,7 @@ c.headings()
 
 basepath=primal_path
 
-sol.primal_shooting_stef_update(basepath, "no")
+sol.primal_shooting_stef_update(basepath, "yes")
 
 #post.store_all_values(basepath, folder_name)
 
