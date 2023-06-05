@@ -181,9 +181,12 @@ def erase_all_files(basepath, folder_name, k):
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
     try:
         shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
+    except Exception:
+        print("Error while moving postProlog: ")
+    try:
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop.txt")
     except Exception:
-        print("Error while moving directory: ")
+        print("Error while moving pressureDrop: ")
     try:
         shutil.rmtree(src_log)
     except Exception as error:
@@ -207,11 +210,11 @@ def store_for_plot_defect(basepath, sweep_name, interval_name, file):
     _, flux_value = post.fetch_values_defect(basepath, file, sweep_name, interval_name)
     velocity_value, _ = post.fetch_values_defect(basepath, file, sweep_name, interval_name)
     #with open("logtable.csv", 'a', newline='') as tab:
-    writer = csv.writer(tab)
+    #writer = csv.writer(tab)
     # Store the variables in a table or data structure of your choice
-    table.append((velocity_value, flux_value))
+    table_defect=table.append((velocity_value, flux_value))
     # Write the row to the CSV file
-    writer.writerow([velocity_value, flux_value])
+    #writer.writerow([velocity_value, flux_value])
     return table_defect
 
 
@@ -231,11 +234,13 @@ def store_all_values(basepath, folder_name):
             for i in range(2, n+1):
                 interval_name=myinterval.format(i)
                 #Write Sweep Number
-                store_for_plot(basepath, folder_name, sweep_name)
+                #store_for_plot(basepath, folder_name, sweep_name)
                 
                 #Fetch pressureDrop
-                pressure_path=find_logfile(basepath + folder_name, "pressureDrop.txt")
-                pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+                pressure_path=find_logfile(basepath + folder_name, folder_name)
+                print("\n\n"+pressure_path+"\n\n")
+                os.chdir(pressure_path)
+                pressureDrop=post.fetch_values(basepath, "pressureDrop.txt", "pressureDrop is     ")
                 
                 #Fetch Velocity and Continuity Defects:
                 flux_path=find_logfile(basepath, ("shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"))
