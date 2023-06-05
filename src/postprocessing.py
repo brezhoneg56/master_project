@@ -11,8 +11,8 @@ from src import solvers as sol, preprocessing as pre, postprocessing as post, bo
 import shutil
 import csv
 from concurrent import futures
-from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
+from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
 ###########################################################################
 
 #################  PRIMAL PRIMITIVE POSTPROCESSING ########################
@@ -29,7 +29,7 @@ def preparePostProcessing(basepath, folder_name, sweep_name):
     os.chdir(destination_file)
     shutil.copytree(ref_cases_mod_def + "constant/", postPro_destination + "/constant/" )
     shutil.copytree(ref_cases_mod_def + "system/", postPro_destination + "/system/" )
-    #with futures.ProcessPoolExecutor(max_workers=14) as executor:
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
     for i in range(1, n+1):
             #print("copyfile in loop" + str(i))
         #executor.submit(postProcessingCopyfiles, i, destination_file, postPro_destination)
@@ -65,19 +65,6 @@ def shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, i):
     if os.path.exists(src_shootP):
         shutil.copy(src_shootP, dest_shootP)
 
-def the_shooting_update_for_all(sweep_name, k, i, j):
-    m=1 #Counter for Shooting update is always i-1
-    #print("Starting shooting update process for " + sweep_name + ".\n")
-    interval_name=myinterval.format(i)
-    #print("j="+str(j))
-    #print("n="+str(n))
-    if j<=n:
-        #print("Shooting Update process started from " + interval_name + " for " + sweep_name)
-        pre.prepareShootingUpdate(basepath, folder_name, sweep_name, k, j)
-    interval_name=myinterval.format(m)    
-    sol.computeShootingUpdate(basepath, folder_name, k, i)
-    post.shootingUpdateP(basepath, folder_name, sweep_name, interval_name, k, m)
-    m=m+1 #Counter for Shooting Update
 
 def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
@@ -152,7 +139,7 @@ def erase_files(path_files):
     if os.path.exists(path_files):
         os.removedirs(the_path)
 
-def erase_shootingdefect(path_files, sweep_name, interval_name, i):
+def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
     if i!=1:
         src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
         dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
@@ -186,12 +173,9 @@ def erase_all_files(basepath, folder_name, k):
             
             erase_constant(path_files+"/constant")
             erase_system(path_files+"/system")
-            erase_shootingdefect(path_files, sweep_name, interval_name, i)            
+            erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i)            
             
             shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
-            
-            
-    
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
@@ -200,7 +184,6 @@ def erase_all_files(basepath, folder_name, k):
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop.txt")
     except Exception:
         print("Error while moving directory: ")
-    #erase_files(src_log)
     try:
         shutil.rmtree(src_log)
     except Exception as error:
@@ -211,74 +194,107 @@ def erase_all_files(basepath, folder_name, k):
     dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
     if os.path.exists(src_log):    
         shutil.move(src_log, dest_log)
-    #except Exception as e4:
-     #           print("Error while moving directory: " + str(e4))
-    
-    #erase_files(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
     if os.path.exists(basepath+folder_name+"/"+sweep_name+"/preProcessing/"):     
-    #try:
         shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
-    #except Exception as error:
-    #    print("Error while deleting file: " + str(error))
+    
+######################################################################
+## LOGTABLE
 
-def store_for_plot2(filename):
+
+def store_for_plot_defect(basepath, sweep_name, interval_name, file):
     table = []
-#    with open(filename, 'r') as file:
-#        reader = csv.reader(file, delimiter='    ')
-#        next(reader)  # Skip header line
-#        
-#        for row in reader:
-#            sweep_number = int(row[0])
-#            timer = float(row[1])
-#            pressure_drop = float(row[2])
-#            
-#            # Store the variables in a table or data structure of your choice
-#            table.append((sweep_number, timer, pressure_drop))
-#    
-#    return table
-# Option 2
-def store_for_plot3(filename):
+    ### Partie Defect :
+    _, flux_value = post.fetch_values_defect(basepath, file, sweep_name, interval_name)
+    velocity_value, _ = post.fetch_values_defect(basepath, file, sweep_name, interval_name)
+    #with open("logtable.csv", 'a', newline='') as tab:
+    writer = csv.writer(tab)
+    # Store the variables in a table or data structure of your choice
+    table.append((velocity_value, flux_value))
+    # Write the row to the CSV file
+    writer.writerow([velocity_value, flux_value])
+    return table_defect
+
+def store_for_plot(basepath, folder_name, file):
+    
+
+
+def store_all_values(basepath, folder_name):
+    os.chdir(basepath + folder_name)
+    print("All value will be stored in a CSV file as follows:\n")
+    print("Row number = Sweep Number, pressureDrop, velocity defect, continuity defect (flux), primalWallTime, SweepWallTime, AccumulatedTime")
+    print("Wrinting into logtable in  " + basepath + folder_name)
     table = []
-    with open(filename, 'r') as file:
-        lines = file.readlines()
-        os.chdir(basepath + folder_name)
-        with open("logtable.csv", 'a') as tab:
-            with open("pressureDropvalues.txt","r") as mapression:
-                for line in mapression:
-                    sweep_number = int(match.group(1))
-                    if "pressureDrop" in line:
-                        pressure_drop = float(group(3))
-                    if "Elapsed time for pimpleDyMFoam" in line:
-                        timer = float(match.group(2))
-                    # Store the variables in a table or data structure of your choice
-                    table.append((sweep_number, timer, pressure_drop))
+    os.chdir(basepath + folder_name)
+    with open("logtable.csv", 'a', newline='') as tab:
+        for k in range(1, n+1):
+            sweep_name=mysweep.format(k)
+            #path_file=basepath + folder_name + "/" + sweep_name + "/logfiles/pressureDrop.txt"
+            #find_logfile(basepath, folder_name, "pressureDrop.txt")
+            for i in range(2, n+1):
+                interval_name=myinterval.format(i)
+                #Write Sweep Number
+                store_for_plot(basepath, folder_name, sweep_name)
+                
+                #Fetch pressureDrop
+                pressure_path=find_logfile(basepath + folder_name, "pressureDrop.txt")
+                pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+                
+                #Fetch Velocity and Continuity Defects:
+                flux_path=find_logfile(basepath, ("shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"))
+                #print(flux_path)
+                
+                _, flux_value = post.fetch_values_defect(basepath, sweep_name, interval_name, flux_path)
+                velocity_value, _ = post.fetch_values_defect(basepath, sweep_name, interval_name, flux_path)
+        
+                writer = csv.writer(tab)
+                # Store the variables in a table or data structure of your choice
+                table.append((sweep_name, pressureDrop, velocity_value, flux_value))
+                # Write the row to the CSV file
+                writer.writerow([table])
     return table
 
+def find_logfile(basepath, thefile):
+    max_depth = 6  # Maximum depth to search for the file
+    for root, dirs, files in os.walk(basepath):
+        current_depth = root.count(os.sep) - basepath.count(os.sep)
+        if current_depth <= max_depth and thefile in files:
+            logfile_path = os.path.join(root, thefile)
+            return logfile_path
+    # If logfile is not found
+    return None
 
-def store_for_plot(filename):
-    table = []
-    with open(filename, 'r') as file:
-        lines = file.readlines()
+def fetch_values_defect(basepath, sweep_name, interval_name, path_file):
+    #path_file = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/" + "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+    with open(path_file, "r") as myfile:
+        text = myfile.read()
 
-        # Assuming basepath and folder_name are defined somewhere in your code
-        os.chdir(basepath + folder_name)
+        # Regular expression pattern to capture the value
+        velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
+        fluxes = r"defects \(fluxes\): sum local = ([\d.e+-]+)"
 
-        with open("logtable.csv", 'a', newline='') as tab:
-            writer = csv.writer(tab)
+        # Search for the pattern in each line
+        for line in text.split('\n'):
+            velocity_match = re.search(velocity, line)
+            flux_match = re.search(fluxes, line)
+            if velocity_match:
+                velocity_defect = velocity_match.group(1)
+                #print("defects (velocity): sum local:", velocity_defect)
+            if flux_match:
+                flux_defect = flux_match.group(1)
+                #print("defects (fluxes): sum local:", flux_defect)
+        return(velocity_defect, flux_defect)
 
-            with open("pressureDropvalues.txt", "r") as mapression:
-                for line in mapression:
-                    # Use regex to search for the desired information
-                    match = re.search(r'Sweep Number: (\d+), Timer: (\d+\.\d+), Pressure Drop: (\d+\.\d+)', line)
-                    if match:
-                        sweep_number = int(match.group(1))
-                        timer = float(match.group(2))
-                        pressure_drop = float(match.group(3))
+def fetch_values(basepath, path_file, line_to_find):
+    with open(path_file, "r") as myfile:
+        text = myfile.read()
+        # Regular expression pattern to capture the value
+        #velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
+        line_to_find=line_to_find + "([\d.e+-]+)"
+        # Search for the pattern in each line
+        for line in text.split('\n'):
+            match = re.search(line_to_find, line)
+            if match:
+                the_value = match.group(1)
+        return(the_value)
+##################################
 
-                        # Store the variables in a table or data structure of your choice
-                        table.append((sweep_number, timer, pressure_drop))
-
-                        # Write the row to the CSV file
-                        writer.writerow([sweep_number, timer, pressure_drop])
-
-    return table

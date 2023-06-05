@@ -13,8 +13,8 @@ import fileinput
 import multiprocessing
 from concurrent import futures
 import glob
-from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases, calcs_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
+from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, postPro_cases, calcs_path
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
 from concurrent.futures import ThreadPoolExecutor
 ###########################################################################
 
@@ -48,12 +48,12 @@ def prepareMyNextSweep(basepath, k, folder_name):
     previous_sweep_name=mysweep.format(k)#k
     os.path.join(folder_name,sweep_name)
     print("\nPreparing shooting of " + sweep_name + ". ") 
-    with futures.ProcessPoolExecutor(max_workers=14) as executor:
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
     # Copy Directories that were already shoot. Warning : put that after the computations
         for x in range(1,k+1):#k+1
             executor.submit(copyShootDirs, basepath, x, folder_name, previous_sweep_name, sweep_name)
     #Preparing shooting directories from sweep1 data 
-    with futures.ProcessPoolExecutor(max_workers=14) as executor:    
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
         for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
             executor.submit(preparenextSweepStartingFiles, basepath, folder_name, previous_sweep_name, sweep_name, i)
         sweep_name=mysweep.format(k)
@@ -182,11 +182,11 @@ def initializeLinearisation(basepath, folder_name, sweep_name):
     linU_path=ref_cases + "/boundaryConditions/linU"
     fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
         for i in range(1, n + 1): #will become k + 1, n + 1 because of first loop being put into the big loop
             executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
 
-def copy_linearization(folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path):    
+def copy_linearization(basepath, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path):    
         interval_name=myinterval.format(i)
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
         
@@ -218,9 +218,9 @@ def prepareNextLinearization(basepath, folder_name, k, i):
     linP_path=ref_cases + "/boundaryConditions/linP0"
     linU_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/linUDefect"
         
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:    
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
         for i in range(k+1, n + 1): #avant c'était
-            executor.submit(copy_linearization, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
+            executor.submit(copy_linearization, basepath, folder_name, sweep_name, i, linP_path, linU_path, fvSchemes_path, fvSolution_path)
 
 def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
     #Fetch shooting Update folder from postPro cases
@@ -233,7 +233,8 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
     
     #Fetch data from EndTime folder
     src_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i)*deltaT))
-    #print(str(bc.decimal_analysis(theta + (i)*deltaT)))
+    src_data_start=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(bc.decimal_analysis(theta + (i-1)*deltaT))
+    #Copy to shootingUpdate
     dest_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
     shutil.copy(src_data+"/linU", dest_data+"dUdu")
     shutil.copy(src_data+"/linUf", dest_data+"dUduf")
@@ -246,9 +247,14 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
     shutil.copy(src_data+"/p", dest_data+"shootingUpdateP")
     shutil.copy(src_data+"/phi", dest_data+"shootingUpdatePhi")
     shutil.copy(src_data+"/Uf", dest_data+"shootingUpdateUf")
+    
+    #Fetching data for limitor
+    shutil.copy(src_data_start+"/linU", dest_data+"dUdu_Init")
+    shutil.copy(src_data_start+"/linUf", dest_data+"dUduf_Init")
+    shutil.copy(src_data_start+"/linP", dest_data+"dPdp_Init")
+
 
 ####### ADJOINT
-
 
 def prepareTimeFolders(folder_name, sweep_name):
     for i in range (1, n+1):

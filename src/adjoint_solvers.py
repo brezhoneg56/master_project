@@ -14,7 +14,7 @@ from concurrent import futures
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, postprocessing as post
 from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name
+from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name, maxCPU
 
 def prepareAdjointDefectComputation(basepath, sweep_name, interval_name, previous_interval, i): #for computeDefect
     
@@ -83,7 +83,7 @@ def adjointPimpleDyMFoam(folder_name, sweep_name, i):
 def loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k): #Version V1 : Parallel call for all intervals within one sweep
     print("\nStarting shooting of " + sweep_name + "\n")
     print("Starting ADJ EXECUTOR ... \n")
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
         for i in range(n, k-1, -1):
             executor.submit(adjointPimpleDyMFoam, folder_name, sweep_name, i)
         #adjointPimpleDyMFoam(folder_name, sweep_name, i)
@@ -115,7 +115,7 @@ def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):
     #    pre.initializeLinearisation(basepath, folder_name, sweep_name)
     for i in range(1, n+1):#k, essayer 2
         pre.prepareNextLinearization(adjoint_path, folder_name, k, i)
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:        
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
         for i in range(1, n+1):#k.essayer 2, on ne lin pas dans 1
             executor.submit(adjointLinearisedPimpleDyMFoam, adjoint_path, folder_name, sweep_name, i)
             print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
@@ -123,12 +123,12 @@ def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):
         print("\n\nAll Adjoint linearisations started, Waiting... \n")
     print("LIN ADJ EXECUTOR terminated \n\n")
 
-def computeAdjoint():
+def computeAdjoint(basepath):
     #Starting Timer for entire Process
     start_time=time.time()
     
     #Verify if folder_name exists, and offers to delete it if so
-    bc.checking_existence(adjoint_path + folder_name)
+    bc.checking_existence(basepath, folder_name)
     print("Preparing files for adjoint computation...\n")
     
     #Initialization loop over all Sweeps    

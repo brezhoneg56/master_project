@@ -10,8 +10,8 @@ import fileinput
 from concurrent import futures
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import sys
-from config import basepath, primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name
+from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)
@@ -29,9 +29,9 @@ def sweep_1_initialization(basepath, folder_name):
     sweep_path=os.path.join(folder_name,sweep_name)
     os.mkdir(sweep_path)
     print("\nThe directory " + folder_name + " has been created at this place: \n" + basepath + "\n\n")
-    with futures.ProcessPoolExecutor(max_workers=13) as executor:        
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
         for i in range(1,n + 1):
-            executor.submit(copy_sweep1_initialization, sweep_name, i)
+            executor.submit(copy_sweep1_initialization, basepath, sweep_name, i)
     os.chdir(basepath + folder_name)
     with open("pressureDropvalues.txt","w") as mytime:
         mytime.write("\n\n=============================================================================\n\n" + "                         LOGFILE " + folder_name + "\n\n=============================================================================\n\n")
@@ -40,7 +40,7 @@ def sweep_1_initialization(basepath, folder_name):
     os.chdir(basepath)
     #return(folder_name)
 
-def copy_sweep1_initialization(sweep_name, i): #Copy function for sweep1_initialization
+def copy_sweep1_initialization(basepath, sweep_name, i): #Copy function for sweep1_initialization
     interval_name=myinterval.format(i)
             
     # Fetching Directory constant
@@ -187,7 +187,7 @@ def check_existence_linU(basepath, folder_name, sweep_name):
                         #sol.linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i)
                         sys.exit
 
-def checking_existence(folder_name):
+def checking_existence(basepath, folder_name):
     if os.path.exists(basepath + folder_name):
             ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
             if ans=="Y" or ans=="y":
@@ -201,7 +201,7 @@ def checking_existence(folder_name):
                 sys.exit()
     return(folder_name)
 
-def timer_and_write(elapsed_time, function, sweep_name):
+def timer_and_write(basepath, elapsed_time, function, sweep_name):
     num_minutes=int(elapsed_time / 60)
     num_seconds=elapsed_time % 60
     # Function write_time        

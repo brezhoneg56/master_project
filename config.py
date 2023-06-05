@@ -28,7 +28,7 @@ basepath=primal_path
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
 n=10; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals_test_02-06"
+folder_name=str(n)+"_intervals_fail"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop
@@ -36,8 +36,7 @@ deltaT=T/n
 t=0.001 #Sampling size for OpenFoam Computations
 myinterval="interval{}"
 mysweep="sweep{}"
-
-maxworkers=14 #### A FAIRE
+maxCPU=14 #Gives the maximum amount of parallely working CPUs
 
 #### HEADINGS #########
 def headings():
