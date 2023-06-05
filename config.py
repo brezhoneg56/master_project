@@ -36,7 +36,10 @@ deltaT=T/n
 t=0.001 #Sampling size for OpenFoam Computations
 myinterval="interval{}"
 mysweep="sweep{}"
-maxCPU=14 #Gives the maximum amount of parallely working CPUs
+maxCPU=1.04 #Gives the maximum amount of parallely working CPUs
+timer_pimple=[]
+timer_sweep=[]
+
 
 #### HEADINGS #########
 def headings():
