@@ -6,12 +6,13 @@ Created on Mon Apr 17 17:05:09 2023
 """
 import os
 import shutil
+import csv
 import fileinput
 from concurrent import futures
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc
 import sys
 from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU, timer_pimple, timer_sweep
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
 def decimal_analysis(number):  ##analysis of how many decimals my number has : 1, 2 ou 3 décimales
         if number * 10 % 10 == 0:
             return round(number,2)
@@ -204,6 +205,7 @@ def checking_existence(basepath, folder_name):
 def timer_and_write(basepath, elapsed_time, function, sweep_name):
     num_minutes=int(elapsed_time / 60)
     num_seconds=elapsed_time % 60
+    time=[]
     # Function write_time        
     os.chdir(basepath + folder_name)
     with open("pressureDropvalues.txt","a") as mytime:
@@ -211,4 +213,11 @@ def timer_and_write(basepath, elapsed_time, function, sweep_name):
         mytime.write(time_pimple)
         print(time_pimple)
     mytime.close()
+    
+    with open(function+"_times.txt", "a") as timelog:
+        #writer = csv.writer(timelog)
+        time=time.append(elapsed_time)
+        timelog.write(str(elapsed_time)+"\n")
+        #writer.writerows(time)
+    timelog.close()
     os.chdir(basepath) #back to main pa60th

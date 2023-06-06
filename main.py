@@ -12,7 +12,7 @@ import subprocess
 from concurrent import futures
 import csv
 from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path;
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU, timer_sweep;
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU;
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc, adjoint_solvers as adsol
 import sys
 import shutil
@@ -28,15 +28,9 @@ basepath=primal_path
 
 sol.primal_shooting_stef_update(basepath, "yes")
 
-#post.store_all_values(basepath, folder_name)
-
-#for k in range(1, n+1):
-#    post.erase_all_files(basepath, folder_name, k)
-
-
-
+#post.plot_results(basepath)
 #post.store_all_values(basepath, folder_name)
 
 
-#store_all_values(basepath, folder_name)
+
 

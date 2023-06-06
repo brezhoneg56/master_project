@@ -12,7 +12,7 @@ import shutil
 import csv
 from concurrent import futures
 from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
-from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU, timer_pimple, timer_sweep
+from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, maxCPU
 ###########################################################################
 
 #################  PRIMAL PRIMITIVE POSTPROCESSING ########################
@@ -181,8 +181,8 @@ def erase_all_files(basepath, folder_name, k):
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
     try:
         shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
-    except Exception:
-        print("Error while moving postProlog: ")
+    except Exception as epost:
+        print("Error while moving postProlog: " + str(epost))
     try:
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop" + str(k) + ".txt")
     except Exception:
@@ -222,73 +222,67 @@ def store_for_plot_defect(basepath, sweep_name, interval_name, file):
 def store_all_values(basepath, folder_name):
     os.chdir(basepath + folder_name)
     print("All value will be stored in a CSV file as follows:\n")
-    print("Row number = Sweep Number, pressureDrop, velocity defect, continuity defect (flux), primalWallTime, SweepWallTime, AccumulatedTime")
-    print("Wrinting into logtable in  " + basepath + folder_name)
+    print("Row number = Sweep Number, pressureDrop, velocity defect, continuity defect (flux), primalWallTime, SweepWallTime, AccumulatedTime\n")
+    print("Wrinting into logtable in  " + basepath + folder_name + "\n")
     table = []
+    primalWallTime = []
     acc_time=0.0
     os.chdir(basepath + folder_name)
     with open("logtable.csv", 'a', newline='') as tab:
+        writer = csv.writer(tab)
         for k in range(1, n+1):
             sweep_name=mysweep.format(k)
             velocity=0.0;
             flux=0.0;
             
-            
-            ##Just for testing
-            #timer_pimple.append(k)
-            #timer_sweep.append(k)
-            
             #Fetch pressureDrop
-            pressure_path=find_logfile(basepath, sweep_name, "pressureDrop" + str(k) + ".txt")
+            pressure_path=post.find_logfile(basepath, sweep_name, "pressureDrop" + str(k) + ".txt")
             try:
                 pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
-            except Exception as pressure:
+            except Exception:
                 print("Pressure Drop not found")
                 pressureDrop=0
             
             for i in range(2, n+1):
                 interval_name=myinterval.format(i)
-                #Fetch Velocity and Continuity Defects:
-                try:
-                    flux_path=find_logfile(basepath, sweep_name, ("shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"))
-                    #print(flux_path)
-                except Exception as shoot:
-                    print("Shooting Defect not found")
-                    flux_path=0
-                _, flux_value = post.fetch_values_defect(basepath, sweep_name, interval_name, flux_path)
-                velocity_value, _ = post.fetch_values_defect(basepath, sweep_name, interval_name, flux_path)
+                _, flux_value = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                velocity_value, _ = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
                 velocity=velocity+float(velocity_value)
                 flux=flux+float(flux_value)
-            
-            primalWallTime=timer_pimple[k-1]
-            SweepWallTime=timer_sweep[k-1]
-            acc_time=acc_time+SweepWallTime
-            writer = csv.writer(tab)
+
+            os.chdir(basepath + folder_name)
+            with open("pimpleDyMFoam_times.txt", "r") as timefile:
+                for y in timefile:
+                    y = y.strip()
+                    primalWallTime.append(float(y))
+            timefile.close()
+            with open("subintervals_times.txt", "r") as timefile:
+                for index, y in enumerate(timefile):
+                    if index == k-1:  # Read the line corresponding to the current round (k)
+                        y = y.strip()
+                        acc_time+=float(y)
+                        #print(y)
+                        break
+
             # Store the variables in a table or data structure of your choice
-            table.append([str(k) + "    " + str(pressureDrop) + "    " + str(velocity) + "    " + str(flux) + "    " + str(primalWallTime) + "    " + str(SweepWallTime) + "    " + str(acc_time)])
+            table.append([str(k) + "    " + str(pressureDrop) + "    " + str(round(velocity, 3)) + "    " + str(round(flux, 3)) + "    " + str(round(primalWallTime[k-1],3)) + "    " + str(round(acc_time, 3))])
+        
         # Write the row to the CSV file
         writer.writerows(table)
-    return table
 
 def find_logfile(basepath, sweep_name, thefile):
-    #max_depth = 5  # Maximum depth to search for the file
-    #for k in range(1, n+1):
     file_path = basepath + folder_name + "/" + sweep_name + "/logfiles/"
     for root, dirs, files in os.walk(file_path):
-        #current_depth = root.count(os.sep) - file_path.count(os.sep)
-        #if current_depth <= max_depth and thefile in files:
         if thefile in files:
             logfile_path = os.path.join(root, thefile)
-            #print(logfile_path)
             return (logfile_path)
         else:
             print(thefile + " not found")
 
-
-
-def fetch_values_defect(basepath, sweep_name, interval_name, path_file):
-    #path_file = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/" + "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
-    with open(path_file, "r") as myfile:
+def fetch_values_defect(basepath, sweep_name, interval_name, thefile):
+    path_file = basepath + folder_name + "/" + sweep_name + "/logfiles/"#shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+    os.chdir(path_file)
+    with open(thefile, "r") as myfile:
         text = myfile.read()
 
         # Regular expression pattern to capture the value
@@ -320,4 +314,23 @@ def fetch_values(basepath, path_file, line_to_find):
                 the_value = match.group(1)
         return(the_value)
 ##################################
+#
+#def plot_results(basepath):
+#    os.chdir(basepath + folder_name)
+#    line_2 = []
+#    line_last = []
+#    
+#    with open("logtable.csv", "r") as file:
+#        for line in file:
+#            data = line.split()
+#            line_2.append(float(data[1]))
+#            line_last.append(float(data[-1]))
+#
+#    # Plotting
+#    plt.plot(line_last, line_2, 'bo-')  # 'bo-' represents blue color, marker 'o', and solid line
+#    plt.xlabel('Last Line')
+#    plt.ylabel('Second Line')
+#    plt.title('Second Line as a Function of Last Line')
+#    plt.grid(True)
+#    plt.show()
 

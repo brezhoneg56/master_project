@@ -15,7 +15,7 @@ import time
 from concurrent import futures
 from functools import partial
 from src import boundary_conditions as bc, preprocessing as pre, solvers as sol, adjoint_solvers as adsol,  postprocessing as post
-from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path, timer_pimple, timer_sweep
+from config import primal_path, calcs_undeformed, ref_cases, ref_cases_mod_def, project_path, adjoint_path
 from config import n, theta, T, a, deltaT, myinterval, mysweep, folder_name, maxCPU
 ###########################################################################
 
@@ -47,7 +47,7 @@ def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Para
     
     #Stop Timer and write in logfile
     elapsed_time = time.time() - timer_pimpleDyMFoam
-    timer_pimple.append(elapsed_time)
+    #timer_pimple.append(elapsed_time)
     bc.timer_and_write(basepath, elapsed_time, "pimpleDyMFoam", sweep_name)
     
     post.preparePostProcessing(basepath, folder_name, sweep_name)
@@ -245,15 +245,14 @@ def primal_shooting_stef_update(basepath, erasing):
         
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
-        timer_sweep.append(elapsed_time)        
-        bc.timer_and_write(basepath, elapsed_time, "all subintervals", sweep_name)
+        bc.timer_and_write(basepath, elapsed_time, "subintervals", sweep_name)
         
     print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
 
     #Stopping timer and writing into logfile
     total_time=time.time()-start_time_ALL
     bc.timer_and_write(basepath, total_time, folder_name, sweep_name)
-        
+    post.store_all_values(basepath, folder_name)
 ###########################################################################
 
 def the_shooting_manager():
