@@ -314,7 +314,32 @@ def fetch_values(basepath, path_file, line_to_find):
                 the_value = match.group(1)
         return(the_value)
 ##################################
-#
+
+def plot_my_data(basepath, filename, x_axis, y_axis, title):
+    os.chdir(basepath + folder_name)
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    modified_lines = []
+    for line in lines:
+        if line.startswith('set title'):
+            modified_lines.append("set title '" + title + "'\n")
+        elif line.startswith("plot 'logtable.csv'"):
+            parts = line.split("using ")
+            parts[1] = str(x_axis) + ":" + str(y_axis)
+            modified_lines.append("using ".join(parts))
+        else:
+            modified_lines.append(line)
+
+    with open(filename, 'w') as file:
+        file.writelines(modified_lines)
+
+    # Example usage:
+        #filename = 'path/to/file'
+        #modify_plot_code_in_file(filename, 6, 2, "Custom Plot Title")
+
+
+
 #def plot_results(basepath):
 #    os.chdir(basepath + folder_name)
 #    line_2 = []
