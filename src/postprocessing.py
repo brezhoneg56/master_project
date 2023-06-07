@@ -316,8 +316,9 @@ def fetch_values(basepath, path_file, line_to_find):
         return(the_value)
 ##################################
 
-def plot_my_data(basepath, filename, x_axis, y_axis, title, k):
-    os.chdir(basepath + folder_name)
+def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
+    os.chdir(basepath + new_folder + "/")
+    print(basepath + new_folder)
     # Read the first and last lines of logtable.csv
     with open("logtable.csv", 'r') as file:
         first_line = file.readline().strip().split('    ')
@@ -361,7 +362,8 @@ def plot_my_data(basepath, filename, x_axis, y_axis, title, k):
     modified_lines = []
     for line in lines:
         if line.startswith('set title'):
-            new_title="Plot for " + str(n) + " subintervals"
+            #new_title="Plot for " + str(n) + " subintervals"
+            new_title = "Plot for {} subintervals".format(k)
             modified_lines.append("set title '" + new_title + "'\n")
         elif line.startswith("set xlabel"):
             modified_lines.append("set xlabel '" + axis_labels[x_axis] + "'\n")
@@ -380,7 +382,8 @@ def plot_my_data(basepath, filename, x_axis, y_axis, title, k):
         elif line.startswith("set output "):
             
             # Construct the plot filename based on the given options
-            plot_filename = "plot_{}_{}_{}.eps".format(x_axis, y_axis, title)
+            #plot_filename = "plot_{}_{}_{}.eps".format(x_axis, y_axis, title)
+            plot_filename = "plot_{}_{}_{}_intervals.eps".format(x_axis, y_axis, k)
             modified_lines.append("set output '" + plot_filename + "'\n")
         else:
             modified_lines.append(line)
@@ -388,21 +391,120 @@ def plot_my_data(basepath, filename, x_axis, y_axis, title, k):
     with open(filename, 'w') as file:
         file.writelines(modified_lines)
 
+    
     # Execute the bash command to generate the plot
     subprocess.run(["gnuplot", filename])
     # # Example usage:
         # filename = 'path/to/file'
         # modify_plot_code_in_file(filename, 6, 2, "Custom Plot Title")
 
-def all_plots(basepath):
+def all_plots_new(basepath):
     bash_path="/home/jcosson/workspace/henersj_shootingdata/scripts/gnuplot/shootingManagerOutput.plot"
-    dest_bash=basepath + folder_name + "/shootingManagerOutput.plot"
-    shutil.copyfile(bash_path, dest_bash)
-    print("Plotting in " + basepath + folder_name + "...\n")
-    plot_my_data(basepath, "shootingManagerOutput.plot", 6, 2, folder_name, n)
-    plot_my_data(basepath, "shootingManagerOutput.plot", 6, 1, folder_name, n)
-    plot_my_data(basepath, "shootingManagerOutput.plot", 1, 2, folder_name, n)
-    plot_my_data(basepath, "shootingManagerOutput.plot", 1, 3, folder_name, n)
-    plot_my_data(basepath, "shootingManagerOutput.plot", 1, 4, folder_name, n)
-    plot_my_data(basepath, "shootingManagerOutput.plot", 1, 5, folder_name, n)
+    intervals=[2,3,5,7,10,14,28,56,100]
+    for intervals in intervals:
+        new_folder=str(intervals)+"_intervals_05-06-23"
+        dest_bash=basepath + new_folder + "/shootingManagerOutput.plot"
+        shutil.copyfile(bash_path, dest_bash)
+        print("Plotting in " + basepath + new_folder + " ...\n")        
+        os.chdir(basepath + new_folder + "/")
+        plot_my_data(basepath, "shootingManagerOutput.plot", 6, 2, new_folder, intervals)
+        plot_my_data(basepath, "shootingManagerOutput.plot", 6, 1, new_folder, n)
+        plot_my_data(basepath, "shootingManagerOutput.plot", 1, 2, new_folder, n)
+        plot_my_data(basepath, "shootingManagerOutput.plot", 1, 3, new_folder, n)
+        plot_my_data(basepath, "shootingManagerOutput.plot", 1, 4, new_folder, n)
+        plot_my_data(basepath, "shootingManagerOutput.plot", 1, 5, new_folder, n)
     print("Data has been plotted.")
+
+
+def multiple_plots(basepath, filename, x_axis, y_axis, intervals):
+    os.chdir(basepath)
+    bash_path="/home/jcosson/workspace/henersj_shootingdata/scripts/gnuplot/multiplePlotShooting.plot"
+    dest_bash=basepath + "/multiplePlotShooting" + str(x_axis) + str(y_axis) + ".plot"
+    shutil.copyfile(bash_path, dest_bash)
+    filename="multiplePlotShooting" + str(x_axis) + str(y_axis) + ".plot"
+    print("Plotting in " + basepath + " ...\n")       
+    for interval in intervals:
+        with open(str(interval) + "_intervals_05-06-23" + "/logtable" + str(interval) + ".csv", 'r') as file:
+            first_line = file.readline().strip().split('    ')
+            last_line = file.readlines()[-1].strip().split('    ')
+
+        # Get the column values based on x_axis and y_axis
+        num_columns = len(first_line)
+        x_min = float(first_line[min(x_axis - 1, num_columns - 1)])
+        x_max = float(last_line[min(x_axis - 1, num_columns - 1)])
+        y_min = float(first_line[min(y_axis - 1, num_columns - 1)])
+        y_max = float(last_line[min(y_axis - 1, num_columns - 1)])            
+
+        axis_labels = {
+            1: "Sweep [-]",
+            2: "Pressure Drop [Nm, E-7]",
+            3: "Impuls Defect [kg.m.s⁻¹]",
+            4: "Continuity Defect [kg.m.s⁻¹]",
+            5: "Wall Time Primal [s]",
+            6: "Total Accumulated Time [s]"
+            }
+        xrange_values = {
+            1: "[{}:{}]\n".format(0,interval),
+            2: "[{}:{}]\n".format(0, x_max*10e5),
+            3: "[{}:{}]\n".format(x_max,x_min),
+            4: "[{}:{}]\n".format(0,x_max),
+            5: "[{}:{}]\n".format(0,x_max),
+            6: "[{}:{}]\n".format(0,x_max),
+            }
+        yrange_values = {
+            1: "[0:{}]\n".format(interval),
+            2: "[0:{}]\n".format(y_max, 10e-5),
+            3: "[{}:{}]\n".format(y_max,y_min),
+            4: "[{}:{}]\n".format(y_max,y_min),
+            5: "[{}:{}]\n".format(0,y_max + 50),
+            6: "[{}:{}]\n".format(0,y_max),
+            }
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+    modified_lines = []
+    num=1
+    for line in lines:
+        if line.startswith('set title'):
+            new_title = "Plot Comparison over {} subintervals".format(intervals)
+            modified_lines.append("set title '" + new_title + "'\n")
+        elif line.startswith("set xlabel"):
+            modified_lines.append("set xlabel '" + axis_labels[x_axis] + "'\n")
+        elif line.startswith("set ylabel"):
+            modified_lines.append("set ylabel '" + axis_labels[y_axis] + "'\n")
+        elif line.startswith("set xrange"):
+            modified_lines.append("set xrange " + xrange_values[x_axis])
+        elif line.startswith("set yrange"):
+            modified_lines.append("set yrange " + yrange_values[y_axis])
+        elif line.startswith("set output "):
+            plot_filename = "plot_{}_{}_{}_intervals.eps".format(x_axis, y_axis, "Comparison")
+            modified_lines.append("set output '" + plot_filename + "'\n")
+        
+        elif line.endswith("' , \\\n"):
+            print(line)
+            #Delete existing lines
+            del lines[num-1]
+        else:
+            modified_lines.append(line)
+        num+=1
+        print(line)
+
+    plot_commands = []
+    for interval in intervals:
+        #plot_command = "'{}_intervals_05-06-23/logtable{}.csv' using 6:($2*10e6) with linespoints ls 1 title '{} intervals' ".format(interval, interval, interval)
+        plot_command = "'{}_intervals_05-06-23/logtable{}.csv' using {}:{} with linespoints title '{} intervals' ".format(interval, interval, x_axis, y_axis, interval)
+        plot_commands.append(plot_command)
+    
+    # Join the plot commands using a comma and a line continuation character \
+    plot_command_string = ", \\\n".join(plot_commands)
+    
+    # Final plot command
+    final_plot_command = "plot " + plot_command_string
+    
+    # Append the final_plot_command to modified_lines
+    modified_lines.append(final_plot_command)       
+        
+    with open(filename, 'w') as file:
+        file.writelines(modified_lines)
+    
+    # Execute the bash command to generate the plot
+    subprocess.run(["gnuplot", filename])

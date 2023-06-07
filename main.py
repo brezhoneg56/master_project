@@ -30,9 +30,23 @@ basepath=primal_path
 
 #post.plot_results(basepath)
 #post.store_all_values(basepath, folder_name)
-print(folder_name)
 
-post.all_plots(basepath)
-
+#post.all_plots_new(basepath)
+#post.multiple_plots(basepath, "multiplePlotShooting.plot", 2, 6, new_folder, k)
 #plot_my_data(basepath, "shootingManagerOutput.plot", 6, 2, folder_name, n)
 
+# Execute the bash command to generate the plot
+filename="multiplePlotShooting.plot"
+#/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/multiplePlotShooting.plot
+os.chdir(basepath)
+print(basepath)
+#subprocess.run(["gnuplot", filename])
+intervals = [1, 2, 3, 5, 7, 10, 14, 28, 56, 100]
+x = [6, 1, 1, 1, 1]
+y = [2, 2, 3, 4, 5]
+
+#print(len(x))
+
+for z in range(0, (len(x))):
+    #print(x[z], y[z])
+    post.multiple_plots(basepath, filename, x[z], y[z], intervals)
