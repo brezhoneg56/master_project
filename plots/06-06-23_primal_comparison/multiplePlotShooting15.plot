@@ -27,6 +27,7 @@ set key top right
 
 set terminal postscript eps 18 dashed lw 1 enhanced 
 set output 'plot_1_5_Comparison_intervals.eps'
+set output 'plot_1_5_Comparison_intervals.png'
 
 plot '1_intervals_05-06-23/logtable1.csv' using 1:5 with linespoints title '1 intervals' , \
 '2_intervals_05-06-23/logtable2.csv' using 1:5 with linespoints title '2 intervals' , \
