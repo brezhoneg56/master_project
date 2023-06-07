@@ -29,9 +29,9 @@ set terminal postscript eps 18 dashed lw 1 enhanced
 set output 'plot_6_2_Comparison_intervals_zoom.eps'
 set output 'plot_6_2_Comparison_intervals_zoom.png'
 
-plot '1_intervals_05-06-23/logtable1.csv' using 6:2 with linespoints title '1 intervals' , \
-'2_intervals_05-06-23/logtable2.csv' using 6:2 with linespoints title '2 intervals' , \
-'3_intervals_05-06-23/logtable3.csv' using 6:2 with linespoints title '3 intervals' , \
-'5_intervals_05-06-23/logtable5.csv' using 6:2 with linespoints title '5 intervals' , \
-'7_intervals_05-06-23/logtable7.csv' using 6:2 with linespoints title '7 intervals' , \
-'10_intervals_05-06-23/logtable10.csv' using 6:2 with linespoints title '10 intervals'
+plot '/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/1_intervals_05-06-23/logtable1.csv' using 6:2 with linespoints title '1 intervals' , \
+'/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/2_intervals_05-06-23/logtable2.csv' using 6:2 with linespoints title '2 intervals' , \
+'/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/3_intervals_05-06-23/logtable3.csv' using 6:2 with linespoints title '3 intervals' , \
+'/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/5_intervals_05-06-23/logtable5.csv' using 6:2 with linespoints title '5 intervals' , \
+'/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/7_intervals_05-06-23/logtable7.csv' using 6:2 with linespoints title '7 intervals' , \
+'/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/10_intervals_05-06-23/logtable10.csv' using 6:2 with linespoints title '10 intervals'
