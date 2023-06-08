@@ -27,14 +27,20 @@ set key bottom right
 
 set terminal postscript eps 18 dashed lw 1 enhanced 
 set output 'plot_1_2_Comparison_intervals.eps'
+
+
+plot 'logtable1.csv' using 1:2 with linespoints title '1 intervals' , \
+'logtable2.csv' using 1:2 with linespoints title '2 intervals' , \
+'logtable3.csv' using 1:2 with linespoints title '3 intervals' , \
+'logtable5.csv' using 1:2 with linespoints title '5 intervals' , \
+'logtable7.csv' using 1:2 with linespoints title '7 intervals' , \
+'logtable10.csv' using 1:2 with linespoints title '10 intervals' , \
+'logtable14.csv' using 1:2 with linespoints title '14 intervals' , \
+'logtable28.csv' using 1:2 with linespoints title '28 intervals' , \
+'logtable56.csv' using 1:2 with linespoints title '56 intervals' , \
+'logtable100.csv' using 1:2 with linespoints title '100 intervals' 
+
+set terminal pngcairo size 2400, 1600 dashed lw 1 enhanced 
 set output 'plot_1_2_Comparison_intervals.png'
 
-plot '2_intervals_05-06-23/logtable2.csv' using 1:2 with linespoints title '2 intervals' , \
-'3_intervals_05-06-23/logtable3.csv' using 1:2 with linespoints title '3 intervals' , \
-'5_intervals_05-06-23/logtable5.csv' using 1:2 with linespoints title '5 intervals' , \
-'7_intervals_05-06-23/logtable7.csv' using 1:2 with linespoints title '7 intervals' , \
-'10_intervals_05-06-23/logtable10.csv' using 1:2 with linespoints title '10 intervals' , \
-'14_intervals_05-06-23/logtable14.csv' using 1:2 with linespoints title '14 intervals' , \
-'28_intervals_05-06-23/logtable28.csv' using 1:2 with linespoints title '28 intervals' , \
-'56_intervals_05-06-23/logtable56.csv' using 1:2 with linespoints title '56 intervals' , \
-'100_intervals_05-06-23/logtable100.csv' using 1:2 with linespoints title '100 intervals' 
+replot
