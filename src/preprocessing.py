@@ -41,6 +41,8 @@ def preparenextSweepStartingFiles(basepath, folder_name, previous_sweep_name, sw
     shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
     print("Preparing for: " + sweep_name + " and " + interval_name + ". Previous end time, that is new start time: " + str(endTime))
 
+
+
 def prepareMyNextSweep(basepath, k, folder_name):
     
     #Prepare all shooting intervals of next sweep for computation 
@@ -57,6 +59,11 @@ def prepareMyNextSweep(basepath, k, folder_name):
         for i in range(k+1, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
             executor.submit(preparenextSweepStartingFiles, basepath, folder_name, previous_sweep_name, sweep_name, i)
         sweep_name=mysweep.format(k)
+
+
+
+
+
 
 ###########################################################################
 
@@ -263,14 +270,24 @@ def prepareTimeFolders(folder_name, sweep_name):
         dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
         for filename in os.listdir(src_case):
             if filename.startswith('0.'):
-                shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
+                try:
+                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
+                except Exception as e1:
+                    print(e1)
+            #if filename.startswith
         for filename in os.listdir(src_case):                
             if not filename.startswith('0.'):
                 if os.path.isdir(src_case + "/" + filename):
-                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
+                    try:
+                        shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
+                    except Exception as e1:
+                        print(e1)
                 else:
-                    shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
-
+                    try:
+                        shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
+                    except Exception as e1:
+                        print(e1)
+        
 def initializeMyAdjoint(folder_name, sweep_name):
     adjointStartTime = theta + deltaT
     adjointEndTime = theta
@@ -289,11 +306,11 @@ def initializeMyAdjoint(folder_name, sweep_name):
         
         for line in fileinput.input(controlDict_path, inplace=True):
             if line.startswith('startTime'):
-                line = 'startTime       {};\n'.format(-endTime)
+                line = 'startTime       {};'.format(-endTime)
             elif line.startswith('endTime'):
-                line = 'endTime         {};\n'.format(-startTime)
+                line = 'endTime         {};'.format(-startTime) #{};\n'
             print(line)
-        print('startTime       {};\n'.format(-endTime))
+        print('startTime       {};'.format(-endTime))
         
         #Preparing next interval (i-1)
         #Current Sweep current interval
@@ -304,3 +321,110 @@ def initializeMyAdjoint(folder_name, sweep_name):
         
         shutil.copyfile(src_adjoint_undeformed_var + "Uaf", dest_adjoint_undeformed_var + "Uaf")
         shutil.copyfile(src_adjoint_undeformed_var + "phia", dest_adjoint_undeformed_var + "phia")
+
+def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
+    #Fetch shooting Update folder from postPro cases
+    src_shootUpdate=ref_cases+"shootingDefect/"
+    dest_shootUpdate=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/" 
+    if os.path.exists(dest_shootUpdate):
+        print("Replacing file")
+        post.erase_files(dest_shootUpdate)   
+    shutil.copytree(src_shootUpdate, dest_shootUpdate)
+    
+    #Fetch data from EndTime folder
+    src_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-(bc.decimal_analysis(theta + (i-1)*deltaT)))
+    src_data_start=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-(bc.decimal_analysis(theta + (i)*deltaT)))
+    #Copy to shootingUpdate
+    dest_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+    shutil.copy(src_data+"/linUa", dest_data+"dUdua")
+    shutil.copy(src_data+"/linUfa", dest_data+"dUdufa")
+    shutil.copy(src_data+"/linPa", dest_data+"dPdpa")
+    shutil.copy(src_data+"/Ua", dest_data+"UaEnd_left")
+    shutil.copy(src_data+"/pa", dest_data+"paEnd_left")
+    shutil.copy(src_data+"/phia", dest_data+"phiaEnd_left")
+    shutil.copy(src_data+"/Ufa", dest_data+"UfaEnd_left")
+    shutil.copy(src_data+"/Ua", dest_data+"shootingUpdateUa")
+    shutil.copy(src_data+"/pa", dest_data+"shootingUpdatePa")
+    shutil.copy(src_data+"/phia", dest_data+"shootingUpdatePhia")
+    shutil.copy(src_data+"/Ufa", dest_data+"shootingUpdateUfa")
+    
+    #Fetching data for limitor
+    shutil.copy(src_data_start+"/linUa", dest_data+"dUdua_Init")
+    shutil.copy(src_data_start+"/linUfa", dest_data+"dUdufa_Init")
+    shutil.copy(src_data_start+"/linPa", dest_data+"dPdpa_Init")
+
+
+
+def preparenextAdjointSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i):
+    interval_name=myinterval.format(i)
+    destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    previous_interval_name=myinterval.format(i+1)
+    print("previous interval: " + previous_interval_name)
+    endTime=-bc.decimal_analysis(theta + deltaT*(i))
+    startTime=-bc.decimal_analysis(theta + deltaT*(i-1))
+
+    print("endtime of previous interval: " + str(endTime))
+    source_constant=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name + '/constant'
+    source_system=basepath + folder_name + "/" + previous_sweep_name + "/" + interval_name + '/system'
+    source_endTime=basepath + folder_name + "/" + previous_sweep_name + "/" + previous_interval_name + '/' + str(endTime)        
+    destination_endTime=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    if i<n+1:
+        
+#    
+#    try:
+#        shutil.copytree(source_constant,os.path.join(destination_constant, os.path.basename(source_constant)))
+#    except Exception as e:
+#        print(e)
+#    try:
+#        shutil.copytree(source_system,os.path.join(destination_system, os.path.basename(source_system)))
+#    except Exception as e:
+#        print(e) 
+        if os.path.exists(destination_endTime + str(endTime)):
+            shutil.rmtree(destination_endTime + str(endTime))
+        shutil.copytree(source_endTime,os.path.join(destination_endTime, os.path.basename(source_endTime)))
+    
+    print("\n\n\n\nPREPARING for: " + sweep_name + " and " + interval_name + ". Previous end time, that is new start time: " + str(endTime))
+    controlDict_path=adjoint_path + folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
+    print(controlDict_path)
+    for line in fileinput.input(controlDict_path, inplace=True):
+        if line.startswith('startTime'):
+            line = 'startTime       {};'.format(endTime)
+        elif line.startswith('endTime'):
+            line = 'endTime         {};'.format(startTime) #{};\n'
+        print(line)
+    print('startTime       {};'.format(endTime))
+    
+#    dest_adjoint_undeformed_var=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-endTime) + "/"
+#    shutil.copyfile(src_adjoint_undeformed_var + "pa", dest_adjoint_undeformed_var + "pa")
+#    shutil.copyfile(src_adjoint_undeformed_var + "Ua", dest_adjoint_undeformed_var + "Ua")
+#        
+#    shutil.copyfile(src_adjoint_undeformed_var + "Uaf", dest_adjoint_undeformed_var + "Uaf")
+#    shutil.copyfile(src_adjoint_undeformed_var + "phia", dest_adjoint_undeformed_var + "phia")
+    
+
+def prepareMyNextAdjointSweep(basepath, k, folder_name):
+    
+    #Prepare all shooting intervals of next sweep for computation 
+    sweep_name=mysweep.format(k+1)#k+1
+    previous_sweep_name=mysweep.format(k)#k
+    print("previous sweep: " + previous_sweep_name)
+    os.path.join(folder_name,sweep_name)
+    print("\nPreparing shooting of " + sweep_name + ". ") 
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+    # Copy Directories that were already shoot. Warning : put that after the computations
+        #for x in range(1, k+1):#k+1
+            #executor.submit(copyShootDirs, basepath, x, folder_name, previous_sweep_name, sweep_name)
+           # copyShootDirs(basepath, x, folder_name, previous_sweep_name, sweep_name)
+    #Preparing shooting directories from sweep1 data 
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
+        for i in range(k, n+1): #will become k + 1, n + 1 because of first loop being put into the big loop
+            #executor.submit(preparenextAdjointSweepStartingFiles, basepath, folder_name, previous_sweep_name, sweep_name, i)
+            preparenextAdjointSweepStartingFiles(basepath, folder_name, previous_sweep_name, sweep_name, i)
+            print("Test for " + "Previous sweep: " + previous_sweep_name + " and current sweep: " + sweep_name)
+        sweep_name=mysweep.format(k)
+    
+
+     #preparation comme pour le primal
+        #adjoint prepa : le timefolder du primal avec un "-", les condition depart adjoint, "system" depuis le current interval
+

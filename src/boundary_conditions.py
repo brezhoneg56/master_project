@@ -190,7 +190,7 @@ def check_existence_linU(basepath, folder_name, sweep_name):
 
 def checking_existence(basepath, folder_name):
     if os.path.exists(basepath + folder_name):
-            ans=input("WARNING: Directory " + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
+            ans=input("WARNING: Directory " + basepath + folder_name + " already exists. Do you want to replace it ? (Y/N)     \n   \n")
             if ans=="Y" or ans=="y":
                 print("Deleting files...\n")
                 for g in range(1, n + 1):

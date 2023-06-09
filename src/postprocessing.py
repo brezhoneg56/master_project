@@ -78,7 +78,18 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     shutil.copy(src_upfiles + "shootingUpdatePhi", dest_upfiles + "/phi")
     shutil.copy(src_upfiles + "shootingUpdateUf", dest_upfiles + "/Uf")
     shutil.copy(src_p, dest_upfiles)
-    
+
+def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i):
+    next_sweep=mysweep.format(k+1)
+    next_interval=myinterval.format(i-1)
+    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
+    dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
+    #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
+    shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "/Ua")
+    shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
+    shutil.copy(src_upfiles + "shootingUpdateUfa", dest_upfiles + "/Ufa")
+    shutil.copy(src_p, dest_upfiles)
     
 ### ERASING FUNCTIONS #################
 def erase_system(path_files):
