@@ -296,6 +296,29 @@ def prepareTimeFolders(folder_name, sweep_name, k):
                         print(e1)
         
 def initializeMyAdjoint(folder_name, sweep_name):
+    for i in range (1, n+1):
+        interval_name=myinterval.format(i)
+        src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
+        dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
+        for filename in os.listdir(src_case):
+            if filename.startswith('0.'):
+                try:
+                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
+                except Exception as e1:
+                    print(e1)
+            #if filename.startswith
+        for filename in os.listdir(src_case):                
+            if not filename.startswith('0.'):
+                if os.path.isdir(src_case + "/" + filename):
+                    try:
+                        shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
+                    except Exception as e1:
+                        print(e1)
+                else:
+                    try:
+                        shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
+                    except Exception as e1:
+                        print(e1)    
     adjointStartTime = theta + deltaT
     adjointEndTime = theta
 
@@ -328,29 +351,7 @@ def initializeMyAdjoint(folder_name, sweep_name):
         
         shutil.copyfile(src_adjoint_undeformed_var + "Uaf", dest_adjoint_undeformed_var + "Uaf")
         shutil.copyfile(src_adjoint_undeformed_var + "phia", dest_adjoint_undeformed_var + "phia")
-    for i in range (1, n+1):
-        interval_name=myinterval.format(i)
-        src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
-        dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
-        for filename in os.listdir(src_case):
-            if filename.startswith('0.'):
-                try:
-                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
-                except Exception as e1:
-                    print(e1)
-            #if filename.startswith
-        for filename in os.listdir(src_case):                
-            if not filename.startswith('0.'):
-                if os.path.isdir(src_case + "/" + filename):
-                    try:
-                        shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
-                    except Exception as e1:
-                        print(e1)
-                else:
-                    try:
-                        shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
-                    except Exception as e1:
-                        print(e1)
+    
 
 def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
     #Fetch shooting Update folder from postPro cases
