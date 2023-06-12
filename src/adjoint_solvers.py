@@ -27,13 +27,13 @@ def prepareAdjointDefectComputation(basepath, sweep_name, interval_name, previou
         print(e)
     startingTime=str(bc.decimal_analysis(theta + (i)*deltaT))
     endingTime=str(bc.decimal_analysis(theta + (i)*deltaT))
-    adjointStartingTime=str(bc.decimal_analysis(-(theta + (i-1)*deltaT)))
-    adjointEndingTime=str(bc.decimal_analysis(-(theta + (i)*deltaT)))
+    adjointStartingTime=str(bc.decimal_analysis(-(theta + (i)*deltaT)))
+    adjointEndingTime=str(bc.decimal_analysis(-(theta + (i)*deltaT))) #avant i
 
     #Fetch U, p, phi from current interval
-    src_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointEndingTime + "/Ua" ##Starts with -0.5
-    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointEndingTime + "/pa"
-    src_phi=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointEndingTime + "/phia"
+    src_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointStartingTime + "/Ua" ##Starts with -0.5
+    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointStartingTime + "/pa"
+    src_phi=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + adjointStartingTime + "/phia"
     
     dest_U=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/UaInit_right"
     dest_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/paInit_right"
@@ -101,7 +101,7 @@ def computeAdjointPressureDropFoam(basepath, folder_name, sweep_name):
 def computeAdjointDefect(basepath, sweep_name, k):
     #int1_Defect(basepath, sweep_name)
     print("\nComputing Adjoint Defect ...")
-    for i in range(n-1, 0, -1): #2, n+1  ### avant n-1 
+    for i in range(n-1, 0, -1): # avant n-1 
         interval_name=myinterval.format(i)
         previous_interval=myinterval.format(i+1) #avant i-1 mais on va à l'envers
         prepareAdjointDefectComputation(adjoint_path, sweep_name, interval_name, previous_interval, i)
@@ -110,8 +110,6 @@ def computeAdjointDefect(basepath, sweep_name, k):
             os.chdir(adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect")
             subprocess.run(['computeAdjointShootingDefect'], stdout=logfile, stderr=subprocess.STDOUT)        
     os.chdir(basepath)
-
-### ADJOINT
 
 def adjointPimpleDyMFoam(folder_name, sweep_name, i):
     interval_name=myinterval.format(i)
@@ -127,7 +125,7 @@ def loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k): #Version V1 : Parall
     print("\nStarting shooting of " + sweep_name + "\n")
     print("Starting ADJ EXECUTOR ... \n")
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(n, 0, -1): #(n, k-1, -1)
+        for i in range(n, k-1, -1): #(n, k-1, -1)
             executor.submit(adjointPimpleDyMFoam, folder_name, sweep_name, i)
         #adjointPimpleDyMFoam(folder_name, sweep_name, i)
             print("Starting adjointPimpleDyMFoam for interval " + str(i))
@@ -146,7 +144,7 @@ def copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_pa
         linU_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/0/linUaDefect"        
         
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-(bc.decimal_analysis(theta + (i)*deltaT)))
-        print(str(starttime_dest))
+        print("Start for LIN COPY:" + str(starttime_dest))
         #Copy lin files
         shutil.copy2(linP_path, starttime_dest + "/linPa")
         shutil.copy2(linU_path, starttime_dest + "/linUa")
@@ -168,9 +166,10 @@ def prepareNextAdjointLinearization(basepath, folder_name, k):
     fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
 
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
-        for i in range(n-1, 0, -1): #avant c'était 1 (a la place de 0)     (n-k, 0, -1)
-            executor.submit(copy_adjointlinearization, basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
+    for i in range(n, 0, -1): #avant n-1
+            #executor.submit(copy_adjointlinearization, basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
+        copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
 
 def adjointLinearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
@@ -183,7 +182,7 @@ def adjointLinearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     print("Adjoint linearisation of " + interval_name + " is done. Writing into lin_logfile ...")
     os.chdir(basepath) #back to main path
 
-def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):
+def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):  ###A TESTER SANS PARALEL
     print("linfor " + sweep_name)
     
     #with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
@@ -215,57 +214,59 @@ def computeAdjointNewtonUpdate(basepath, sweep_name, i, k):
 def loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k):
     print("\nComputing Adjoint Newton Update...")
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(n-k, 1, -1): #depart à 2
+        for i in range(n-k-1, 0, -1): #déart à n au lieu de n-1
              executor.submit(computeAdjointNewtonUpdate, basepath, sweep_name, i, k)
+        #computeAdjointNewtonUpdate (basepath, sweep_name, i, k)
 
-def computeAdjoint(basepath):
-    #Starting Timer for entire Process
-    start_time=time.time()
-    
-    #Verify if folder_name exists, and offers to delete it if so
-    bc.checking_existence(basepath, folder_name)
-    print("Preparing files for adjoint computation...\n")
-    
-    #Preparing files for adjoint computation
-    #pre.prepareTimeFolders(folder_name, "sweep1")
-    pre.initializeMyAdjoint(folder_name, "sweep1")
-    print("done")
-    #Initialization loop over all Sweeps    
-    for k in range (1, n+1):
-        sweep_name=mysweep.format(k)
-        
-        #Renaming Time folder with "-"
-        pre.prepareTimeFolders(folder_name, sweep_name)
-    
-        #Intermediate Timer
-        elapsed_time = time.time() - start_time        
-        bc.timer_and_write(basepath, elapsed_time, "copying files", "adjoint folder")
-    
-  
-        sweep_name=mysweep.format(k)
-        loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-        
-        #Computing Adjoint Defect
-        print("\nADJOINT DEFECT...\n")
-        computeAdjointDefect(adjoint_path, sweep_name, k)
-        
-        #Computing Adjoint Linearization
-        print("\nADJOINT LINEARIZATION...\n")
-        loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-        
-        #Starting Adjoint Newton Update
-        loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k)
-        
-        #Renaming Time folder with "-"
-        sweep_name=mysweep.format(k+1)
-        #pre.prepareTimeFolders(folder_name, sweep_name)
-        
-        if k<n: #A FAIRE !!!
-            pre.prepareMyNextAdjointSweep(basepath, k, folder_name)
-       
-    #Final Timer
-    elapsed_time = time.time() - start_time        
-    bc.timer_and_write(elapsed_time, "adjointPimpleDyMFoam", folder_name)
+
+#def computeAdjoint(basepath):
+#    #Starting Timer for entire Process
+#    start_time=time.time()
+#    
+#    #Verify if folder_name exists, and offers to delete it if so
+#    bc.checking_existence(basepath, folder_name)
+#    print("Preparing files for adjoint computation...\n")
+#    
+#    #Preparing files for adjoint computation
+#    #pre.prepareTimeFolders(folder_name, "sweep1")
+#    pre.initializeMyAdjoint(folder_name, "sweep1")
+#    print("done")
+#    #Initialization loop over all Sweeps    
+#    for k in range (1, n+1):
+#        sweep_name=mysweep.format(k)
+#        
+#        #Renaming Time folder with "-"
+#        pre.prepareTimeFolders(folder_name, sweep_name)
+#    
+#        #Intermediate Timer
+#        elapsed_time = time.time() - start_time        
+#        bc.timer_and_write(basepath, elapsed_time, "copying files", "adjoint folder")
+#    
+#  
+#        sweep_name=mysweep.format(k)
+#        loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
+#        
+#        #Computing Adjoint Defect
+#        print("\nADJOINT DEFECT...\n")
+#        computeAdjointDefect(adjoint_path, sweep_name, k)
+#        
+#        #Computing Adjoint Linearization
+#        print("\nADJOINT LINEARIZATION...\n")
+#        loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
+#        
+#        #Starting Adjoint Newton Update
+#        loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k)
+#        
+#        #Renaming Time folder with "-"
+#        sweep_name=mysweep.format(k+1)
+#        #pre.prepareTimeFolders(folder_name, sweep_name)
+#        
+#        if k<n: #A FAIRE !!!
+#            pre.prepareMyNextAdjointSweep(basepath, k, folder_name)
+#       
+#    #Final Timer
+#    elapsed_time = time.time() - start_time        
+#    bc.timer_and_write(elapsed_time, "adjointPimpleDyMFoam", folder_name)
 
 
 def combined_shooting_stef_update():

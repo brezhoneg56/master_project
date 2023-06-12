@@ -32,7 +32,7 @@ def computeAdjoint(basepath):
     print("Preparing files for adjoint computation...\n")
     
     #Preparing files for adjoint computation
-    pre.prepareTimeFolders(folder_name, "sweep1")
+    #pre.prepareTimeFolders(folder_name, "sweep1", 1) # NE FONCTIONNE PLUS EN INIT, RAJOUTE À INITALIZE
     pre.initializeMyAdjoint(folder_name, "sweep1")
     print("done")
     #Initialization loop over all Sweeps    
@@ -57,17 +57,28 @@ def computeAdjoint(basepath):
         #Starting Adjoint Newton Update
         adsol.loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k)
         
-        #Renaming Time folder with "-"
-        sweep_name=mysweep.format(k+1)
-        pre.prepareTimeFolders(folder_name, sweep_name)
-        
         if k<n: #A FAIRE !!!
             pre.prepareMyNextAdjointSweep(basepath, k, folder_name)
+            #Renaming Time folder with "-"
+            sweep_name=mysweep.format(k+1)
+            pre.prepareTimeFolders(folder_name, sweep_name, k)
        
     #Final Timer
     elapsed_time = time.time() - start_time        
     bc.timer_and_write(basepath, elapsed_time, "adjointPimpleDyMFoam", folder_name)
 
 computeAdjoint(adjoint_path)
+#k=1
+##Renaming Time folder with "-"
+#
+#        
+#if k<n: #A FAIRE !!!
+#    pre.prepareMyNextAdjointSweep(adjoint_path, k, folder_name)
+#    sweep_name=mysweep.format(k+1)
+#    pre.prepareTimeFolders(folder_name, sweep_name, k)
+#k=2
+#sweep_name=mysweep.format(k)
+#os.chdir(adjoint_path)
+#adsol.loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
 
-#pre.prepareMyNextAdjointSweep(adjoint_path, 1, folder_name)
+

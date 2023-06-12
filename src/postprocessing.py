@@ -149,7 +149,10 @@ def erase_files(path_files):
                 except:
                     print("Failed to erase")
     if os.path.exists(path_files):
-        os.removedirs(the_path)
+        try:
+            os.removedirs(the_path)
+        except Exception as e:
+            print(e)
 
 def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
     if i!=1:
