@@ -271,7 +271,7 @@ def copyAdjointShootDirs(basepath, i, folder_name, previous_sweep_name, sweep_na
 
 
 def prepareTimeFolders(folder_name, sweep_name, k):
-    for i in range (n, k, -1):
+    for i in range (n-k, 0, -1):
         interval_name=myinterval.format(i)
         src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
         dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name

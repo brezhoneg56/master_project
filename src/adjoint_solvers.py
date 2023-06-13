@@ -125,7 +125,7 @@ def loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k): #Version V1 : Parall
     print("\nStarting shooting of " + sweep_name + "\n")
     print("Starting ADJ EXECUTOR ... \n")
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(n, k-1, -1): #(n, k-1, -1)
+        for i in range(n-k+1, 0, -1): #(n, k-1, -1)
             executor.submit(adjointPimpleDyMFoam, folder_name, sweep_name, i)
         #adjointPimpleDyMFoam(folder_name, sweep_name, i)
             print("Starting adjointPimpleDyMFoam for interval " + str(i))
