@@ -16,55 +16,17 @@ from config import n, theta, T, a, t, deltaT, myinterval, mysweep, folder_name, 
 from src import solvers as sol, preprocessing as pre, postprocessing as post, boundary_conditions as bc, adjoint_solvers as adsol
 import sys
 import shutil
+import threading
 import concurrent.futures
-
-################                  PATH                     ################
 c.headings()
 ################           CHOICE OF COMPUTATION           ################
 
+#adsol.computeAdjoint(adjoint_path)
 #sol.the_shooting_manager()
-def computeAdjoint(basepath):
-    #Starting Timer for entire Process
-    start_time=time.time()
-    
-    #Verify if folder_name exists, and offers to delete it if so
-    bc.checking_existence(basepath, folder_name)
-    print("Preparing files for adjoint computation...\n")
-    
-    #Preparing files for adjoint computation
-    #############pre.prepareTimeFolders(folder_name, "sweep1", 1) # NE FONCTIONNE PLUS EN INIT, RAJOUTE À INITALIZE
-    pre.initializeMyAdjoint(folder_name, "sweep1")
-    print("done")
-    #Initialization loop over all Sweeps    
-    for k in range (1, n+1): #(1, n+1)
-        sweep_name=mysweep.format(k)
-    
-        sweep_name=mysweep.format(k)
-        adsol.loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-        
-        #Intermediate Timer
-        elapsed_time = time.time() - start_time        
-        bc.timer_and_write(basepath, elapsed_time, sweep_name, "adjoint folder")
-        
-        #Computing Adjoint Defect
-        print("\nADJOINT DEFECT...\n")
-        adsol.computeAdjointDefect(adjoint_path, sweep_name, k)
-        
-        #Computing Adjoint Linearization
-        print("\nADJOINT LINEARIZATION...\n")
-        adsol.loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-        
-        #Starting Adjoint Newton Update
-        adsol.loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k)
-        
-        if k<n: #A FAIRE !!!
-            pre.prepareMyNextAdjointSweep(basepath, k, folder_name)
-            #Renaming Time folder with "-"
-            sweep_name=mysweep.format(k+1)
-            pre.prepareTimeFolders(folder_name, sweep_name, k)
-       
-    #Final Timer
-    elapsed_time = time.time() - start_time        
-    bc.timer_and_write(basepath, elapsed_time, "adjointPimpleDyMFoam", folder_name)
 
-computeAdjoint(adjoint_path)
+#post.store_all_adjoint_values(adjoint_path, folder_name)
+
+#sol.primal_shooting_stef_update(primal_path, "no")
+#adsol.computeAdjoint(adjoint_path)
+
+sol.coupling_threads()

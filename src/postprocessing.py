@@ -79,6 +79,8 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     shutil.copy(src_upfiles + "shootingUpdateUf", dest_upfiles + "/Uf")
     shutil.copy(src_p, dest_upfiles)
 
+#################  ADJOINT POSTPROCESSING ########################
+
 def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
     next_interval=myinterval.format(i-1)
@@ -90,8 +92,51 @@ def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name
     shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
     shutil.copy(src_upfiles + "shootingUpdateUfa", dest_upfiles + "/Ufa")
     shutil.copy(src_p, dest_upfiles)
+
+def computeAdjointPressureDropFoam(basepath, folder_name, sweep_name):
+    os.chdir(basepath + folder_name + '/' + sweep_name + "/adjoint_postProcessing/")
+    #Open a log file for pressureDrop and timers       
+    with open("adjointPressureDrop.txt","w"):
+        os.system('computeAdjointPressureDropFoam start end > "adjointPressureDrop.txt"')            
+        print("\nComputation of Pressure Drop for " + sweep_name + " is done.\nWriting into adjoint_pressureDrop.txt ...")
     
-### ERASING FUNCTIONS #################
+    #Writing the pressureDrop line into txt file
+    with open("adjointPressureDrop.txt","r") as f:
+        os.chdir(basepath + folder_name)
+        with open("pressureDropvalues.txt","a") as mapression:
+            #mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
+            for line in f:
+                if "adjointPressureDrop" in line:
+                    mapression.write(line)
+                    print(line)
+        mapression.close()
+    f.close()
+    os.chdir(basepath) #back to main path
+    print("Done.\n")
+
+
+def adjointPostProcessingCopyfiles(i, destination_file, postPro_destination):
+    interval_name=myinterval.format(i)
+    for filename in os.listdir(destination_file + interval_name):                
+        if filename.startswith('-0.') or filename.startswith(str(-theta)) or filename.startswith(str(-(theta + deltaT*n))):
+            #os.path.join(destination_file + interval_name + "/" + filename, postPro_destination)
+            bc.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
+
+def prepareAdjointPostProcessing(basepath, folder_name, sweep_name):
+    destination_file=basepath + folder_name + '/' + sweep_name + '/'
+    postPro_destination=destination_file + "adjoint_postProcessing"
+    os.chdir(destination_file)
+    shutil.copytree(ref_cases_mod_def + "constant/", postPro_destination + "/constant/" )
+    shutil.copytree(ref_cases_mod_def + "system/", postPro_destination + "/system/" )
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+        for i in range(1, n+1):
+            #print("copyfile in loop" + str(i))
+            executor.submit(adjointPostProcessingCopyfiles, i, destination_file, postPro_destination)
+        #post.adjointPostProcessingCopyfiles(i, destination_file, postPro_destination)
+    print("ready for postProcessing of " + sweep_name + "...\n")
+
+#################    ERASING FUNCTIONS    #################
+    
 def erase_system(path_files):
     for filename in os.listdir(path_files):
         the_path = os.path.join(path_files, filename)
@@ -162,7 +207,11 @@ def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
         #post.erase_0(path_files)
         #post.erase_constant(path_files)
         #post.erase_system(path_files)
-        
+def erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name, i):
+    if i!=n:
+        src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+        dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
+        shutil.move(src_shootfile, dest_shootfile)
     
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
@@ -215,8 +264,57 @@ def erase_all_files(basepath, folder_name, k):
     if os.path.exists(basepath+folder_name+"/"+sweep_name+"/preProcessing/"):     
         shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
     
-######################################################################
-## LOGTABLE
+def erase_all_adjoint_files(basepath, folder_name, k):
+    sweep_name=mysweep.format(k)
+    #Interval time files   
+    os.makedirs(basepath+folder_name+"/"+sweep_name+"/logfiles")
+    for i in range(1, n+1):
+            interval_name=myinterval.format(i)
+            path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
+            erase_time_files(path_files)
+            
+            src_log=basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/adjoint_lin_logfilesweep"+str(k)+"_"+interval_name+".txt"
+            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_lin_logfile_"+interval_name+".txt"
+            if os.path.exists(src_log):
+                shutil.move(src_log, dest_log)
+            #except Exception as e4:
+            #    print("Error while moving directory: " + str(e4))
+            src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_pimple.log"
+            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/pimple_"+interval_name+".log"
+            try:
+                shutil.move(src_log, dest_log)
+            except Exception as error:
+                print("Error while moving file: " + str(error))            
+            
+            erase_constant(path_files+"/constant")
+            erase_system(path_files+"/system")
+            erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name, i)            
+            
+            shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
+    #PostProcessessing files
+    src_log=basepath+folder_name+"/"+sweep_name+"/adjoint_postProcessing/"
+    dest_log=basepath+folder_name+"/"+sweep_name+"/"
+    try:
+        shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
+    except Exception as epost:
+        print("Error while moving postProlog: " + str(epost))
+    try:
+        shutil.move(src_log+"adjointPressureDrop.txt", dest_log+"/logfiles/adjointPressureDrop" + str(k) + ".txt")
+    except Exception:
+        print("Error while moving adjointPressureDrop: ")
+    try:
+        shutil.rmtree(src_log)
+    except Exception as error:
+        print("Error while deleting directory: " + str(error))
+    
+    #Preprocessing files
+#    src_log=basepath+folder_name+"/"+sweep_name+"/preProcessing/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
+#    dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
+#    if os.path.exists(src_log):    
+#        shutil.move(src_log, dest_log)
+#    if os.path.exists(basepath+folder_name+"/"+sweep_name+"/preProcessing/"):     
+#        shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
+#################  LOGTABLE FUNCTIONS  #################
 
 
 def store_for_plot_defect(basepath, sweep_name, interval_name, file):
@@ -251,12 +349,7 @@ def store_all_values(basepath, folder_name):
             flux=0.0;
             
             #Fetch pressureDrop
-            pressure_path=post.find_logfile(basepath, sweep_name, "pressureDrop" + str(k) + ".txt")
-            try:
-                pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
-            except Exception:
-                print("Pressure Drop not found")
-                pressureDrop=0
+            fetchPressureDrop(basepath, sweep_name, k)
             
             for i in range(2, n+1):
                 interval_name=myinterval.format(i)
@@ -285,25 +378,126 @@ def store_all_values(basepath, folder_name):
         # Write the row to the CSV file
         writer.writerows(table)
 
+def store_all_adjoint_values(basepath, folder_name):
+    os.chdir(basepath + folder_name)
+    print("All value will be stored in a CSV file as follows:\n")
+    print("Row number = Sweep Number, pressureDrop, velocity defect, continuity defect (flux), primalWallTime, SweepWallTime, AccumulatedTime\n")
+    print("Wrinting into logtable in  " + basepath + folder_name + "\n")
+    table = []
+    primalWallTime = []
+    acc_time=0.0
+    os.chdir(basepath + folder_name)
+    with open("adjointlogtable.csv", 'a', newline='') as tab:
+        writer = csv.writer(tab)
+        for k in range(1, n+1):
+            sweep_name=mysweep.format(k)
+            velocity=0.0;
+            flux=0.0;
+            
+            #Fetch pressureDrop
+            pressureDrop=fetchPressureDrop(basepath, sweep_name, k)
+            
+            for i in range(1, n):
+                interval_name=myinterval.format(i)
+                try:
+                    _, flux_value = post.fetch_adjoint_values_defect(basepath, sweep_name, interval_name, "adjoint_shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                except Exception as e:
+                    print("flux value problem")
+                    print(e)
+                try:
+                    velocity_value, _ = post.fetch_adjoint_values_defect(basepath, sweep_name, interval_name, "adjoint_shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                except Exception as e:
+                    print("velocity value problem ")
+                    print(e)                
+                try:
+                    velocity=velocity+float(velocity_value)
+                    flux=flux+float(flux_value)
+                except Exception as e:
+                    print("summing problem")
+                    print(e)
+            os.chdir(basepath + folder_name)
+            with open("adjointPimpleDyMFoam_times.txt", "r") as timefile:
+                for y in timefile:
+                    y = y.strip()
+                    primalWallTime.append(float(y))
+            timefile.close()
+            with open("adjoint_subintervals_times.txt", "r") as timefile:
+                for index, y in enumerate(timefile):
+                    if index == k-1:  # Read the line corresponding to the current round (k)
+                        y = y.strip()
+                        acc_time+=float(y)
+                        #print(y)
+                        break
+
+            # Store the variables in a table or data structure of your choice
+            table.append([str(k) + "    " + str(pressureDrop) + "    " + str(round(velocity, 3)) + "    " + str(round(flux, 3)) + "    " + str(round(primalWallTime[k-1],3)) + "    " + str(round(acc_time, 3))])
+        
+        # Write the row to the CSV file
+        writer.writerows(table)
+        print("Done.\n\n\n")
+
+
+
+
 def find_logfile(basepath, sweep_name, thefile):
-    file_path = basepath + folder_name + "/" + sweep_name + "/logfiles/"
-    for root, dirs, files in os.walk(file_path):
-        if thefile in files:
-            logfile_path = os.path.join(root, thefile)
-            return (logfile_path)
-        else:
-            print(thefile + " not found")
+    try:
+        file_path = basepath + folder_name + "/" + sweep_name + "/logfiles/"
+        for root, dirs, files in os.walk(file_path):
+            if thefile in files:
+                logfile_path = os.path.join(root, thefile)
+                return (logfile_path)
+            else:
+                print(thefile + " not found")
+    except Exception:
+        try:
+            file_path = basepath + folder_name + "/" + sweep_name
+            for root, dirs, files in os.walk(file_path):
+                if thefile in files:
+                    logfile_path = os.path.join(root, thefile)
+                    return (logfile_path)
+                else:
+                    print(thefile + " not found")
+        except Exception as e:
+            print(str(e))
+
+def fetchPressureDrop(basepath, sweep_name, k):
+    #print(basepath + folder_name + "/" + sweep_name + "/adjointPostProcessing/")
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
+        pressure_path= basepath + folder_name + "/" + sweep_name + "/logfiles/pressureDrop" + str(k) + ".txt"
+        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/postProcessing/"):
+        pressure_path= basepath + folder_name + "/" + sweep_name + "/postProcessing/pressureDrop.txt"
+        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/"):
+        pressure_path= basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/adjointPressureDrop.txt"
+        pressureDrop=post.fetch_values(basepath, pressure_path, "adjointPressureDrop is     ")
+    else:
+        print("Pressure Drop not found ")
+        pressureDrop=0
+    return(pressureDrop)
+    
+            
+#                except Exception as e:
+#                    print("Pressure Drop not found: " + str(e))
+#                    pressureDrop=0
 
 def fetch_values_defect(basepath, sweep_name, interval_name, thefile):
-    path_file = basepath + folder_name + "/" + sweep_name + "/logfiles/"#shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
-    os.chdir(path_file)
+# Regular expression pattern to capture the value
+    velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
+    fluxes = r"defects \(fluxes\): sum local = ([\d.e+-]+)"    
+    
+    #path_file = #shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
+        path_file =basepath + folder_name + "/" + sweep_name + "/logfiles/"
+        os.chdir(path_file)
+        #with open(thefile, "r") as myfile:
+         #   text = myfile.read()
+    
+    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"):
+        path_file=basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"        
+        os.chdir(path_file)
     with open(thefile, "r") as myfile:
         text = myfile.read()
-
-        # Regular expression pattern to capture the value
-        velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
-        fluxes = r"defects \(fluxes\): sum local = ([\d.e+-]+)"
-
         # Search for the pattern in each line
         for line in text.split('\n'):
             velocity_match = re.search(velocity, line)
@@ -314,21 +508,49 @@ def fetch_values_defect(basepath, sweep_name, interval_name, thefile):
             if flux_match:
                 flux_defect = flux_match.group(1)
                 #print("defects (fluxes): sum local:", flux_defect)
-        return(velocity_defect, flux_defect)
+    return(velocity_defect, flux_defect)
+
+def fetch_adjoint_values_defect(basepath, sweep_name, interval_name, thefile):
+    # Regular expression pattern to capture the value
+    velocity = r"defects \(adjoint velocity\): sum local = [-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?"  ### r"[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?"      ([\d.e+-]+)
+    fluxes = r"defects \(adjoint fluxes\): sum local = [-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?"#([\d.e+-]+)"    
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
+        path_file =basepath + folder_name + "/" + sweep_name + "/logfiles/"
+        os.chdir(path_file)
+        print(path_file)
+    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/"):
+        path_file=basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/"        
+        os.chdir(path_file)
+    if os.path.exists(path_file + thefile):
+        with open(thefile, "r") as myfile:
+            text = myfile.read()
+            # Search for the pattern in each line
+            for line in text.split('\n'):
+                velocity_match = re.search(velocity, line)
+                flux_match = re.search(fluxes, line)
+                if velocity_match:
+                    velocity_defect = velocity_match.group(1)
+                    #print("defects (adjoint velocity): sum local:", velocity_defect)
+                if flux_match:
+                    flux_defect = flux_match.group(1)
+                    #print("defects (adjoint fluxes): sum local:", flux_defect)
+                    return(float(velocity_defect), float(flux_defect))
 
 def fetch_values(basepath, path_file, line_to_find):
     with open(path_file, "r") as myfile:
         text = myfile.read()
         # Regular expression pattern to capture the value
         #velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
-        line_to_find=line_to_find + "([\d.e+-]+)"
+        line_to_find=line_to_find + r"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)"#"([\d.e+-]+)"
         # Search for the pattern in each line
         for line in text.split('\n'):
             match = re.search(line_to_find, line)
             if match:
                 the_value = match.group(1)
+                break
         return(the_value)
-##################################
+
+#################    PLOT FUNCTIONS    #################
 
 def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
     os.chdir(basepath + new_folder + "/")

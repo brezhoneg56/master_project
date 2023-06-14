@@ -7,6 +7,7 @@ Created on Tue Apr 18 10:27:15 2023
 import os
 import csv
 import re
+import threading
 import subprocess
 import multiprocessing
 import sys
@@ -59,7 +60,7 @@ def loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k): #Version V1 : Para
     if k<n:
         pre.prepareMyNextSweep(basepath, k, folder_name)
 
-#########################      LINEARIZATION      #########################
+#########################        LINEARIZATION        #########################
 
 def linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, i):
     #Executing linearisedPimpleDyMFoam for sweep k interval i
@@ -90,6 +91,8 @@ def loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k):
     elapsed_time = time.time() - lin_time
     bc.timer_and_write(basepath, elapsed_time, "linearisedPimpleDyMFoam", sweep_name)
     print("LIN EXECUTOR terminated \n\n") 
+
+######################### UPDATE AND DEFECT #########################
 
 def computeShootingUpdate(basepath, folder_name, g, i):
     sweep_name=mysweep.format(g)
@@ -135,9 +138,9 @@ def loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k):
              executor.submit(computeNewtonUpdate, basepath, sweep_name, i, k)
 
 
-###################### FUNCTIONS FOR MAIN EXECUTION #######################
+##################     FUNCTIONS FOR MAIN EXECUTION     ###################
 
-def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + shooting method) primal_nofastpropagator_steffensen
+def OLDprimal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + shooting method) primal_nofastpropagator_steffensen
     #Strating Timer
     start_time=time.time()
     
@@ -162,7 +165,7 @@ def primal_nofastpropagator_seq(basepath): #change name (eg primal or adjoint + 
     print("Elapsed time:", num_minutes, " minutes, ", num_seconds, "seconds")
     bc.timer_and_write(basepath, elapsed_time, "all subintervals", sweep_name)
 
-def computeSteffensenMethod(basepath, folder_name):
+def OLDcomputeSteffensenMethod(basepath, folder_name):
     start_time=time.time()
     print("\n\nStarting Steffensen's Method for " + folder_name + ".\n")
     
@@ -203,7 +206,7 @@ def computeSteffensenMethod(basepath, folder_name):
 
 
 # THE BIG SOLVERs
-def primal_shooting_stef_update(basepath, erasing):
+def primal_shooting_stef_update(basepath, erasing, event):
     
     #Verify if folder_name exists, and offers to delete it if so
     bc.checking_existence(basepath, folder_name)
@@ -213,11 +216,11 @@ def primal_shooting_stef_update(basepath, erasing):
     
     #Initilisation for Sweep1
     bc.sweep_1_initialization(basepath, folder_name) #One sync version
-
+    
+    deletion_counter=-1
     # STARTING MAIN LOOP
     for k in range(1, n+1):
     ######################    
-
         #Intermediate counter start
         start_time=time.time()
         #Naming current sweep
@@ -228,32 +231,69 @@ def primal_shooting_stef_update(basepath, erasing):
 
         #Newline for defect
         loop_computeDefect(basepath, sweep_name, k)
-
-        #Starting intermediate timer
-
+        if k==2:
+            print("Starting the adjoint ...\n")
+            event.set()
+        
         #Starting linearisation for Sweep k over all subintervals
         loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
 
         #Starting Newton Update
         loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k)
-
-        # Deleting Files after Sweep k Done    
-        if erasing=="yes":
-            print("Deleting files...\n")
-            post.erase_all_files(basepath, folder_name, k)
-            print("The files were succefully deleted. See exceptions above.")
         
+        # Deleting Files after Sweep k Done
+        if erasing=="yes":
+            if (deletion_counter>0):
+                print("Deleting files...\n")
+                post.erase_all_files(basepath, folder_name, k)
+                print("The files for " + mysweep.format(deletion_counter)+ " in primal_path were succefully deleted. See exceptions above.")
+        deletion_counter+=1
+
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
         bc.timer_and_write(basepath, elapsed_time, "subintervals", sweep_name)
-        
     print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
 
     #Stopping timer and writing into logfile
     total_time=time.time()-start_time_ALL
     bc.timer_and_write(basepath, total_time, folder_name, sweep_name)
     post.store_all_values(basepath, folder_name)
+
 ###########################################################################
+
+def primal_option(primal, adjoint, coupling):
+    erasing=input("Do you you to delete time files and configuration files after computation? (Y/N) (stop to exit)    \n   \n")
+    if erasing=="stop":
+        sys.exit()
+    if erasing=="Y" or erasing=="y" or erasing=="yes":
+        print("With deleting option, only primal can work for now")
+        primal_shooting_stef_update(primal_path, "yes")
+    elif erasing=="N" or erasing=="n" or erasing=="no":
+        ans=input("Warning: This option requires a lot of avaible free disk space. Do you want to continue? (Y/N)")
+        if ans=="Y" or ans=="y" or ans=="yes":
+            basepath=primal_path
+            os.chdir(basepath)
+            primal_shooting_stef_update(primal_path, "no")        
+    else:
+        print("Please answer by yes or no.")
+        the_shooting_manager()
+
+def coupling_threads():
+    # Create an event object for synchronization
+    event = threading.Event()
+    
+    # Create threads for the two functions
+    thread1 = threading.Thread(target=sol.primal_shooting_stef_update(primal_path, "yes", event))
+    thread2 = threading.Thread(target=adsol.computeAdjoint(adjoint_path, event))
+    
+    # Start the threads
+    thread1.start()
+    thread2.start()
+    
+    # Wait for the threads to finish
+    thread1.join()
+    thread2.join()
+
 
 def the_shooting_manager():
     process=input("Do you want to start the entire process? (Primal + Update + Adjoint) (Y/N) (stop to exit)     \n   \n")
@@ -261,36 +301,32 @@ def the_shooting_manager():
     if process=="stop":
         sys.exit()
    ###############
-   # 
     if process=="Y" or process=="y" or process=="yes":
-        erasing=input("Do you you to delete time files and configuration files after computation? (Y/N) (stop to exit)    \n   \n")
-        if erasing=="stop":
-             sys.exit()
-        if erasing=="Y" or erasing=="y" or erasing=="yes":
-            primal_shooting_stef_update(primal_path, "yes")
-        elif erasing=="N" or erasing=="n" or erasing=="no":
-            primal_shooting_stef_update(primal_path, "no")
-        else:
-            print("Please answer by yes or no.")
-            the_shooting_manager()
-    
-    
+        primal_option()
     elif process=="N" or process=="n" or process=="no":
-        choice=input("Enter of of the options displayed below:\n1 - Primal\n2 - Primal + Newton Update\n3 - Adjoint (Requires a full completed Primal Case with the same name)\n\n")
+        choice=input("Enter of of the options displayed below:\n1 - Primal\n2 - Primal + Newton Update\n3 - Adjoint (Requires a full completed Primal Case with the same name)\n4 - Coupled Primal and Adjoint\n\n")
         #print("")
         if choice=="1":
             basepath=primal_path
             os.chdir(basepath)
             primal_nofastpropagator_seq(primal_path)
         if choice=="2":
-            basepath=primal_path
-            os.chdir(basepath)
-            primal_shooting_stef_update(primal_path, "yes")
-        if choice=="3":
-            print("Warning: This option is not ready yet")
+            primal_option()
+        if choice == "3":
+            ans=input("Warning: The implementation of an automatic deleting of files after completion is not ready yet.\nThis option requires a lot of avaible free disk space. Do you want to continue? (Y/N)\n\n")
+            if ans=="Y" or ans=="y" or ans=="yes":
+                basepath=adjoint_path
+                os.chdir(basepath)
+                adsol.computeAdjoint(adjoint_path)
+            else:
+                print("Exiting Python Shooting Manager\n")
+        if choice == "3":
             basepath=adjoint_path
             os.chdir(basepath)
             adsol.computeAdjoint(basepath)
+        if choice =="4":
+            print("Warning: This option is not ready yet")
+        
         else:
             print("Please enter one of the displayed possibilities.")
             the_shooting_manager()
