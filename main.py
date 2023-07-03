@@ -22,8 +22,8 @@ c.headings()
 ################           CHOICE OF COMPUTATION           ################
 
 
-#sol.the_new_shooting_manager("no", "yes")
+sol.the_new_shooting_manager("no", "yes")
 #adsol.computeAdjoint(adjoint_path, "no")
-adsol.computeAdjoint(adjoint_path, "yes", "no")
-for k in range(1,n+1):
-    post.erase_all_files(primal_path, folder_name, k)
+#adsol.computeAdjoint(adjoint_path, "yes", "no")
+#for k in range(1,n+1):
+#    post.erase_all_files(primal_path, folder_name, k)
