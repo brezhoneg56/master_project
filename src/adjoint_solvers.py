@@ -80,7 +80,7 @@ def computeAdjointDefect(basepath, sweep_name, k):
         pre.prepareAdjointDefectComputation(adjoint_path, sweep_name, interval_name, previous_interval, i)
         os.chdir(adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name)
         with open("adjoint_shooting_defect_logfile"+sweep_name+"_"+interval_name+".txt","w") as logfile:
-            os.chdir(adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect")
+            os.chdir(adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/")
             subprocess.run(['computeAdjointShootingDefect'], stdout=logfile, stderr=subprocess.STDOUT)        
     os.chdir(basepath)
 
@@ -103,9 +103,9 @@ def loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k):
 
 ##################     FUNCTIONS FOR MAIN EXECUTION     ###################
 
-def computeAdjoint(basepath, event):
+def computeAdjoint(basepath, erasing, event):
     # Wait for the signal from the first function
-    event.wait()
+    #event.wait()
     
     #Starting Timer for entire Process
     start_time=time.time()
@@ -117,6 +117,7 @@ def computeAdjoint(basepath, event):
     #Preparing files for adjoint computation
     pre.initializeMyAdjoint(folder_name, "sweep1")
     print("done")
+    deletion_counter=-1
     #Initialization loop over all Sweeps    
     for k in range (1, n+1): #(1, n+1)
         sweep_name=mysweep.format(k)
@@ -145,76 +146,26 @@ def computeAdjoint(basepath, event):
             #Renaming Time folder with "-"
             next_sweep_name=mysweep.format(k+1)
             pre.prepareTimeFolders(folder_name, next_sweep_name, k)
-            
+
+        # Deleting Files after Sweep k Done
+        if erasing=="yes":
+            if (deletion_counter>0):
+                print("Deleting files...\n")
+                #post.erase_all_adjoint_files(basepath, folder_name, k)
+                post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
+                print("The files for " + mysweep.format(deletion_counter)+ " in primal_path were succefully deleted. See exceptions above.")
+        deletion_counter+=1        
+        
+        
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
         bc.timer_and_write(basepath, elapsed_time, "adjoint_subintervals", sweep_name) #### mettre adjoint
+        os.chdir(basepath + folder_name + "/")
+        with open("pressureDropvalues.txt","a") as mapression:
+            mapression.write("\n\nAdjoint shooting of " + sweep_name + ":\n---------------------------------\n" )
+        mapression.close() 
        
     #Final Timer
     elapsed_time = time.time() - start_time        
     bc.timer_and_write(basepath, elapsed_time, "adjoint computation", folder_name)
     post.store_all_adjoint_values(basepath, folder_name)
-
-
-### NOT WORKING YET
-#def combined_shooting_stef_update():
-#    basepath=primal_path
-#    #Verify if primal folder_name exists, and offers to delete it if so
-#    bc.checking_existence(primal_path, folder_name)
-#    #Verify if adjoint folder_name exists, and offers to delete it if so
-#    bc.checking_existence(adjoint_path, folder_name)
-#    #Starting Timer for entire Process
-#    start_time_ALL=time.time()
-#    #Initilisation for Sweep1
-#    bc.sweep_1_initialization(basepath, folder_name) #One sync version
-#    # STARTING MAIN LOOP
-#    for k in range(1, n+1):
-#    ######################    
-#        #Intermediate counter start
-#        start_time=time.time()
-#        #Naming current sweep
-#        sweep_name = mysweep.format(k)
-#        #Starting primitive Shooting in Sweep k over all subintervals
-#        sol.loop_pimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version        
-#        #Newline for defect
-#        sol.loop_computeDefect(basepath, sweep_name, k)
-#        #Starting linearisation for Sweep k over all subintervals
-#        sol.loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
-#        #Starting Newton Update
-#        sol.loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k)
-#        ###### Adjoint
-#        start_time=time.time()
-#        basepath=adjoint_path
-#        sweep_name=mysweep.format(k)
-#        #Renaming Time folder with "-"
-#        pre.prepareTimeFolders(folder_name, sweep_name)
-#        #Preparing files for adjoint computation
-#        if sweep_name=="sweep1":
-#            pre.initializeMyAdjoint(folder_name, sweep_name)
-#        sweep_name=mysweep.format(k)
-#        loop_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-#        #Computing Adjoint Defect
-#        print("\nADJOINT DEFECT...\n")
-#        computeAdjointDefect(adjoint_path, sweep_name, k)
-#        #Computing Adjoint Linearization
-#        print("\nADJOINT LINEARIZATION...\n")
-#        loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k)
-#        #Starting Adjoint Newton Update
-#        loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k)
-#        ###############
-#        basepath=primal_path
-#        erasing="no"
-#        # Deleting Files after Sweep k Done    
-#        if erasing=="yes":
-#            print("Deleting files...\n")
-#            post.erase_all_files(basepath, folder_name, k)
-#            print("The files were succefully deleted. See exceptions above.")
-#        
-#        #Stopping intermediate timer and writing into logfile
-#        elapsed_time = time.time() - start_time
-#        bc.timer_and_write(basepath, elapsed_time, "subintervals", sweep_name)  
-#    print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
-#    #Stopping timer and writing into logfile
-#    total_time=time.time()-start_time_ALL
-#    bc.timer_and_write(basepath, total_time, folder_name, sweep_name)
-#    post.store_all_values(basepath, folder_name)

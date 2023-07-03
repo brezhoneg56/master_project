@@ -27,8 +27,8 @@ project_path="/home/jcosson/workspace/henersj_shootingdata/scripts/master_projec
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=7; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals_adjoint"
+n=8; #Amount of sweeps / shooting intervals
+folder_name=str(n)+"_intervals_adjoint_30-06"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop

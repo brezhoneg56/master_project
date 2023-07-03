@@ -209,10 +209,12 @@ def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
         #post.erase_system(path_files)
 def erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name, i):
     if i!=n:
-        src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+        src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
         dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
-        shutil.move(src_shootfile, dest_shootfile)
-    
+        try:
+            shutil.move(src_shootfile, dest_shootfile)
+        except Exception as e:
+            print(e)
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
     #Interval time files   
@@ -294,10 +296,10 @@ def erase_all_adjoint_files(basepath, folder_name, k):
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/adjoint_postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
-    try:
-        shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
-    except Exception as epost:
-        print("Error while moving postProlog: " + str(epost))
+    #try:
+    #    shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
+    #except Exception as epost:
+    #    print("Error while moving postProlog: " + str(epost))
     try:
         shutil.move(src_log+"adjointPressureDrop.txt", dest_log+"/logfiles/adjointPressureDrop" + str(k) + ".txt")
     except Exception:
@@ -314,6 +316,11 @@ def erase_all_adjoint_files(basepath, folder_name, k):
 #        shutil.move(src_log, dest_log)
 #    if os.path.exists(basepath+folder_name+"/"+sweep_name+"/preProcessing/"):     
 #        shutil.rmtree(basepath+folder_name+"/"+sweep_name+"/preProcessing/")
+
+def erase_primal_adjoint_files(the_primal_path, the_adjoint_path, folder_name, k):
+    erase_all_files(the_primal_path, folder_name, k)
+    erase_all_adjoint_files(the_adjoint_path, folder_name, k)
+
 #################  LOGTABLE FUNCTIONS  #################
 
 
@@ -349,7 +356,7 @@ def store_all_values(basepath, folder_name):
             flux=0.0;
             
             #Fetch pressureDrop
-            fetchPressureDrop(basepath, sweep_name, k)
+            pressureDrop=fetchPressureDrop(basepath, sweep_name, k)
             
             for i in range(2, n+1):
                 interval_name=myinterval.format(i)
@@ -395,7 +402,7 @@ def store_all_adjoint_values(basepath, folder_name):
             flux=0.0;
             
             #Fetch pressureDrop
-            pressureDrop=fetchPressureDrop(basepath, sweep_name, k)
+            pressureDrop=fetchAdjointPressureDrop(basepath, sweep_name, k)
             
             for i in range(1, n):
                 interval_name=myinterval.format(i)
@@ -468,6 +475,16 @@ def fetchPressureDrop(basepath, sweep_name, k):
     elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/postProcessing/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/postProcessing/pressureDrop.txt"
         pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+    else:
+        print("Pressure Drop not found ")
+        pressureDrop=0
+    return(pressureDrop)
+    
+def fetchAdjointPressureDrop(basepath, sweep_name, k):
+    #print(basepath + folder_name + "/" + sweep_name + "/adjointPostProcessing/")
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
+        pressure_path= basepath + folder_name + "/" + sweep_name + "/logfiles/adjointPressureDrop" + str(k) + ".txt"
+        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
     elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/adjointPressureDrop.txt"
         pressureDrop=post.fetch_values(basepath, pressure_path, "adjointPressureDrop is     ")
@@ -475,11 +492,6 @@ def fetchPressureDrop(basepath, sweep_name, k):
         print("Pressure Drop not found ")
         pressureDrop=0
     return(pressureDrop)
-    
-            
-#                except Exception as e:
-#                    print("Pressure Drop not found: " + str(e))
-#                    pressureDrop=0
 
 def fetch_values_defect(basepath, sweep_name, interval_name, thefile):
 # Regular expression pattern to capture the value

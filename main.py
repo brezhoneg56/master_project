@@ -21,12 +21,9 @@ import concurrent.futures
 c.headings()
 ################           CHOICE OF COMPUTATION           ################
 
-#adsol.computeAdjoint(adjoint_path)
-#sol.the_shooting_manager()
 
-#post.store_all_adjoint_values(adjoint_path, folder_name)
-
-#sol.primal_shooting_stef_update(primal_path, "no")
-#adsol.computeAdjoint(adjoint_path)
-
-sol.coupling_threads()
+#sol.the_new_shooting_manager("no", "yes")
+#adsol.computeAdjoint(adjoint_path, "no")
+adsol.computeAdjoint(adjoint_path, "yes", "no")
+for k in range(1,n+1):
+    post.erase_all_files(primal_path, folder_name, k)
