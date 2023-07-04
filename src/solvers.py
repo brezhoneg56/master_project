@@ -301,7 +301,7 @@ def the_new_shooting_manager(display_choice, deleting):
         display_choice()
     elif deleting=="no" or deleting=="n" or deleting=="No" or deleting=="N":
         sol.primal_shooting_stef_update(primal_path, "no", "no")
-        adsol.computeAdjoint(adjoint_path, "no")
+        adsol.computeAdjoint(adjoint_path, "no", "no")
     elif deleting=="yes" or deleting=="y" or deleting=="Yes" or deleting=="Y":
         sol.primal_shooting_stef_update(primal_path, "no", "no")
         adsol.computeAdjoint(adjoint_path, "yes", "no")

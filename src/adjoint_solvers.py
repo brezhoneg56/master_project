@@ -152,7 +152,9 @@ def computeAdjoint(basepath, erasing, event):
             if (deletion_counter>0):
                 print("Deleting files...\n")
                 #post.erase_all_adjoint_files(basepath, folder_name, k)
-                post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
+                #post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
+                post.erase_all_files(primal_path, folder_name, k)
+                post.erase_all_adjoint_files(adjoint_path, folder_name, k)
                 print("The files for " + mysweep.format(deletion_counter)+ " in primal_path were succefully deleted. See exceptions above.")
         deletion_counter+=1        
         

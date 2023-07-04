@@ -289,12 +289,12 @@ def erase_all_adjoint_files(basepath, folder_name, k):
             except Exception as error:
                 print("Error while moving file: " + str(error))            
             #Shooting logfile
-            src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".log"
-            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".log"
-            try:
-                shutil.move(src_log, dest_log)
-            except Exception as error:
-                print("Error while moving file: " + str(error)) 
+            src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".txt"
+            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".txt"
+            #try:
+            shutil.move(src_log, dest_log)
+            #except Exception as error:
+            #    print("Error while moving file: " + str(error)) 
                 
             erase_constant(path_files+"/constant")
             erase_system(path_files+"/system")
@@ -479,23 +479,22 @@ def fetchPressureDrop(basepath, sweep_name, k):
     #print(basepath + folder_name + "/" + sweep_name + "/adjointPostProcessing/")
     if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/logfiles/pressureDrop" + str(k) + ".txt"
-        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is")
     elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/postProcessing/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/postProcessing/pressureDrop.txt"
-        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is")
     else:
         print("Pressure Drop not found ")
         pressureDrop=0
     return(pressureDrop)
     
 def fetchAdjointPressureDrop(basepath, sweep_name, k):
-    #print(basepath + folder_name + "/" + sweep_name + "/adjointPostProcessing/")
     if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/logfiles/adjointPressureDrop" + str(k) + ".txt"
-        pressureDrop=post.fetch_adjoint_values(basepath, pressure_path, "pressureDrop is     ")
+        pressureDrop=post.fetch_values(basepath, pressure_path, "adjointPressureDrop is")
     elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/adjointPressureDrop.txt"
-        pressureDrop=post.fetch_adjoint_values(basepath, pressure_path, "adjointPressureDrop is     ")  
+        pressureDrop=post.fetch_values(basepath, pressure_path, "adjointPressureDrop is")  
     else:
         print("Pressure Drop not found ")
         pressureDrop=0
@@ -506,16 +505,20 @@ def fetch_values_defect(basepath, sweep_name, interval_name, thefile):
     velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
     fluxes = r"defects \(fluxes\): sum local = ([\d.e+-]+)"    
     
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"):
+        path_file=basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"        
+        os.chdir(path_file)
     #path_file = #shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
-    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
+    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
         path_file =basepath + folder_name + "/" + sweep_name + "/logfiles/"
         os.chdir(path_file)
         #with open(thefile, "r") as myfile:
          #   text = myfile.read()
     
-    elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"):
+    if os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"):
         path_file=basepath + folder_name + "/" + sweep_name + "/" + interval_name +  "/shootingDefect/"        
         os.chdir(path_file)
+    
     with open(thefile, "r") as myfile:
         text = myfile.read()
         # Search for the pattern in each line
@@ -557,34 +560,20 @@ def fetch_adjoint_values_defect(basepath, sweep_name, interval_name, thefile):
                     return(float(velocity_defect), float(flux_defect))
 
 def fetch_values(basepath, path_file, line_to_find):
-    with open(path_file, "r") as myfile:
-        text = myfile.read()
-        # Regular expression pattern to capture the value
-        #velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
-        line_to_find=line_to_find + r"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)"#"([\d.e+-]+)"
-        # Search for the pattern in each line
-        for line in text.split('\n'):
-            match = re.search(line_to_find, line)
-            if match:
-                the_value = match.group(1)
-                break
-        return(the_value)
+    value = None
 
-def fetch_adjoint_values(basepath, path_file, line_to_find):
-    with open(path_file, "r") as myfile:
-        text = myfile.read()
-        # Regular expression pattern to capture the value
-        #velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
-        line_to_find=line_to_find + r"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)"#"([\d.e+-]+)"
-        # Search for the pattern in each line
-        for line in text.split('\n'):
-            match = re.search(line_to_find, line)
-            if match:
-                the_value = match.group(1)
-                return(the_value)
+    with open(path_file, "r") as file:
+        for line in file:
+            if line_to_find in line:
+                value = line.split()[-1]
+                return(value)
                 break
-            else:
-                return(0)
+
+    if value is not None:
+        print("Extracted value:", value)
+    else:
+        print("Value not found in the file.")
+
 #################    PLOT FUNCTIONS    #################
 
 def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
