@@ -275,19 +275,27 @@ def erase_all_adjoint_files(basepath, folder_name, k):
             path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
             erase_time_files(path_files)
             
+            #Lin logilfe
             src_log=basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/adjoint_lin_logfilesweep"+str(k)+"_"+interval_name+".txt"
-            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_lin_logfile_"+interval_name+".txt"
+            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_lin_logfilesweep"+str(k)+"_"+interval_name+".txt"
             if os.path.exists(src_log):
                 shutil.move(src_log, dest_log)
-            #except Exception as e4:
-            #    print("Error while moving directory: " + str(e4))
+            
+            #Pimple Logfile
             src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_pimple.log"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/pimple_"+interval_name+".log"
             try:
                 shutil.move(src_log, dest_log)
             except Exception as error:
                 print("Error while moving file: " + str(error))            
-            
+            #Shooting logfile
+            src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".log"
+            dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".log"
+            try:
+                shutil.move(src_log, dest_log)
+            except Exception as error:
+                print("Error while moving file: " + str(error)) 
+                
             erase_constant(path_files+"/constant")
             erase_system(path_files+"/system")
             erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name, i)            
@@ -484,10 +492,10 @@ def fetchAdjointPressureDrop(basepath, sweep_name, k):
     #print(basepath + folder_name + "/" + sweep_name + "/adjointPostProcessing/")
     if os.path.exists(basepath + folder_name + "/" + sweep_name + "/logfiles/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/logfiles/adjointPressureDrop" + str(k) + ".txt"
-        pressureDrop=post.fetch_values(basepath, pressure_path, "pressureDrop is     ")
+        pressureDrop=post.fetch_adjoint_values(basepath, pressure_path, "pressureDrop is     ")
     elif os.path.exists(basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/"):
         pressure_path= basepath + folder_name + "/" + sweep_name + "/adjoint_postProcessing/adjointPressureDrop.txt"
-        pressureDrop=post.fetch_values(basepath, pressure_path, "adjointPressureDrop is     ")
+        pressureDrop=post.fetch_adjoint_values(basepath, pressure_path, "adjointPressureDrop is     ")  
     else:
         print("Pressure Drop not found ")
         pressureDrop=0
@@ -562,6 +570,21 @@ def fetch_values(basepath, path_file, line_to_find):
                 break
         return(the_value)
 
+def fetch_adjoint_values(basepath, path_file, line_to_find):
+    with open(path_file, "r") as myfile:
+        text = myfile.read()
+        # Regular expression pattern to capture the value
+        #velocity = r"defects \(velocity\): sum local = ([\d.e+-]+)"
+        line_to_find=line_to_find + r"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)"#"([\d.e+-]+)"
+        # Search for the pattern in each line
+        for line in text.split('\n'):
+            match = re.search(line_to_find, line)
+            if match:
+                the_value = match.group(1)
+                return(the_value)
+                break
+            else:
+                return(0)
 #################    PLOT FUNCTIONS    #################
 
 def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
