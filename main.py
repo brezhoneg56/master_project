@@ -21,7 +21,7 @@ import concurrent.futures
 c.headings()
 ################           CHOICE OF COMPUTATION           ################
 
-sol.primal_shooting_stef_update(primal_path, "no", "no")
+#sol.primal_shooting_stef_update(primal_path, "no", "no")
 adsol.computeAdjoint(adjoint_path, "no", "yes")
 
 

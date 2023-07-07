@@ -263,38 +263,20 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
 def initializeMyAdjoint(folder_name, sweep_name):
     for i in range (1, n+1):
         interval_name=myinterval.format(i)
-        src_case = primal_path + folder_name + "/" + sweep_name + "/" + interval_name
+        src_case = primal_path + folder_name + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
         dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
-        for filename in os.listdir(src_case):
-            if filename.startswith('0.'):
-                try:
-                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
-                except Exception as e1:
-                    print(e1)
-            #if filename.startswith
-        for filename in os.listdir(src_case):                
-            if not filename.startswith('0.'):
-                if os.path.isdir(src_case + "/" + filename):
-                    try:
-                        shutil.copytree(src_case + "/" + filename + "/", dest_case + "/" + filename + "/")
-                    except Exception as e1:
-                        print(e1)
-                else:
-                    try:
-                        shutil.copyfile(src_case + "/" + filename, dest_case + "/" + filename)
-                    except Exception as e1:
-                        print(e1)
-    for i in range(1, n+1):
-        interval_name=myinterval.format(i)
-        controlDict_path=adjoint_path + folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
-        startTime=bc.decimal_analysis(theta + deltaT*(i-1))
-        endTime=bc.decimal_analysis(theta + deltaT*i)
         
+        shutil.copytree(src_case + "/system/", dest_case + "/system/")        
+        shutil.copytree(src_case + "/constant/", dest_case + "/constant/")        
         #Copy fv files
         fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
         fvSolution_path=ref_cases + "/controlBib/fvSolution"         
         shutil.copy(fvSchemes_path, adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
         shutil.copy(fvSolution_path, adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/system")
+        
+        controlDict_path=adjoint_path + folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
+        startTime=bc.decimal_analysis(theta + deltaT*(i-1))
+        endTime=bc.decimal_analysis(theta + deltaT*i)        
         
         for line in fileinput.input(controlDict_path, inplace=True):
             if line.startswith('startTime'):
@@ -302,7 +284,14 @@ def initializeMyAdjoint(folder_name, sweep_name):
             elif line.startswith('endTime'):
                 line = 'endTime         {};'.format(-startTime) #{};\n'
             print(line)
-        print('startTime       {};'.format(-endTime))
+        print('startTime       {};'.format(-endTime))        
+        
+        for filename in os.listdir(src_case):
+            if filename.startswith('0.'):
+                try:
+                    shutil.copytree(src_case + "/" + filename + "/", dest_case + "/-" + filename + "/")
+                except Exception as e1:
+                    print(e1)        
         
         #Preparing next interval (i-1)    #Current Sweep current interval
         src_adjoint_undeformed_var= calcs_path + "adjoint_undeformed/" + str(-endTime) + "/"
