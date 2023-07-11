@@ -21,8 +21,10 @@ import concurrent.futures
 c.headings()
 ################           CHOICE OF COMPUTATION           ################
 
+sol.the_new_shooting_manager("no", 3)
+
 #sol.primal_shooting_stef_update(primal_path, "no", "no")
-adsol.computeAdjoint(adjoint_path, "no", "yes")
+#adsol.computeAdjoint(adjoint_path, "no", "yes")
 
 
 #for k in range(1,n+1):

@@ -51,7 +51,7 @@ def computePressureDropFoam(basepath, folder_name, sweep_name):
             #mapression.write("\n\nShooting of " + sweep_name + ":\n---------------------------------\n" )
             for line in f:
                 if "pressureDrop" in line:
-                    pressure=mapression.write(line)
+                    pressure=mapression.write("\n" + str(line)) #avant : juste line
                     print(line)
         mapression.close()
     f.close()
@@ -80,6 +80,26 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     shutil.copy(src_p, dest_upfiles)
 
 #################  ADJOINT POSTPROCESSING ########################
+def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i):
+    next_sweep=mysweep.format(k+1)
+    next_interval=myinterval.format(i-1)
+    
+    
+    src_sweep=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/"
+    dest_sweep=adjoint_path + folder_name + "/" + next_sweep + "/" + interval_name + "/"
+    shutil.copytree(src_sweep, dest_sweep)    
+    
+    if i<n-k+1:
+        src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+        src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
+        dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
+        shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "/Ua")
+        shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
+        shutil.copy(src_upfiles + "shootingUpdateUaf", dest_upfiles + "/Uaf")
+        shutil.copy(src_p, dest_upfiles)
+    
+    
+
 
 def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
@@ -88,9 +108,20 @@ def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name
     src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
     dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
     #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
+        
+    
+    
+    if k<n:
+        pre.prepareMyNextAdjointSweep(basepath, k, folder_name)
+            
+        #Renaming Time folder with "-"
+        pre.prepareTimeFolders(folder_name, next_sweep, k)
+        
+        
+    
     shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "/Ua")
     shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
-    shutil.copy(src_upfiles + "shootingUpdateUfa", dest_upfiles + "/Ufa")
+    shutil.copy(src_upfiles + "shootingUpdateUaf", dest_upfiles + "/Uaf")
     shutil.copy(src_p, dest_upfiles)
 
 def computeAdjointPressureDropFoam(basepath, folder_name, sweep_name):
@@ -291,10 +322,10 @@ def erase_all_adjoint_files(basepath, folder_name, k):
             #Shooting logfile
             src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".txt"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/adjoint_shooting_defect_logfilesweep" + str(k) + "_" + interval_name + ".txt"
-            #try:
-            shutil.move(src_log, dest_log)
-            #except Exception as error:
-            #    print("Error while moving file: " + str(error)) 
+            try:
+                shutil.move(src_log, dest_log)
+            except Exception as error:
+                print("Error while moving file: " + str(error)) 
                 
             erase_constant(path_files+"/constant")
             erase_system(path_files+"/system")

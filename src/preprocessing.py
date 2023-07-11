@@ -253,8 +253,8 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
     
     #Fetching data for limitor
     shutil.copy(src_data_start+"/linU", dest_data+"dUdu_Init")
-    shutil.copy(src_data_start+"/linUf", dest_data+"dUduf_Init")
     shutil.copy(src_data_start+"/linP", dest_data+"dPdp_Init")
+    #shutil.copy(src_data_start+"/linUf", dest_data+"dUduf_Init")
 
 
 
@@ -505,9 +505,9 @@ def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_na
     
     #Copy to shootingUpdate
     dest_data=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingUpdate/0/"
-    shutil.copy(src_data+"/linUa", dest_data+"dUdua")
-    shutil.copy(src_data+"/linUaf", dest_data+"dUduaf")
-    shutil.copy(src_data+"/linPa", dest_data+"dPdpa")
+    shutil.copy(src_data+"/linUa", dest_data+"dUadua")
+    shutil.copy(src_data+"/linUaf", dest_data+"dUaduaf")
+    shutil.copy(src_data+"/linPa", dest_data+"dPadpa")
     shutil.copy(src_data+"/Ua", dest_data+"UaEnd_left")
     shutil.copy(src_data+"/pa", dest_data+"paEnd_left")
     shutil.copy(src_data+"/phia", dest_data+"phiaEnd_left")
@@ -518,9 +518,9 @@ def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_na
     shutil.copy(src_data+"/Uaf", dest_data+"shootingUpdateUaf")
     
     #Fetching data for limitor
-    shutil.copy(src_data_start+"/linUa", dest_data+"dUdua_Init")
-    shutil.copy(src_data_start+"/linUaf", dest_data+"dUduaf_Init") ##PROBLEM : linUaf doesn't exist in starttime folder
-    shutil.copy(src_data_start+"/linPa", dest_data+"dPdpa_Init")
+    shutil.copy(src_data_start+"/linUa", dest_data+"dUadua_Init")
+    #shutil.copy(src_data_start+"/linUaf", dest_data+"dUaduaf_Init") ##PROBLEM : linUaf doesn't exist in starttime folder
+    shutil.copy(src_data_start+"/linPa", dest_data+"dPadpa_Init")
 
 
     

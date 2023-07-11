@@ -261,24 +261,6 @@ def primal_shooting_stef_update(basepath, erasing, event):
 
 #################### OPTIONS  ##########################################
 
-def primal_option():
-    erasing=input("Do you you to delete time files and configuration files after computation? (Y/N) (stop to exit)    \n   \n")
-    if erasing=="stop":
-        sys.exit()
-    if erasing=="Y" or erasing=="y" or erasing=="yes":
-        print("With deleting option, only primal can work for now")
-        primal_shooting_stef_update(primal_path, "yes", "event")
-    elif erasing=="N" or erasing=="n" or erasing=="no":
-        ans=input("Warning: This option requires a lot of avaible free disk space. Do you want to continue? (Y/N)")
-        if ans=="Y" or ans=="y" or ans=="yes":
-            basepath=primal_path
-            os.chdir(basepath)
-            primal_shooting_stef_update(primal_path, "no", "event")        
-            adsol.computeAdjoint(adjoint_path, "event")
-    else:
-        print("Please answer by yes or no.")
-        the_shooting_manager()
-
 def coupling_threads():
     # Create an event object for synchronization
     event = threading.Event()
@@ -296,79 +278,32 @@ def coupling_threads():
     thread2.join()
 
 
-def the_new_shooting_manager(display_choice, deleting):
-    if display_choice == "y" or display_choice == "yes" or display_choice == "Y" or display_choice == "Yes":
-        display_choice()
-    elif deleting=="no" or deleting=="n" or deleting=="No" or deleting=="N":
-        sol.primal_shooting_stef_update(primal_path, "no", "no")
-        adsol.computeAdjoint(adjoint_path, "no", "no")
-    elif deleting=="yes" or deleting=="y" or deleting=="Yes" or deleting=="Y":
-        sol.primal_shooting_stef_update(primal_path, "no", "no")
-        adsol.computeAdjoint(adjoint_path, "yes", "no")
-        for k in range(1,n+1):
-            post.erase_all_files(primal_path, folder_name, k)
-
-def display_choice():
-    choice=input("Enter of of the options displayed below:\n1 - Primal\n2 - Primal + Newton Update\n3 - Adjoint (Requires a full completed Primal Case with the same name)\n4 - Coupled Primal and Adjoint\n\n")
-    if choice=="1":
-        basepath=primal_path
-        os.chdir(basepath)
+def the_new_shooting_manager(deleting, choice):
+    if choice ==0:
+        primal_shooting_stef_update(primal_path, "no", "event")        
+        adsol.computeAdjoint(adjoint_path, "yes", "event")
+    
+    # PRIMAL
+    if choice==1:
+        os.chdir(primal_path)
         OLDprimal_nofastpropagator_seq(primal_path)
-    if choice=="2":
-        primal_option()
-    if choice == "3":
-        ans=input("Warning: The implementation of an automatic deleting of files after completion is not ready yet.\nThis option requires a lot of avaible free disk space. Do you want to continue? (Y/N)\n\n")
-        if ans=="Y" or ans=="y" or ans=="yes":
-            basepath=adjoint_path
-            os.chdir(basepath)
-            adsol.computeAdjoint(adjoint_path)
-        else:
-            print("Exiting Python Shooting Manager\n")
-    if choice =="4":
-        print("Warning: This option is not ready yet")
-    else:
-        print("Please enter one of the displayed possibilities.")
-        the_new_shooting_manager()
-
-
-
-
-
-
-
-def the_shooting_manager():
-    process=input("Do you want to start the entire process? (Primal + Update + Adjoint) (Y/N) (stop to exit)     \n   \n")
-    ##############
-    if process=="stop":
-        sys.exit()
-   ###############
-    if process=="Y" or process=="y" or process=="yes":
-        primal_option()
-    elif process=="N" or process=="n" or process=="no":
-        choice=input("Enter of of the options displayed below:\n1 - Primal\n2 - Primal + Newton Update\n3 - Adjoint (Requires a full completed Primal Case with the same name)\n4 - Coupled Primal and Adjoint\n\n")
-        #print("")
-        if choice=="1":
-            basepath=primal_path
-            os.chdir(basepath)
-            OLDprimal_nofastpropagator_seq(primal_path)
-        if choice=="2":
-            primal_option()
-        if choice == "3":
-            ans=input("Warning: The implementation of an automatic deleting of files after completion is not ready yet.\nThis option requires a lot of avaible free disk space. Do you want to continue? (Y/N)\n\n")
-            if ans=="Y" or ans=="y" or ans=="yes":
-                basepath=adjoint_path
-                os.chdir(basepath)
-                adsol.computeAdjoint(adjoint_path)
-            else:
-                print("Exiting Python Shooting Manager\n")
-        if choice == "3":
-            basepath=adjoint_path
-            os.chdir(basepath)
-            adsol.computeAdjoint(adjoint_path)
-        if choice =="4":
-            print("Warning: This option is not ready yet")
+    # PRIMAL + NEWTON UPDATE
+    if choice==2:
+        os.chdir(primal_path)
+        primal_shooting_stef_update(primal_path, deleting, "event")        
+        adsol.computeAdjoint(adjoint_path, deleting, "event")
         
-        else:
-            print("Please enter one of the displayed possibilities.")
-            the_shooting_manager()
+    #ADJOINT
+    if choice == 3:
+        os.chdir(adjoint_path)
+        adsol.computeAdjoint(adjoint_path, deleting, "event")
+        
+    #COUPLING
+    if choice ==4:
+        print("Warning: This option is not ready yet")
+    if choice >4:
+        choice=input("Enter of of the options displayed below:\n1 - Primal\n2 - Primal + Newton Update\n3 - Adjoint (Requires a full completed Primal Case with the same name)\n4 - Coupled Primal and Adjoint\n\n")
+        the_new_shooting_manager(deleting, choice)
+
+
     
