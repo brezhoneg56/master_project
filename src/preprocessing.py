@@ -448,6 +448,7 @@ def prepareAdjointDefectComputation(basepath, sweep_name, interval_name, previou
 
 def copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path):    
         interval_name=myinterval.format(i)
+        previous_interval=myinterval.format(i+1)
         #New Paths for linP and linU, taking the Newton Update into account:
         interval_name=myinterval.format(i)
         linP_path=ref_cases + "/boundaryConditions/linPa0"
@@ -488,7 +489,7 @@ def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_na
     if os.path.exists(dest_shootUpdate):
         print("Replacing file")
         try:
-            os.rmtree(dest_shootUpdate)
+            shutil.rmtree(dest_shootUpdate)
         except Exception as e:
             print(e)
         try:
