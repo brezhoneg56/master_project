@@ -82,36 +82,21 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
 #################  ADJOINT POSTPROCESSING ########################
 def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
-
+    next_interval=myinterval.format(i-1)
+    
+    
     src_sweep=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/"
     dest_sweep=adjoint_path + folder_name + "/" + next_sweep + "/" + interval_name + "/"
-    shutil.copytree(src_sweep, dest_sweep)
-
-def prepare_adjoint_state_variables(basepath, folder_name, sweep_name, k, interval_name, i):
-    next_sweep=mysweep.format(k+1)
-    next_interval=myinterval.format(i-1)
-    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingUpdate/0/"
-    src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
-    dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
+    shutil.copytree(src_sweep, dest_sweep)    
     
-    print("Source for Up files : " + src_upfiles)
-    print("Dest for Up files : " + dest_upfiles)
-    try:        
+    if i<n-k+1:
+        src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+        src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
+        dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
         shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "/Ua")
-    except Exception as e:
-        print(str(e))
-    try:            
         shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
-    except Exception as e:
-        print(str(e))
-    try:
         shutil.copy(src_upfiles + "shootingUpdateUaf", dest_upfiles + "/Uaf")
-    except Exception as e:
-        print(str(e))
-    try:            
         shutil.copy(src_p, dest_upfiles)
-    except Exception as e:
-        print(str(e))
     
     
 

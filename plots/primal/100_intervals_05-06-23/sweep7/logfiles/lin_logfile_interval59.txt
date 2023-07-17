@@ -1,0 +1,137 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : 2.3.1-262087cdf8db
+Exec   : linearisedPimpleDyMFoam
+Date   : Jun 05 2023
+Time   : 23:50:33
+Host   : "jcosson-VirtualBox"
+PID    : 17422
+Case   : /home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/100_intervals_05-06-23/sweep7/interval59
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0.458
+
+Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+Selecting motion solver: displacementLaplacian
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: inverseDistance
+Reading field linP
+
+Reading field linU
+
+starte createPhia.H
+
+Reading/calculating face flux field linPhi
+
+Adjungierte Interpolation durchgefuehrt
+
+createPhia.H verlassen
+
+setRefCell ausgefuehrt
+
+No finite volume options present
+
+
+PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+
+
+Starting time loop
+
+Time = 0.459
+
+Reading field p
+
+Reading field U
+
+Read primal fluxes 
+
+Reading primal face flux fields phi/meshPhi
+
+Created primal fluxes 
+
+Selecting incompressible transport model Newtonian
+singlePhaseTransportModel gewaehlt 
+
+Selecting turbulence model type RASModel
+Selecting RAS turbulence model kOmegaSST
+kOmegaSSTCoeffs
+{
+    alphaK1         0.85034;
+    alphaK2         1;
+    alphaOmega1     0.5;
+    alphaOmega2     0.85616;
+    gamma1          0.5532;
+    gamma2          0.4403;
+    beta1           0.075;
+    beta2           0.0828;
+    betaStar        0.09;
+    a1              0.31;
+    c1              10;
+    Cmu             0.09;
+    b1              1;
+    F3              false;
+}
+
+autoPtr ausgefuehrt
+
+Reading/calculating face velocity Uf
+
+Init adjoint face velocity linUf
+
+Courant Number mean: 0.265525 max: 0.596085
+Adjoint Courant Number mean: 0.000167294 max: 0.00482476
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+PIMPLE: iteration 1
+DILUPBiCG:  Solving for linUx, Initial residual = 0.0866913, Final residual = 0.00027853, No Iterations 1
+DILUPBiCG:  Solving for linUy, Initial residual = 0.166102, Final residual = 0.000362399, No Iterations 1
+DILUPBiCG:  Solving for linUz, Initial residual = 0.162607, Final residual = 0.000404782, No Iterations 1
+GAMG:  Solving for linP, Initial residual = 1, Final residual = 0.00414373, No Iterations 3
+GAMG:  Solving for linP, Initial residual = 0.0231602, Final residual = 0.000174894, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.00793245, Final residual = 5.94297e-05, No Iterations 4
+Adjoint continuity errors : sum local = 3.06574e-08, global = -4.26479e-09, cumulative = -4.26479e-09
+GAMG:  Solving for linP, Initial residual = 0.0341855, Final residual = 0.000190006, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.00658895, Final residual = 5.65704e-05, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.00211404, Final residual = 2.00475e-05, No Iterations 4
+Adjoint continuity errors : sum local = 9.97284e-09, global = -4.27389e-10, cumulative = -4.69218e-09
+PIMPLE: iteration 2
+DILUPBiCG:  Solving for linUx, Initial residual = 0.0242465, Final residual = 0.000129903, No Iterations 1
+DILUPBiCG:  Solving for linUy, Initial residual = 0.0396484, Final residual = 0.00011868, No Iterations 1
+DILUPBiCG:  Solving for linUz, Initial residual = 0.0505059, Final residual = 0.000211149, No Iterations 1
+GAMG:  Solving for linP, Initial residual = 0.0451736, Final residual = 0.000237577, No Iterations 3
+GAMG:  Solving for linP, Initial residual = 0.00418332, Final residual = 3.02911e-05, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.00135116, Final residual = 1.03223e-05, No Iterations 4
+Adjoint continuity errors : sum local = 5.14078e-09, global = 1.04516e-09, cumulative = -3.64701e-09
+GAMG:  Solving for linP, Initial residual = 0.00362802, Final residual = 2.17692e-05, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.000940169, Final residual = 5.22915e-06, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.000285979, Final residual = 2.06874e-06, No Iterations 4
+Adjoint continuity errors : sum local = 1.03069e-09, global = 1.0344e-10, cumulative = -3.54357e-09
+PIMPLE: iteration 3
+DILUPBiCG:  Solving for linUx, Initial residual = 0.00346043, Final residual = 4.22008e-07, No Iterations 2
+DILUPBiCG:  Solving for linUy, Initial residual = 0.00513078, Final residual = 2.88815e-07, No Iterations 2
+DILUPBiCG:  Solving for linUz, Initial residual = 0.00461506, Final residual = 1.69657e-06, No Iterations 2
+GAMG:  Solving for linP, Initial residual = 0.0434009, Final residual = 0.000384996, No Iterations 2
+GAMG:  Solving for linP, Initial residual = 0.00176587, Final residual = 1.00772e-05, No Iterations 5
+GAMG:  Solving for linP, Initial residual = 0.000875159, Final residual = 5.50639e-06, No Iterations 4
+Adjoint continuity errors : sum local = 2.8109e-09, global = -3.32603e-10, cumulative = -3.87618e-09
+GAMG:  Solving for linP, Initial residual = 0.0022007, Final residual = 2.17432e-05, No Iterations 2
+GAMG:  Solving for linP, Initial residual = 0.000221074, Final residual = 1.06354e-06, No Iterations 4
+GAMG:  Solving for linP, Initial residual = 0.000103351, Final residual = 5.61406e-07, No Iterations 4
+Adjoint continuity errors : sum local = 2.87384e-10, global = 1.25906e-11, cumulative = -3.86359e-09
+ExecutionTime = 12.2 s  ClockTime = 12 s
+
+End
+

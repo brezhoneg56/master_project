@@ -286,8 +286,7 @@ def the_new_shooting_manager(deleting, choice):
     # PRIMAL
     if choice==1:
         os.chdir(primal_path)
-        #OLDprimal_nofastpropagator_seq(primal_path)
-        primal_shooting_stef_update(primal_path, "no", "no")
+        OLDprimal_nofastpropagator_seq(primal_path)
     # PRIMAL + NEWTON UPDATE
     if choice==2:
         os.chdir(primal_path)
