@@ -253,8 +253,8 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
     
     #Fetching data for limitor
     shutil.copy(src_data_start+"/linU", dest_data+"dUdu_Init")
-    shutil.copy(src_data_start+"/linP", dest_data+"dPdp_Init")
     #shutil.copy(src_data_start+"/linUf", dest_data+"dUduf_Init")
+    shutil.copy(src_data_start+"/linP", dest_data+"dPdp_Init")
 
 
 

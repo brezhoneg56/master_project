@@ -134,7 +134,7 @@ def computeNewtonUpdate(basepath, sweep_name, i, k):
 def loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k):
     print("\nComputing Newton Update...")
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(k+2, n+1): #depart à 2
+        for i in range(k+1, n+1): #depart à 2
              executor.submit(computeNewtonUpdate, basepath, sweep_name, i, k)
 
 
@@ -286,7 +286,8 @@ def the_new_shooting_manager(deleting, choice):
     # PRIMAL
     if choice==1:
         os.chdir(primal_path)
-        OLDprimal_nofastpropagator_seq(primal_path)
+        #OLDprimal_nofastpropagator_seq(primal_path)
+        primal_shooting_stef_update(primal_path, deleting, "event")
     # PRIMAL + NEWTON UPDATE
     if choice==2:
         os.chdir(primal_path)
