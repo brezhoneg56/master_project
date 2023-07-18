@@ -409,10 +409,14 @@ def prepareAdjointDefectComputation(basepath, sweep_name, interval_name, previou
     #Fetch shootingDefect from ref_Cases    
     src_shootingDefect = ref_cases + "shootingDefect/"
     dest_shootingDefect = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/"
+    if os.path.exists(dest_shootingDefect):
+        post.erase_adjointShootingdefect(adjoint_path, dest_shootingDefect, sweep_name, interval_name, i)
     try:
-        shutil.copytree(src_shootingDefect, dest_shootingDefect)
+        shutil.rmtree(dest_shootingDefect)
     except Exception as e:
-        print(e)
+        print(str(e))
+    
+    shutil.copytree(src_shootingDefect, dest_shootingDefect)
     #startingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
     #endingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
     adjointStartingTime=str(bc.decimal_analysis(-(theta + (i-1)*deltaT)))

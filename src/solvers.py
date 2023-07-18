@@ -281,7 +281,7 @@ def coupling_threads():
 def the_new_shooting_manager(deleting, choice):
     if choice ==0:
         primal_shooting_stef_update(primal_path, "no", "event")        
-        adsol.computeAdjoint(adjoint_path, "yes", "event")
+        adsol.computeAdjoint(adjoint_path, deleting, "event")
     
     # PRIMAL
     if choice==1:
@@ -291,7 +291,7 @@ def the_new_shooting_manager(deleting, choice):
     # PRIMAL + NEWTON UPDATE
     if choice==2:
         os.chdir(primal_path)
-        primal_shooting_stef_update(primal_path, deleting, "event")        
+        primal_shooting_stef_update(primal_path, "no", "event")        
         adsol.computeAdjoint(adjoint_path, deleting, "event")
         
     #ADJOINT

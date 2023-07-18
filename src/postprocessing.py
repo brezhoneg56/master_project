@@ -81,6 +81,7 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
 
 #################  ADJOINT POSTPROCESSING ########################
 def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i):
+    print("START prepare_adjoint_fixed_primal")
     next_sweep=mysweep.format(k+1)
     next_interval=myinterval.format(i-1)
     
@@ -88,15 +89,24 @@ def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_
     src_sweep=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/"
     dest_sweep=adjoint_path + folder_name + "/" + next_sweep + "/" + interval_name + "/"
     shutil.copytree(src_sweep, dest_sweep)    
+      
+    dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
+    src_pa=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     
-    if i<n-k+1:
-        src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
-        src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
-        dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
-        shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "/Ua")
-        shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "/phia")
-        shutil.copy(src_upfiles + "shootingUpdateUaf", dest_upfiles + "/Uaf")
-        shutil.copy(src_p, dest_upfiles)
+    shutil.copy(src_pa + "pa", dest_upfiles + "pa")
+    shutil.copy(src_pa + "Ua", dest_upfiles + "Ua")
+    shutil.copy(src_pa + "phia", dest_upfiles + "phia")
+    shutil.copy(src_pa + "Uaf", dest_upfiles + "Uaf")
+
+
+    
+    
+    
+    #if i>1:
+    #    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingUpdate/0/"
+    #    shutil.copy(src_upfiles + "shootingUpdateUa", dest_upfiles + "Ua")
+    #    shutil.copy(src_upfiles + "shootingUpdatePhia", dest_upfiles + "phia")
+    #    shutil.copy(src_upfiles + "shootingUpdateUaf", dest_upfiles + "Uaf")
     
     
 
@@ -104,7 +114,7 @@ def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_
 def prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i):
     next_sweep=mysweep.format(k+1)
     next_interval=myinterval.format(i-1)
-    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingUpdate/0/"
+    src_upfiles=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingUpdate/0/"
     src_p=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/pa" #correction de i-1
     dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT))
     #print(str(bc.decimal_analysis(theta + (i-1)*deltaT)))
@@ -239,7 +249,7 @@ def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
         #post.erase_constant(path_files)
         #post.erase_system(path_files)
 def erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name, i):
-    if i!=n:
+    #if i!=n:
         src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
         dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
         try:

@@ -62,7 +62,7 @@ def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):  ###A TES
     pre.prepareNextAdjointLinearization(adjoint_path, folder_name, k)
     start_time=time.time()
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
-        for i in range(1, n+1):#k.essayer 2, on ne lin pas dans 1
+        for i in range(2, n):#k.essayer 2, on ne lin pas dans 1, avant 1, n+1
             executor.submit(adjointLinearisedPimpleDyMFoam, adjoint_path, folder_name, sweep_name, i)
             print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
         print("\n\nAll Adjoint linearisations started, Waiting... \n")
