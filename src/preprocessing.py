@@ -263,7 +263,13 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
 def initializeMyAdjoint(folder_name, sweep_name):
     for i in range (1, n+1):
         interval_name=myinterval.format(i)
-        src_case = primal_path + folder_name + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
+#        src_case = primal_path + folder_name + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
+        src_case = primal_path + "1_intervals_adjoint_11-07" + "/" + "sweep"+str(1) + "/" + "interval1" ##Solution from very last sweep (the more precise) is taken
+
+
+
+
+
         dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
         
         shutil.copytree(src_case + "/system/", dest_case + "/system/")        
@@ -492,7 +498,7 @@ def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_na
     if os.path.exists(dest_shootUpdate):
         print("Replacing file")
         try:
-            os.rmtree(dest_shootUpdate)
+            shutil.rmtree(dest_shootUpdate)
         except Exception as e:
             print(e)
         try:
