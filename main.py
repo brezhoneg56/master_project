@@ -26,9 +26,9 @@ c.headings()
 
 #post.prepareAdjointPostProcessing(adjoint_path, folder_name, "sweep5")
 
-sol.primal_shooting_stef_update(primal_path, "yes", "event")        
+#sol.primal_shooting_stef_update(primal_path, "yes", "event")        
 
-#adsol.computeAdjoint(adjoint_path, "no", "event")
+adsol.computeAdjoint(adjoint_path, "no", "event")
 
 #sol.primal_shooting_stef_update(primal_path, "no", "no")
 #adsol.computeAdjoint(adjoint_path, "no", "yes")

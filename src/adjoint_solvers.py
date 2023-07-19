@@ -61,10 +61,11 @@ def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):  ###A TES
     print("Starting LIN ADJ EXECUTOR ... \n")
     pre.prepareNextAdjointLinearization(adjoint_path, folder_name, k)
     start_time=time.time()
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
-        for i in range(2, n):#k.essayer 2, on ne lin pas dans 1, avant 1, n+1
-            executor.submit(adjointLinearisedPimpleDyMFoam, adjoint_path, folder_name, sweep_name, i)
-            print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
+    for i in range(2, n):#k.essayer 2, on ne lin pas dans 1, avant 1, n+1
+            #executor.submit(adjointLinearisedPimpleDyMFoam, adjoint_path, folder_name, sweep_name, i)
+        adjointLinearisedPimpleDyMFoam(adjoint_path, folder_name, sweep_name, i)
+        print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
         print("\n\nAll Adjoint linearisations started, Waiting... \n")
     print("LIN ADJ EXECUTOR terminated \n\n")
     elapsed_time = time.time() - start_time
@@ -97,17 +98,21 @@ def computeAdjointNewtonUpdate(basepath, sweep_name, i, k):
 def loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k):
     start_time_ad_pimple=time.time()
     print("\nComputing Adjoint Newton Update...")
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(n-k, 0, -1): #déart à n au lieu de n-1
-            executor.submit(computeAdjointNewtonUpdate, basepath, sweep_name, i, k)
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+    for i in range(n-k, 1, -1): #déart à n au lieu de n-1
+            #executor.submit(computeAdjointNewtonUpdate, basepath, sweep_name, i, k)
             # FileNotFoundError: [Errno 2] No such file or directory: '/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/9_intervals_adjoint_10-07/sweep1/interval8/-0.489/linUaf'
-        #computeAdjointNewtonUpdate(basepath, sweep_name, i, k)
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+        computeAdjointNewtonUpdate(basepath, sweep_name, i, k)
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+    if k<n:
         for i in range(n, 0, -1):
             interval_name=myinterval.format(i)
-            if k<n:
-                #post.prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i) # Dynamic Solution
-                executor.submit(post.prepare_adjoint_fixed_primal, basepath, folder_name, sweep_name, k, interval_name, i) #Fixed solution
+                    #post.prepareNextAdjointNewton(basepath, folder_name, sweep_name, k, interval_name, i) # Dynamic Solution
+                    #executor.submit(post.prepare_adjoint_fixed_primal, basepath, folder_name, sweep_name, k, interval_name, i) #Fixed solution
+            post.prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i)
+        for i in range(n-k+1, 1, -1):
+            interval_name=myinterval.format(i)    
+            post.copy_adjoint_variables(basepath, folder_name, sweep_name, k, interval_name, i)
     #Intermediate Timer
     elapsed_time = time.time() - start_time_ad_pimple      
     bc.timer_and_write(basepath, elapsed_time, sweep_name, "adjoint folder")
@@ -155,8 +160,8 @@ def computeAdjoint(basepath, erasing, event):
         if erasing=="yes":
             if (deletion_counter>0):
                 print("Deleting files...\n")
-                #post.erase_all_adjoint_files(basepath, folder_name, k)
-                #post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
+                post.erase_all_adjoint_files(basepath, folder_name, k)
+                post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
                 post.erase_all_files(primal_path, folder_name, k)
                 post.erase_all_adjoint_files(adjoint_path, folder_name, k)
                 print("The files for " + mysweep.format(deletion_counter)+ " in primal_path were succefully deleted. See exceptions above.")

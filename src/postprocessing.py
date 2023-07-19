@@ -22,7 +22,7 @@ def postProcessingCopyfiles(i, destination_file, postPro_destination):
     for filename in os.listdir(destination_file + interval_name):                
         if filename.startswith('0.') or filename.startswith(str(theta)) or filename.startswith(str(theta + deltaT*n)):
             #os.path.join(destination_file + interval_name + "/" + filename, postPro_destination)
-            shutil.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/") #avant bc.copytree
+            bc.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/") #avant bc.copytree
 
 def preparePostProcessing(basepath, folder_name, sweep_name):
     destination_file=basepath + folder_name + '/' + sweep_name + '/'
@@ -82,17 +82,18 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
 #################  ADJOINT POSTPROCESSING ########################
 def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i):
     print("START prepare_adjoint_fixed_primal")
-    next_sweep=mysweep.format(k+1)
-    next_interval=myinterval.format(i-1)
-    
+    next_sweep=mysweep.format(k+1)    
     
     src_sweep=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/"
     dest_sweep=adjoint_path + folder_name + "/" + next_sweep + "/" + interval_name + "/"
     shutil.copytree(src_sweep, dest_sweep)    
-      
+
+def copy_adjoint_variables(basepath, folder_name, sweep_name, k, interval_name, i):
+    next_sweep=mysweep.format(k+1)
+    next_interval=myinterval.format(i-1)
+    
     dest_upfiles=basepath + folder_name + "/" + next_sweep + "/" + next_interval + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
     src_pa=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-bc.decimal_analysis(theta + (i-1)*deltaT)) + "/"
-    
     shutil.copy(src_pa + "pa", dest_upfiles + "pa")
     shutil.copy(src_pa + "Ua", dest_upfiles + "Ua")
     shutil.copy(src_pa + "phia", dest_upfiles + "phia")
@@ -170,11 +171,11 @@ def prepareAdjointPostProcessing(basepath, folder_name, sweep_name):
     os.chdir(destination_file)
     shutil.copytree(ref_cases_mod_def + "constant/", postPro_destination + "/constant/" )
     shutil.copytree(ref_cases_mod_def + "system/", postPro_destination + "/system/" )
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(1, n+1):
+    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+    for i in range(1, n+1):
             #print("copyfile in loop" + str(i))
-            executor.submit(adjointPostProcessingCopyfiles, i, destination_file, postPro_destination)
-        #post.adjointPostProcessingCopyfiles(i, destination_file, postPro_destination)
+            #executor.submit(adjointPostProcessingCopyfiles, i, destination_file, postPro_destination)
+        post.adjointPostProcessingCopyfiles(i, destination_file, postPro_destination)
     print("ready for postProcessing of " + sweep_name + "...\n")
 
 #################    ERASING FUNCTIONS    #################

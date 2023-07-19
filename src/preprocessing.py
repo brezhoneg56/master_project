@@ -263,9 +263,8 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
 def initializeMyAdjoint(folder_name, sweep_name):
     for i in range (1, n+1):
         interval_name=myinterval.format(i)
-#        src_case = primal_path + folder_name + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
-        src_case = primal_path + "1_intervals_adjoint_11-07" + "/" + "sweep"+str(1) + "/" + "interval1" ##Solution from very last sweep (the more precise) is taken
-
+        src_case = primal_path + "5_intervals_ref" + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
+        
 
 
 
@@ -417,10 +416,10 @@ def prepareAdjointDefectComputation(basepath, sweep_name, interval_name, previou
     dest_shootingDefect = basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/"
     if os.path.exists(dest_shootingDefect):
         post.erase_adjointShootingdefect(adjoint_path, dest_shootingDefect, sweep_name, interval_name, i)
-    try:
-        shutil.rmtree(dest_shootingDefect)
-    except Exception as e:
-        print(str(e))
+        try:
+            shutil.rmtree(dest_shootingDefect)
+        except Exception as e:
+            print(str(e))
     
     shutil.copytree(src_shootingDefect, dest_shootingDefect)
     #startingTime=str(bc.decimal_analysis(theta + (i-1)*deltaT))
