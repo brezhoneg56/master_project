@@ -162,8 +162,8 @@ def adjointPostProcessingCopyfiles(i, destination_file, postPro_destination):
     for filename in os.listdir(destination_file + interval_name):                
         if filename.startswith('-0.') or filename.startswith(str(-theta)) or filename.startswith(str(-(theta + deltaT*n))):
             #os.path.join(destination_file + interval_name + "/" + filename, postPro_destination)
-            #bc.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
-            shutil.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
+            bc.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
+            #shutil.copytree(destination_file + interval_name + "/" + filename, postPro_destination + "/" + filename + "/")
 
 def prepareAdjointPostProcessing(basepath, folder_name, sweep_name):
     destination_file=basepath + folder_name + '/' + sweep_name + '/'
@@ -171,11 +171,11 @@ def prepareAdjointPostProcessing(basepath, folder_name, sweep_name):
     os.chdir(destination_file)
     shutil.copytree(ref_cases_mod_def + "constant/", postPro_destination + "/constant/" )
     shutil.copytree(ref_cases_mod_def + "system/", postPro_destination + "/system/" )
-    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-    for i in range(1, n+1):
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+        for i in range(1, n+1):
             #print("copyfile in loop" + str(i))
-            #executor.submit(adjointPostProcessingCopyfiles, i, destination_file, postPro_destination)
-        post.adjointPostProcessingCopyfiles(i, destination_file, postPro_destination)
+            executor.submit(adjointPostProcessingCopyfiles, i, destination_file, postPro_destination)
+        #post.adjointPostProcessingCopyfiles(i, destination_file, postPro_destination)
     print("ready for postProcessing of " + sweep_name + "...\n")
 
 #################    ERASING FUNCTIONS    #################

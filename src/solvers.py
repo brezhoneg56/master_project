@@ -243,7 +243,7 @@ def primal_shooting_stef_update(basepath, erasing, event):
         
         # Deleting Files after Sweep k Done
         if erasing=="yes":
-            if (deletion_counter>0):
+            if (deletion_counter>0) and k<n:
                 print("Deleting files...\n")
                 post.erase_all_files(basepath, folder_name, k)
                 print("The files for " + mysweep.format(deletion_counter)+ " in primal_path were succefully deleted. See exceptions above.")

@@ -26,16 +26,13 @@ c.headings()
 
 #post.prepareAdjointPostProcessing(adjoint_path, folder_name, "sweep5")
 
-#sol.primal_shooting_stef_update(primal_path, "yes", "event")        
-
-adsol.computeAdjoint(adjoint_path, "no", "event")
+sol.primal_shooting_stef_update(primal_path, "yes", "event")        
+adsol.computeAdjoint(adjoint_path, "yes", "event")
 
 #sol.primal_shooting_stef_update(primal_path, "no", "no")
 #adsol.computeAdjoint(adjoint_path, "no", "yes")
 
 
-#for k in range(1,n+1):
-#    sweep_name=mysweep.format(k)
 #    for i in range(n, 0, -1):
 #        interval_name=myinterval.format(i)
 #        post.prepare_adjoint_fixed_primal(adjoint_path, folder_name, sweep_name, k, interval_name, i)

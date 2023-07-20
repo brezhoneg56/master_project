@@ -263,11 +263,7 @@ def prepareNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i):
 def initializeMyAdjoint(folder_name, sweep_name):
     for i in range (1, n+1):
         interval_name=myinterval.format(i)
-        src_case = primal_path + "5_intervals_ref" + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
-        
-
-
-
+        src_case = primal_path + folder_name + "/" + "sweep"+str(n) + "/" + interval_name ##Solution from very last sweep (the more precise) is taken
 
         dest_case = adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name
         
@@ -485,10 +481,10 @@ def prepareNextAdjointLinearization(basepath, folder_name, k):
     fvSchemes_path=ref_cases + "/controlBib/fvSchemes"
     fvSolution_path=ref_cases + "/controlBib/fvSolution"
 
-    #with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
-    for i in range(n-1, 0, -1): #avant n-1
-            #executor.submit(copy_adjointlinearization, basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
-        copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
+    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:    
+        for i in range(n-1, 0, -1): #avant n-1
+            executor.submit(copy_adjointlinearization, basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
+        #copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_path, fvSolution_path)
 
 def prepareAdjointNewtonUpdate(basepath, folder_name, sweep_name, k, interval_name, i): #on st int2 et on prepare int3
     #Fetch shooting Update folder from postPro cases
