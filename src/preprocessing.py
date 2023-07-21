@@ -459,7 +459,7 @@ def copy_adjointlinearization(basepath, folder_name, sweep_name, i, fvSchemes_pa
         linU_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/0/linUaDefect"        
         
         starttime_dest=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/" + str(-(bc.decimal_analysis(theta + (i)*deltaT)))
-        print("Start for LIN COPY:" + str(starttime_dest))
+        #print("Start for LIN COPY:" + str(starttime_dest))
         #Copy lin files
         shutil.copy2(linP_path, starttime_dest + "/linPa")
         shutil.copy2(linU_path, starttime_dest + "/linUa")

@@ -81,7 +81,7 @@ def prepareNextNewton(basepath, folder_name, sweep_name, k, interval_name, i):
 
 #################  ADJOINT POSTPROCESSING ########################
 def prepare_adjoint_fixed_primal(basepath, folder_name, sweep_name, k, interval_name, i):
-    print("START prepare_adjoint_fixed_primal")
+    #print("START prepare_adjoint_fixed_primal")
     next_sweep=mysweep.format(k+1)    
     
     src_sweep=adjoint_path + folder_name + "/" + sweep_name + "/" + interval_name + "/"
@@ -254,10 +254,10 @@ def erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name,
     #if i!=n:
         src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/adjointShootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
         dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
-        try:
+        if os.path.exists(src_shootfile):
             shutil.move(src_shootfile, dest_shootfile)
-        except Exception as e:
-            print(e)
+        #except Exception as e:
+            #print(e)
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
     #Interval time files   
@@ -371,7 +371,15 @@ def erase_all_adjoint_files(basepath, folder_name, k):
 def erase_primal_adjoint_files(the_primal_path, the_adjoint_path, folder_name, k):
     erase_all_files(the_primal_path, folder_name, k)
     erase_all_adjoint_files(the_adjoint_path, folder_name, k)
-
+    
+def erase_sweeps_res_logs(basepath, folder_name, k):
+    os.chdir(basepath)
+    if os.path.exists(basepath + folder_name + "/sweep" + str(k) + "_times.txt"):
+        os.remove(basepath + folder_name + "/sweep" + str(k) + "_times.txt")
+    if os.path.exists(basepath + folder_name + "/adjointcomputation_times.txt"):
+        os.remove(basepath + folder_name +"/adjointcomputation_times.txt")
+    if os.path.exists(basepath + folder_name + "/" + folder_name + "_times.txt"):
+        os.remove(basepath + folder_name + "/" + folder_name + "_times.txt")
 #################  LOGTABLE FUNCTIONS  #################
 
 
@@ -399,7 +407,7 @@ def store_all_values(basepath, folder_name):
     primalWallTime = []
     acc_time=0.0
     os.chdir(basepath + folder_name)
-    with open("logtable.csv", 'a', newline='') as tab:
+    with open("logtable" + str(n) + ".csv", 'a', newline='') as tab:
         writer = csv.writer(tab)
         for k in range(1, n+1):
             sweep_name=mysweep.format(k)
@@ -435,6 +443,8 @@ def store_all_values(basepath, folder_name):
         
         # Write the row to the CSV file
         writer.writerows(table)
+        erase_sweeps_res_logs(basepath, folder_name, k)
+        print("Done.\n\n\n")
 
 def store_all_adjoint_values(basepath, folder_name):
     os.chdir(basepath + folder_name)
@@ -445,7 +455,7 @@ def store_all_adjoint_values(basepath, folder_name):
     primalWallTime = []
     acc_time=0.0
     os.chdir(basepath + folder_name)
-    with open("adjointlogtable.csv", 'a', newline='') as tab:
+    with open("adjointlogtable" + str(n) + ".csv", 'a', newline='') as tab:
         writer = csv.writer(tab)
         for k in range(1, n+1):
             sweep_name=mysweep.format(k)
@@ -492,6 +502,7 @@ def store_all_adjoint_values(basepath, folder_name):
         
         # Write the row to the CSV file
         writer.writerows(table)
+        erase_sweeps_res_logs(basepath, folder_name, k)
         print("Done.\n\n\n")
 
 
@@ -623,7 +634,7 @@ def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
     os.chdir(basepath + new_folder + "/")
     print(basepath + new_folder)
     # Read the first and last lines of logtable.csv
-    with open("logtable.csv", 'r') as file:
+    with open("logtable" + str(n) + ".csv", 'r') as file:
         first_line = file.readline().strip().split('    ')
         last_line = file.readlines()[-1].strip().split('    ')
 
@@ -676,7 +687,7 @@ def plot_my_data(basepath, filename, x_axis, y_axis, new_folder, k):
             modified_lines.append("set xrange " + xrange_values[x_axis])
         elif line.startswith("set yrange"):
             modified_lines.append("set yrange " + yrange_values[y_axis])
-        elif line.startswith("plot 'logtable.csv'"):
+        elif line.startswith("plot 'logtable" + str(n) + ".csv'"):
             parts = line.split("using ")
             parts[1] = str(x_axis) + ":" + str(y_axis)
             if y_axis == 2:

@@ -65,7 +65,7 @@ def loop_linearised_adjoint_pimpleDyMFoam(folder_name, sweep_name, k):  ###A TES
         for i in range(2, n):#k.essayer 2, on ne lin pas dans 1, avant 1, n+1
             executor.submit(adjointLinearisedPimpleDyMFoam, adjoint_path, folder_name, sweep_name, i)
         #adjointLinearisedPimpleDyMFoam(adjoint_path, folder_name, sweep_name, i)
-        print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
+            print("Starting adjointLinearisedPimpleDyMFoam for interval " + str(i))
         print("\n\nAll Adjoint linearisations started, Waiting... \n")
     print("LIN ADJ EXECUTOR terminated \n\n")
     elapsed_time = time.time() - start_time
@@ -126,15 +126,15 @@ def computeAdjoint(basepath, erasing, event):
     start_time_ALL=time.time()
     
     #Verify if folder_name exists, and offers to delete it if so
-    bc.checking_existence(basepath, folder_name)
+    #bc.checking_existence(basepath, folder_name)
     print("Preparing files for adjoint computation...\n")
     
     #Preparing files for adjoint computation
-    pre.initializeMyAdjoint(folder_name, "sweep1")
+    #pre.initializeMyAdjoint(folder_name, "sweep1")
     print("done")
-    deletion_counter=-1
+    deletion_counter=-2
     #Initialization loop over all Sweeps    
-    for k in range (1, n+1): #(1, n+1)
+    for k in range (5, n+1): #(1, n+1)
         start_time=time.time()
         sweep_name=mysweep.format(k)
         

@@ -217,7 +217,7 @@ def primal_shooting_stef_update(basepath, erasing, event):
     #Initilisation for Sweep1
     bc.sweep_1_initialization(basepath, folder_name) #One sync version
     
-    deletion_counter=-1
+    deletion_counter=-2
     # STARTING MAIN LOOP
     for k in range(1, n+1):
     ######################    
@@ -280,8 +280,8 @@ def coupling_threads():
 
 def the_new_shooting_manager(deleting, choice):
     if choice ==0:
-        primal_shooting_stef_update(primal_path, "no", "event")        
-        adsol.computeAdjoint(adjoint_path, deleting, "event")
+        primal_shooting_stef_update(primal_path, deleting, "event")        
+        adsol.computeAdjoint(adjoint_path, deleting, deleting, "event")
     
     # PRIMAL
     if choice==1:
