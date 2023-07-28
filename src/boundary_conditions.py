@@ -32,7 +32,7 @@ def sweep_1_initialization(basepath, folder_name):
     print("\nThe directory " + folder_name + " has been created at this place: \n" + basepath + "\n\n")
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:        
         for i in range(1,n + 1):
-            executor.submit(copy_sweep1_initialization, basepath, sweep_name, i)
+            executor.submit(zero_sweep1_initialization, basepath, sweep_name, i)
     os.chdir(basepath + folder_name)
     with open("pressureDropvalues.txt","w") as mytime:
         mytime.write("\n\n=============================================================================\n\n" + "                         LOGFILE " + folder_name + "\n\n=============================================================================\n\n")
@@ -41,7 +41,7 @@ def sweep_1_initialization(basepath, folder_name):
     os.chdir(basepath)
     #return(folder_name)
 
-def copy_sweep1_initialization(basepath, sweep_name, i): #Copy function for sweep1_initialization
+def loop_sweep1_initialization(basepath, sweep_name, i): #Copy function for sweep1_initialization
     interval_name=myinterval.format(i)
             
     # Fetching Directory constant
@@ -81,6 +81,57 @@ def copy_sweep1_initialization(basepath, sweep_name, i): #Copy function for swee
         elif line.startswith('endTime'):
             line = 'endTime         {};\n'.format(endTime)
         print(line)
+
+
+def zero_sweep1_initialization(basepath, sweep_name, i): #Copy function for sweep1_initialization
+    interval_name=myinterval.format(i)
+            
+    # Fetching Directory constant
+    source_constant=calcs_undeformed + 'constant'
+    destination_constant=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    shutil.copytree(source_constant,os.path.join(destination_constant,os.path.basename(source_constant)))
+    
+    # Fetching Directory system
+    source_system=calcs_undeformed + 'system'
+    destination_system=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    shutil.copytree(source_system,os.path.join(destination_system,os.path.basename(source_system)))
+    
+    # Fetching Directory with starting time
+    startTime=decimal_analysis(theta + deltaT*(i-1))
+    endTime=decimal_analysis(theta + deltaT*i)
+    source_startTime=calcs_undeformed + str(startTime)
+    destination_startTime=basepath + folder_name + "/" + sweep_name + "/" + interval_name
+    shutil.copytree(source_startTime,os.path.join(destination_startTime,os.path.basename(source_startTime)))
+    if i>1:
+        shutil.copy(ref_cases + "moderate_deformed_SDuct/0/U", os.path.join(destination_startTime,os.path.basename(source_startTime)))
+        shutil.copy(ref_cases + "moderate_deformed_SDuct/0/p", os.path.join(destination_startTime,os.path.basename(source_startTime)))        
+
+        
+    
+    # Deleting wrong polyMesh/points in the starting time directory
+    polyMesh_path=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh/points'
+    os.remove(polyMesh_path)
+    file=destination_startTime + '/' + str(startTime) + '/polyMesh/points'
+    if os.path.exists(file):
+        shutil.rmtree(destination_startTime + '/' + str(startTime) + '/polyMesh')
+        
+    #Fetching the right polyMesh
+    source_newPolyMesh=ref_cases_mod_def + "constant/polyMesh/points"
+    destination_newPolyMesh=basepath + folder_name + "/" + sweep_name + "/" + interval_name + '/constant/polyMesh'
+    shutil.copy(source_newPolyMesh,destination_newPolyMesh)
+    
+    #Modify the controlDict file to ajust startTime and endTime        
+    controlDict_path=folder_name + '/' + sweep_name + '/' + interval_name + '/system/controlDict'
+    for line in fileinput.input(controlDict_path, inplace=True):
+        if line.startswith('startTime'):
+            line = 'startTime       {};\n'.format(startTime)
+        elif line.startswith('endTime'):
+            line = 'endTime         {};\n'.format(endTime)
+        print(line)
+
+
+
+
 
 ###########################################################################
 

@@ -24,10 +24,15 @@ c.headings()
 #sol.the_new_shooting_manager("no", 0)
 
 
-#post.prepareAdjointPostProcessing(adjoint_path, folder_name, "sweep5")
+#for k in range (1, 18):
+   # try:
+    #post.erase_all_files(primal_path, folder_name, k)
+    #except Exception:
+       # print(k)
 
-#sol.primal_shooting_stef_update(primal_path, "yes", "event")        
-adsol.computeAdjoint(adjoint_path, "yes", "event")
+#post.store_all_values(primal_path, "2_intervals_26-07-23_zero-init")
+sol.primal_shooting_stef_update(primal_path, "yes", "event")        
+#adsol.computeAdjoint(adjoint_path, "yes", "event")
 
 
 
@@ -36,6 +41,7 @@ adsol.computeAdjoint(adjoint_path, "yes", "event")
 #        post.prepare_adjoint_fixed_primal(adjoint_path, folder_name, sweep_name, k, interval_name, i)
    #post.erase_primal_adjoint_files(primal_path, adjoint_path, folder_name, k)
     #erase_all_files(the_primal_path, folder_name, k)
-    #post.erase_all_adjoint_files(adjoint_path, folder_name, k)
+#for k in range(1, n+1):
+#    post.erase_all_adjoint_files(adjoint_path, folder_name, k)
 #post.store_all_adjoint_values(adjoint_path, folder_name)
 #post.store_all_values(primal_path, folder_name)

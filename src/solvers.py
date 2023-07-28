@@ -210,12 +210,10 @@ def primal_shooting_stef_update(basepath, erasing, event):
     
     #Verify if folder_name exists, and offers to delete it if so
     bc.checking_existence(basepath, folder_name)
-    
     #Starting Timer for entire Process
     start_time_ALL=time.time()
-    
     #Initilisation for Sweep1
-    bc.sweep_1_initialization(basepath, folder_name) #One sync version
+    bc.sweep_1_initialization(basepath, folder_name) #One sync version, troisieme variable : loop ou zero
     
     deletion_counter=-2
     # STARTING MAIN LOOP
@@ -236,10 +234,10 @@ def primal_shooting_stef_update(basepath, erasing, event):
             #event.set()
         
         #Starting linearisation for Sweep k over all subintervals
-        loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
+        #loop_linearisedPimpleDyMFoam(basepath, folder_name, sweep_name, k) #One sync version
 
         #Starting Newton Update
-        loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k)
+        #loop_computeNewtonUpdate(basepath, folder_name, sweep_name, k)
         
         # Deleting Files after Sweep k Done
         if erasing=="yes":
@@ -252,7 +250,7 @@ def primal_shooting_stef_update(basepath, erasing, event):
         #Stopping intermediate timer and writing into logfile
         elapsed_time = time.time() - start_time
         bc.timer_and_write(basepath, elapsed_time, "subintervals", sweep_name)
-    print("Steffensen's Method terminated. Sweep " + str(k) + " updated.")
+    print("PandC's Method terminated. Sweep " + str(k) + " updated.")
 
     #Stopping timer and writing into logfile
     total_time=time.time()-start_time_ALL

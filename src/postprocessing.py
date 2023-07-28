@@ -245,8 +245,10 @@ def erase_files(path_files):
 def erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i):
     if i!=1:
         src_shootfile=basepath + folder_name + "/" + sweep_name + "/" + interval_name + "/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
-        dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/"
-        shutil.move(src_shootfile, dest_shootfile)
+        dest_shootfile=basepath + folder_name + "/" + sweep_name + "/logfiles/shootingDefect/shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt"
+        if os.path.exists(dest_shootfile):
+            os.remove(dest_shootfile)            
+            shutil.move(src_shootfile, dest_shootfile)
         #post.erase_0(path_files)
         #post.erase_constant(path_files)
         #post.erase_system(path_files)
@@ -260,12 +262,14 @@ def erase_adjointShootingdefect(basepath, path_files, sweep_name, interval_name,
             #print(e)
 def erase_all_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
-    #Interval time files   
-    os.makedirs(basepath+folder_name+"/"+sweep_name+"/logfiles")
+    #Interval time files
+    if not os.path.exists(basepath+folder_name+"/"+sweep_name+"/logfiles/"):
+        os.makedirs(basepath+folder_name+"/"+sweep_name+"/logfiles")
     for i in range(1, n+1):
             interval_name=myinterval.format(i)
             path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
-            erase_time_files(path_files)
+            if os.path.exists(path_files):
+                erase_time_files(path_files)
             
             src_log=basepath+folder_name+"/"+sweep_name+"/"+interval_name+"/lin_logfilesweep"+str(k)+"_"+interval_name+".txt"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/lin_logfile_"+interval_name+".txt"
@@ -275,31 +279,32 @@ def erase_all_files(basepath, folder_name, k):
             #    print("Error while moving directory: " + str(e4))
             src_log=basepath+folder_name+"/"+sweep_name+"/" + interval_name + "/pimple.log"
             dest_log=basepath+folder_name+"/"+sweep_name+"/logfiles/pimple_"+interval_name+".log"
-            try:
+            if os.path.exists(src_log):
                 shutil.move(src_log, dest_log)
-            except Exception as error:
-                print("Error while moving file: " + str(error))            
-            
-            erase_constant(path_files+"/constant")
-            erase_system(path_files+"/system")
+            #except Exception as error:
+                #print("Error while moving file: " + str(error))            
+            if os.path.exists(path_files+"/constant"):
+                erase_constant(path_files+"/constant")
+            if os.path.exists(path_files+"/system"):
+                erase_system(path_files+"/system")
             erase_shootingdefect(basepath, path_files, sweep_name, interval_name, i)            
-            
-            shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
+            if os.path.exists(basepath + folder_name + "/" + sweep_name + "/" + interval_name):
+                shutil.rmtree(basepath + folder_name + "/" + sweep_name + "/" + interval_name)
     #PostProcessessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/postProcessing/"
     dest_log=basepath+folder_name+"/"+sweep_name+"/"
-    try:
-        shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
-    except Exception as epost:
-        print("Error while moving postProlog: " + str(epost))
-    try:
+    #try:
+     #   shutil.move(src_log+"pimple.log", dest_log+"/logfiles/postPro_log.log")
+    #except Exception as epost:
+     #   print("Error while moving postProlog: " + str(epost))
+    if os.path.exists(src_log+"pressureDrop.txt"):
         shutil.move(src_log+"pressureDrop.txt", dest_log+"/logfiles/pressureDrop" + str(k) + ".txt")
-    except Exception:
-        print("Error while moving pressureDrop: ")
-    try:
+    #except Exception:
+        #print("Error while moving pressureDrop: ")
+    if os.path.exists(src_log):
         shutil.rmtree(src_log)
-    except Exception as error:
-        print("Error while deleting directory: " + str(error))
+    #except Exception as error:
+       # print("Error while deleting directory: " + str(error))
     
     #Preprocessing files
     src_log=basepath+folder_name+"/"+sweep_name+"/preProcessing/shooting_update_logfilesweep"+str(k)+"_"+interval_name+".txt"
@@ -311,8 +316,9 @@ def erase_all_files(basepath, folder_name, k):
     
 def erase_all_adjoint_files(basepath, folder_name, k):
     sweep_name=mysweep.format(k)
-    #Interval time files   
-    os.makedirs(basepath+folder_name+"/"+sweep_name+"/logfiles")
+    #Interval time files
+    if not os.path.exists(basepath+folder_name+"/"+sweep_name+"/logfiles/"):
+        os.makedirs(basepath+folder_name+"/"+sweep_name+"/logfiles/")
     for i in range(1, n+1):
             interval_name=myinterval.format(i)
             path_files=basepath+folder_name+"/"+sweep_name+"/"+interval_name
@@ -419,8 +425,16 @@ def store_all_values(basepath, folder_name):
             
             for i in range(2, n+1):
                 interval_name=myinterval.format(i)
-                _, flux_value = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
-                velocity_value, _ = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                try:
+                    _, flux_value = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                except Exception:
+                    print("ERROR with Flux Value. Defining to -1...")
+                    flux_value=-1.0
+                try:
+                    velocity_value, _ = post.fetch_values_defect(basepath, sweep_name, interval_name, "shooting_defect_logfile" + sweep_name + "_" + interval_name + ".txt")
+                except Exception:
+                    print("ERROR with Velocity Value. Defining to -1...")
+                    velocity_value=-1
                 velocity=velocity+float(velocity_value)
                 flux=flux+float(flux_value)
 
