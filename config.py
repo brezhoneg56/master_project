@@ -9,8 +9,15 @@ Created on Tue May  2 12:10:07 2023
 # Here, you can adapt the different paths to your structure.
 
 #PRIMAL PATHS
-primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/"
-adjoint_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/"
+#primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/modef_full_20-07/" # modef + full-scheme : REF POUR ADJOINT
+#primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/modef_partial_05-06-23/"   # model + partial-scheme
+#primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/zero_init_full/"            # zero-init + full-scheme    
+primal_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/primal/zero_init_partial_27-07/"  # zero-init + partial scheme
+
+adjoint_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/adjoint_without_newton_30-07/" #modef + partial-scheme
+#adjoint_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/adjoint_newton_20-07/" #modef + full-scheme
+#adjoint_path="/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/coupled_newton/" #coupling modef + full-scheme
+
 #CALCS PATHS
 calcs_undeformed="/home/jcosson/workspace/henersj_shootingdata/calcs/undeformed_turbulent/"
 calcs_path="/home/jcosson/workspace/henersj_shootingdata/calcs/"
@@ -27,8 +34,9 @@ project_path="/home/jcosson/workspace/henersj_shootingdata/scripts/master_projec
 # After testing is done, please uncomment the following
 #n=int(input("Set the number of shooting intervals: "));
 #theta=input("Define the starting time (example: 0.4): ");
-n=28; #Amount of sweeps / shooting intervals
-folder_name=str(n)+"_intervals_27-07-23_zero-init_primitive" ## "_intervals_20-07_primal-adjoint"
+n=56; #Amount of sweeps / shooting intervals
+folder_name=str(n)+"_intervals_27-07-23_zero-init_primitive"
+#"_intervals_20-07_primal-adjoint"#"_intervals_27-07-23_zero-init_primitive"# ## "_intervals_20-07_primal-adjoint"
 theta=0.4; #Starting time in seconds
 T=0.1; #Length of one period
 a=n; #Amount of sweeps in the first loop

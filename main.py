@@ -24,16 +24,17 @@ c.headings()
 #sol.the_new_shooting_manager("no", 0)
 
 
-#for k in range (1, 18):
+#for k in range (1, n+1):
    # try:
     #post.erase_all_files(primal_path, folder_name, k)
     #except Exception:
        # print(k)
+#post.erase_all_adjoint_files(adjoint_path, folder_name, 1)
 
-#post.store_all_values(primal_path, "2_intervals_26-07-23_zero-init")
+
+#post.store_all_values(primal_path, "56_intervals_27-07-23_zero-init_primitive")
 sol.primal_shooting_stef_update(primal_path, "yes", "event")        
 #adsol.computeAdjoint(adjoint_path, "yes", "event")
-
 
 
 #    for i in range(n, 0, -1):

@@ -98,11 +98,11 @@ def computeAdjointNewtonUpdate(basepath, sweep_name, i, k):
 def loop_computeAdjointNewtonUpdate(basepath, folder_name, sweep_name, k):
     start_time_ad_pimple=time.time()
     print("\nComputing Adjoint Newton Update...")
-    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
-        for i in range(n-k, 1, -1): #déart à n au lieu de n-1
-            executor.submit(computeAdjointNewtonUpdate, basepath, sweep_name, i, k)
-            # FileNotFoundError: [Errno 2] No such file or directory: '/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/9_intervals_adjoint_10-07/sweep1/interval8/-0.489/linUaf'
-        #computeAdjointNewtonUpdate(basepath, sweep_name, i, k)
+#    with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
+#        for i in range(n-k, 1, -1): #déart à n au lieu de n-1
+#            executor.submit(computeAdjointNewtonUpdate, basepath, sweep_name, i, k)
+#            # FileNotFoundError: [Errno 2] No such file or directory: '/home/jcosson/workspace/henersj_shootingdata/calcs/moderate_deformed/adjoint/9_intervals_adjoint_10-07/sweep1/interval8/-0.489/linUaf'
+#        #computeAdjointNewtonUpdate(basepath, sweep_name, i, k)
     with futures.ProcessPoolExecutor(max_workers=maxCPU) as executor:
         if k<n:
             for i in range(n, 0, -1):
